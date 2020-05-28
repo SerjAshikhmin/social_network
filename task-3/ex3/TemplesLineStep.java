@@ -1,7 +1,7 @@
 package ex3;
 
 public class TemplesLineStep implements ILineStep {
-    public IProductPart buildProductPart() {
+    public Temples buildProductPart() {
         System.out.println("Building temples");
         return new Temples();
     }
