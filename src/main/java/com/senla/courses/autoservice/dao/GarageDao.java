@@ -1,13 +1,13 @@
-package com.senla.courses.autoservice.DAO;
+package com.senla.courses.autoservice.dao;
 
-import com.senla.courses.autoservice.DAO.interfaces.IGarageDAO;
+import com.senla.courses.autoservice.dao.interfaces.IGarageDao;
 import com.senla.courses.autoservice.model.Garage;
 import com.senla.courses.autoservice.model.GaragePlace;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GarageDAO implements IGarageDAO {
+public class GarageDao implements IGarageDao {
 
     private List<Garage> garages = new ArrayList<>();
 
@@ -44,12 +44,14 @@ public class GarageDAO implements IGarageDAO {
 
     @Override
     public boolean addGaragePlace(Garage garage, GaragePlace garagePlace) {
-        return garage.getGaragePlaces().add(garagePlace);
+        Garage daoGarage = getGarageById(garage.getId());
+        return daoGarage.getGaragePlaces().add(garagePlace);
     }
 
     @Override
     public boolean removeGaragePlace(Garage garage, GaragePlace garagePlace) {
-        return garage.getGaragePlaces().remove(garagePlace);
+        Garage daoGarage = getGarageById(garage.getId());
+        return daoGarage.getGaragePlaces().remove(garagePlace);
     }
 
     private Garage updateGarageFields(Garage garage, Garage daoGarage) {

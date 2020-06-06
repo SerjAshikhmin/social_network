@@ -5,7 +5,7 @@ public class GaragePlace {
     private int id;
     private String type;
     private int area;
-    private boolean busy = false;
+    private boolean busy;
 
     public GaragePlace(int id, String type, int area) {
         this.id = id;

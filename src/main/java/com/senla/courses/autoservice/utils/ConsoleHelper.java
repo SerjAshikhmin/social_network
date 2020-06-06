@@ -1,4 +1,4 @@
-package com.senla.courses.autoservice.helper;
+package com.senla.courses.autoservice.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

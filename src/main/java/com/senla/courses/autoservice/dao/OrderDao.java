@@ -1,6 +1,6 @@
-package com.senla.courses.autoservice.DAO;
+package com.senla.courses.autoservice.dao;
 
-import com.senla.courses.autoservice.DAO.interfaces.IOrderDAO;
+import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
@@ -10,7 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 
-public class OrderDAO implements IOrderDAO {
+public class OrderDao implements IOrderDao {
     private List<Order> orders = new ArrayList<>();
 
     @Override

@@ -1,4 +1,4 @@
-package com.senla.courses.autoservice.DAO.interfaces;
+package com.senla.courses.autoservice.dao.interfaces;
 
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
@@ -6,7 +6,7 @@ import com.senla.courses.autoservice.model.Order;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public interface IOrderDAO {
+public interface IOrderDao {
 
     boolean addOrder(Order order);
     boolean removeOrder(Order order);

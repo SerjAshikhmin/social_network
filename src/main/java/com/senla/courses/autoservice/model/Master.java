@@ -5,8 +5,8 @@ public class Master {
     private int id;
     private String name;
     private int category;
-    private boolean busy = false;
-    private Order currentOrder = null;
+    private boolean busy;
+    private Order currentOrder;
 
     public Master(int id, String name, int category) {
         this.id = id;

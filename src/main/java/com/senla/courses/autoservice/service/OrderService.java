@@ -1,9 +1,13 @@
 package com.senla.courses.autoservice.service;
 
-import com.senla.courses.autoservice.DAO.interfaces.IOrderDAO;
+import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
+import com.senla.courses.autoservice.service.comparators.order.OrderByCostComparator;
+import com.senla.courses.autoservice.service.comparators.order.OrderByEndDateComparator;
+import com.senla.courses.autoservice.service.comparators.order.OrderByPlannedStartDateComparator;
+import com.senla.courses.autoservice.service.comparators.order.OrderByStartDateComparator;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
 
 import java.util.ArrayList;
@@ -13,9 +17,9 @@ import java.util.List;
 
 public class OrderService implements IOrderService {
 
-    private IOrderDAO orderDAO;
+    private IOrderDao orderDAO;
 
-    public OrderService (IOrderDAO orderDAO) {
+    public OrderService (IOrderDao orderDAO) {
         this.orderDAO = orderDAO;
     }
 
@@ -45,14 +49,18 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<Order> getAllOrders(Comparator orderComparator) {
+    public List<Order> getAllOrdersSorted(String sortBy) {
         List<Order> allOrders = orderDAO.getAllOrders();
-        allOrders.sort(orderComparator);
+
+        Comparator orderComparator = getOrderComparator(sortBy);
+        if (orderComparator != null) {
+            allOrders.sort(orderComparator);
+        }
         return allOrders;
     }
 
     @Override
-    public List<Order> getAllOrdersInProgress(Comparator orderComparator) {
+    public List<Order> getAllOrdersInProgress(String sortBy) {
         List<Order> completedOrders = new ArrayList<>();
         for (Order order : orderDAO.getAllOrders()) {
             if (order.getStatus() == OrderStatus.IN_WORK) {
@@ -60,7 +68,10 @@ public class OrderService implements IOrderService {
             }
         }
 
-        completedOrders.sort(orderComparator);
+        Comparator orderComparator = getOrderComparator(sortBy);
+        if (orderComparator != null) {
+            completedOrders.sort(orderComparator);
+        }
         return completedOrders;
     }
 
@@ -82,7 +93,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<Order> getOrdersByPeriod (GregorianCalendar startPeriod, GregorianCalendar endPeriod, Comparator orderComparator) {
+    public List<Order> getOrdersByPeriod (GregorianCalendar startPeriod, GregorianCalendar endPeriod, String sortBy) {
         List<Order> ordersByPeriod = new ArrayList<>();
         for (Order order : orderDAO.getAllOrders()) {
             if (startPeriod.compareTo(order.getEndDate()) == -1 && endPeriod.compareTo(order.getEndDate()) == 1) {
@@ -90,7 +101,10 @@ public class OrderService implements IOrderService {
             }
         }
 
-        ordersByPeriod.sort(orderComparator);
+        Comparator orderComparator = getOrderComparator(sortBy);
+        if (orderComparator != null) {
+            ordersByPeriod.sort(orderComparator);
+        }
         return ordersByPeriod;
     }
 
@@ -107,6 +121,25 @@ public class OrderService implements IOrderService {
             order.getEndDate().add(GregorianCalendar.MINUTE, minutes);
         }
         orderDAO.updateAllOrders(allOrders);
+    }
+
+    private Comparator getOrderComparator(String sortBy) {
+        Comparator orderComparator = null;
+        switch (sortBy) {
+            case "byCost":
+                orderComparator = new OrderByCostComparator();
+                break;
+            case "byEndDate":
+                orderComparator = new OrderByEndDateComparator();
+                break;
+            case "byPlannedStartDate":
+                orderComparator = new OrderByPlannedStartDateComparator();
+                break;
+            case "byStartDate":
+                orderComparator = new OrderByStartDateComparator();
+                break;
+        }
+        return orderComparator;
     }
 
 }

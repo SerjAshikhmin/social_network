@@ -1,4 +1,5 @@
 /.idea
 /.class
-/.iml
+*.iml
 /out
+*.MF

@@ -1,12 +1,12 @@
 package com.senla.courses.autoservice.controller;
 
-import com.senla.courses.autoservice.DAO.GarageDAO;
-import com.senla.courses.autoservice.DAO.MasterDAO;
-import com.senla.courses.autoservice.DAO.OrderDAO;
-import com.senla.courses.autoservice.DAO.interfaces.IGarageDAO;
-import com.senla.courses.autoservice.DAO.interfaces.IMasterDAO;
-import com.senla.courses.autoservice.DAO.interfaces.IOrderDAO;
-import com.senla.courses.autoservice.helper.ConsoleHelper;
+import com.senla.courses.autoservice.dao.GarageDao;
+import com.senla.courses.autoservice.dao.MasterDao;
+import com.senla.courses.autoservice.dao.OrderDao;
+import com.senla.courses.autoservice.dao.interfaces.IGarageDao;
+import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
+import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.model.Garage;
 import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
@@ -15,7 +15,6 @@ import com.senla.courses.autoservice.model.enums.OrderStatus;
 import com.senla.courses.autoservice.service.GarageService;
 import com.senla.courses.autoservice.service.MasterService;
 import com.senla.courses.autoservice.service.OrderService;
-import com.senla.courses.autoservice.service.comparators.*;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 
 import java.util.*;
@@ -103,27 +102,27 @@ public class Main {
 
         // список заказов по дате подачи
         ConsoleHelper.writeMessage("Список заказов, отсортированный по дате подачи:");
-        ConsoleHelper.writeMessage(orderService.getAllOrders(new OrderByStartDateComparator()));
+        ConsoleHelper.writeMessage(orderService.getAllOrdersSorted("byStartDate"));
         // список заказов по дате планируемого начала выполнения
         ConsoleHelper.writeMessage("Список заказов, отсортированный по дате планируемого начала выполнения:");
-        ConsoleHelper.writeMessage(orderService.getAllOrders(new OrderByPlannedStartDateComparator()));
+        ConsoleHelper.writeMessage(orderService.getAllOrdersSorted("byPlannedStartDate"));
         // список заказов по дате выполнения
         ConsoleHelper.writeMessage("Список заказов, отсортированный по дате выполнения:");
-        ConsoleHelper.writeMessage(orderService.getAllOrders(new OrderByEndDateComparator()));
+        ConsoleHelper.writeMessage(orderService.getAllOrdersSorted("byEndDate"));
         // список заказов по цене
         ConsoleHelper.writeMessage("Список заказов, отсортированный по цене:");
-        ConsoleHelper.writeMessage(orderService.getAllOrders(new OrderByCostComparator()));
+        ConsoleHelper.writeMessage(orderService.getAllOrdersSorted("byCost"));
 
         // список мастеров по алфавиту
         ConsoleHelper.writeMessage("Список мастеров, отсортированный по алфавиту:");
-        ConsoleHelper.writeMessage(masterService.getAllMasters(new MasterByNameComparator()));
+        ConsoleHelper.writeMessage(masterService.getAllMastersSorted("byName"));
         // список мастеров по занятости
         ConsoleHelper.writeMessage("Список мастеров, отсортированный по занятости:");
-        ConsoleHelper.writeMessage(masterService.getAllMasters(new MasterByBusyComparator()));
+        ConsoleHelper.writeMessage(masterService.getAllMastersSorted("byBusy"));
 
         // список выполняемых заказов по цене
         ConsoleHelper.writeMessage("Список выполняемых заказов, отсортированный по цене:");
-        ConsoleHelper.writeMessage(orderService.getAllOrdersInProgress(new OrderByCostComparator()));
+        ConsoleHelper.writeMessage(orderService.getAllOrdersInProgress("byCost"));
 
         // заказ конкретного мастера
         ConsoleHelper.writeMessage("Заказ конкретного мастера:");
@@ -136,7 +135,7 @@ public class Main {
         // заказы за промежуток времени
         ConsoleHelper.writeMessage("Заказы за промежуток времени:");
         ConsoleHelper.writeMessage(orderService.getOrdersByPeriod(new GregorianCalendar(2020, Calendar.MAY, 31, 13, 0),
-                new GregorianCalendar(2020, Calendar.JUNE, 1, 9, 0), new OrderByCostComparator()));
+                new GregorianCalendar(2020, Calendar.JUNE, 1, 9, 0), "byCost"));
 
         // кол-во свободных мест на любую дату в будущем
         ConsoleHelper.writeMessage("Количество свободных мест на любую дату в будущем:");
@@ -152,11 +151,11 @@ public class Main {
     }
 
     private static void createServices() {
-        IOrderDAO orderDAO = new OrderDAO();
+        IOrderDao orderDAO = new OrderDao();
         orderService = new OrderService(orderDAO);
-        IMasterDAO masterDAO = new MasterDAO();
+        IMasterDao masterDAO = new MasterDao();
         masterService = new MasterService(masterDAO);
-        IGarageDAO garageDAO = new GarageDAO();
+        IGarageDao garageDAO = new GarageDao();
         garageService = new GarageService(garageDAO);
     }
 

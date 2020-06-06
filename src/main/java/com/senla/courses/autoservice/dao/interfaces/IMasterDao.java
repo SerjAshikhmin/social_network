@@ -1,11 +1,11 @@
-package com.senla.courses.autoservice.DAO.interfaces;
+package com.senla.courses.autoservice.dao.interfaces;
 
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 
 import java.util.List;
 
-public interface IMasterDAO {
+public interface IMasterDao {
 
     boolean addMaster(Master master);
     boolean removeMaster(Master master);

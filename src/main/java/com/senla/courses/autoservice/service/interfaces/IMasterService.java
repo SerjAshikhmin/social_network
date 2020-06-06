@@ -11,7 +11,7 @@ public interface IMasterService {
     boolean addMaster(Master master);
     boolean removeMaster(Master master);
     List<Master> getAllMasters();
-    List<Master> getAllMasters(Comparator masterComparator);
+    List<Master> getAllMastersSorted(String sortBy);
     List<Master> getAllFreeMasters();
     Order getCurrentOrder(Master master);
 

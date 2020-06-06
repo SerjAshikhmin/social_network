@@ -16,11 +16,11 @@ public interface IOrderService {
     Order updateOrder(Order order);
     void cancelOrder(Order order);
     List<Order> getAllOrders();
-    List<Order> getAllOrders(Comparator orderComparator);
-    List<Order> getAllOrdersInProgress(Comparator orderComparator);
+    List<Order> getAllOrdersSorted(String sortBy);
+    List<Order> getAllOrdersInProgress(String sortBy);
     GregorianCalendar getNearestFreeDate();
     List<Master> getMastersByOrder (Order order);
-    List<Order> getOrdersByPeriod (GregorianCalendar startPeriod, GregorianCalendar endPeriod, Comparator orderComparator);
+    List<Order> getOrdersByPeriod (GregorianCalendar startPeriod, GregorianCalendar endPeriod, String sortBy);
     void updateOrderTime(Order order, GregorianCalendar newStartTime, GregorianCalendar newEndTime);
     void shiftEndTimeOrders(int hours, int minutes);
 

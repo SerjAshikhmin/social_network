@@ -1,13 +1,13 @@
-package com.senla.courses.autoservice.DAO;
+package com.senla.courses.autoservice.dao;
 
-import com.senla.courses.autoservice.DAO.interfaces.IMasterDAO;
+import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MasterDAO implements IMasterDAO {
+public class MasterDao implements IMasterDao {
 
     private List<Master> masters = new ArrayList<>();
 
