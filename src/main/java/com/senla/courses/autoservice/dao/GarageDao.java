@@ -9,7 +9,11 @@ import java.util.List;
 
 public class GarageDao implements IGarageDao {
 
-    private List<Garage> garages = new ArrayList<>();
+    private List<Garage> garages;
+
+    public GarageDao() {
+        this.garages = new ArrayList<>();
+    }
 
     @Override
     public boolean addGarage(Garage garage) {

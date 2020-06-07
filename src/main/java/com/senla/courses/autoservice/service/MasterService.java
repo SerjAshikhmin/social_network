@@ -36,24 +36,19 @@ public class MasterService implements IMasterService {
 
     @Override
     public List<Master> getAllMastersSorted(String sortBy) {
-        List<Master> allMasters = masterDAO.getAllMasters();
+        List<Master> allMastersSorted = new ArrayList<>();
+        allMastersSorted.addAll(masterDAO.getAllMasters());
 
         Comparator masterComparator = getMasterComparator(sortBy);
         if (masterComparator != null) {
-            allMasters.sort(masterComparator);
+            allMastersSorted.sort(masterComparator);
         }
-        return allMasters;
+        return allMastersSorted;
     }
 
     @Override
     public List<Master> getAllFreeMasters() {
-        List<Master> freeMasters = new ArrayList<>();
-        for (Master master : masterDAO.getAllMasters()) {
-            if (!master.isBusy()) {
-                freeMasters.add(master);
-            }
-        }
-        return freeMasters;
+        return masterDAO.getAllFreeMasters();
     }
 
     @Override
@@ -65,10 +60,10 @@ public class MasterService implements IMasterService {
         Comparator masterComparator = null;
         switch (sortBy) {
             case "byName":
-                masterComparator = new MasterByNameComparator();
+                masterComparator = MasterByNameComparator.getInstance();
                 break;
             case "byBusy":
-                masterComparator = new MasterByBusyComparator();
+                masterComparator = MasterByBusyComparator.getInstance();
                 break;
         }
         return masterComparator;

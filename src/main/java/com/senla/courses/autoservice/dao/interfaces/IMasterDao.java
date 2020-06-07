@@ -13,5 +13,6 @@ public interface IMasterDao {
     List<Master> getAllMasters();
     Master updateMaster(Master master);
     Order getCurrentOrder(Master master);
+    List<Master> getAllFreeMasters();
 
 }

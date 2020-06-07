@@ -46,6 +46,17 @@ public class MasterDao implements IMasterDao {
         return master.getCurrentOrder();
     }
 
+    @Override
+    public List<Master> getAllFreeMasters() {
+        List<Master> freeMasters = new ArrayList<>();
+        for (Master master : getAllMasters()) {
+            if (!master.isBusy()) {
+                freeMasters.add(master);
+            }
+        }
+        return freeMasters;
+    }
+
     private Master updateMasterFields(Master master, Master daoMaster) {
         daoMaster.setCategory(master.getCategory());
         daoMaster.setBusy(master.isBusy());

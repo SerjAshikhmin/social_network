@@ -3,7 +3,6 @@ package com.senla.courses.autoservice.service;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
-import com.senla.courses.autoservice.model.enums.OrderStatus;
 import com.senla.courses.autoservice.service.comparators.order.OrderByCostComparator;
 import com.senla.courses.autoservice.service.comparators.order.OrderByEndDateComparator;
 import com.senla.courses.autoservice.service.comparators.order.OrderByPlannedStartDateComparator;
@@ -50,29 +49,20 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<Order> getAllOrdersSorted(String sortBy) {
-        List<Order> allOrders = orderDAO.getAllOrders();
+        List<Order> allOrdersSorted = new ArrayList<>();
+        allOrdersSorted.addAll(orderDAO.getAllOrders());
 
         Comparator orderComparator = getOrderComparator(sortBy);
         if (orderComparator != null) {
-            allOrders.sort(orderComparator);
+            allOrdersSorted.sort(orderComparator);
         }
-        return allOrders;
+        return allOrdersSorted;
     }
 
     @Override
     public List<Order> getAllOrdersInProgress(String sortBy) {
-        List<Order> completedOrders = new ArrayList<>();
-        for (Order order : orderDAO.getAllOrders()) {
-            if (order.getStatus() == OrderStatus.IN_WORK) {
-                completedOrders.add(order);
-            }
-        }
-
         Comparator orderComparator = getOrderComparator(sortBy);
-        if (orderComparator != null) {
-            completedOrders.sort(orderComparator);
-        }
-        return completedOrders;
+        return orderDAO.getAllOrdersInProgress(orderComparator);
     }
 
     @Override
@@ -127,16 +117,16 @@ public class OrderService implements IOrderService {
         Comparator orderComparator = null;
         switch (sortBy) {
             case "byCost":
-                orderComparator = new OrderByCostComparator();
+                orderComparator = OrderByCostComparator.getInstance();
                 break;
             case "byEndDate":
-                orderComparator = new OrderByEndDateComparator();
+                orderComparator = OrderByEndDateComparator.getInstance();
                 break;
             case "byPlannedStartDate":
-                orderComparator = new OrderByPlannedStartDateComparator();
+                orderComparator = OrderByPlannedStartDateComparator.getInstance();
                 break;
             case "byStartDate":
-                orderComparator = new OrderByStartDateComparator();
+                orderComparator = OrderByStartDateComparator.getInstance();
                 break;
         }
         return orderComparator;

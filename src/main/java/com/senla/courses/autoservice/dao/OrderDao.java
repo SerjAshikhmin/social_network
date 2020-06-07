@@ -6,11 +6,13 @@ import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 
 public class OrderDao implements IOrderDao {
+
     private List<Order> orders = new ArrayList<>();
 
     @Override
@@ -73,6 +75,20 @@ public class OrderDao implements IOrderDao {
         this.orders = orders;
     }
 
+    @Override
+    public List<Order> getAllOrdersInProgress(Comparator orderComparator) {
+        List<Order> completedOrders = new ArrayList<>();
+        for (Order order : getAllOrders()) {
+            if (order.getStatus() == OrderStatus.IN_WORK) {
+                completedOrders.add(order);
+            }
+        }
+
+        if (orderComparator != null) {
+            completedOrders.sort(orderComparator);
+        }
+        return completedOrders;
+    }
 
     private Order updateOrderFields(Order order, Order daoOrder) {
         daoOrder.setCost(order.getCost());
@@ -84,4 +100,5 @@ public class OrderDao implements IOrderDao {
         daoOrder.setStatus(order.getStatus());
         return daoOrder;
     }
+
 }
