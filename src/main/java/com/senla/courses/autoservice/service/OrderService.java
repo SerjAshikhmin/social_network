@@ -9,48 +9,48 @@ import com.senla.courses.autoservice.service.comparators.order.OrderByPlannedSta
 import com.senla.courses.autoservice.service.comparators.order.OrderByStartDateComparator;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class OrderService implements IOrderService {
 
-    private IOrderDao orderDAO;
+    private IOrderDao orderDao;
 
     public OrderService (IOrderDao orderDAO) {
-        this.orderDAO = orderDAO;
+        this.orderDao = orderDAO;
     }
 
     @Override
     public boolean addOrder(Order order) {
-        return orderDAO.addOrder(order);
+        return orderDao.addOrder(order);
     }
 
     @Override
     public boolean removeOrder(Order order) {
-        return orderDAO.removeOrder(order);
+        return orderDao.removeOrder(order);
     }
 
     @Override
     public Order updateOrder(Order order) {
-        return orderDAO.updateOrder(order);
+        return orderDao.updateOrder(order);
     }
 
     @Override
     public void cancelOrder(Order order) {
-        orderDAO.cancelOrder(order);
+        orderDao.cancelOrder(order);
     }
 
     @Override
     public List<Order> getAllOrders() {
-        return orderDAO.getAllOrders();
+        return orderDao.getAllOrders();
     }
 
     @Override
     public List<Order> getAllOrdersSorted(String sortBy) {
         List<Order> allOrdersSorted = new ArrayList<>();
-        allOrdersSorted.addAll(orderDAO.getAllOrders());
+        allOrdersSorted.addAll(orderDao.getAllOrders());
 
         Comparator orderComparator = getOrderComparator(sortBy);
         if (orderComparator != null) {
@@ -62,34 +62,29 @@ public class OrderService implements IOrderService {
     @Override
     public List<Order> getAllOrdersInProgress(String sortBy) {
         Comparator orderComparator = getOrderComparator(sortBy);
-        return orderDAO.getAllOrdersInProgress(orderComparator);
+        return orderDao.getAllOrdersInProgress(orderComparator);
     }
 
     @Override
-    public GregorianCalendar getNearestFreeDate() {
-        List<Order> allOrders = orderDAO.getAllOrders();
-        GregorianCalendar nearestFreeDate = allOrders.get(0).getEndDate();
-        for (Order order : allOrders) {
-            if (order.getEndDate().compareTo(nearestFreeDate) == -1) {
-                nearestFreeDate = order.getEndDate();
-            }
-        }
-        return nearestFreeDate;
+    public LocalDateTime getNearestFreeDate() {
+        List<Order> allOrders = orderDao.getAllOrders();
+        final LocalDateTime nearestFreeDate = allOrders.get(0).getEndDate();
+        return allOrders.stream()
+                .filter(order -> order.getEndDate().compareTo(nearestFreeDate) == -1)
+                .findFirst().get().getEndDate();
     }
 
     @Override
     public List<Master> getMastersByOrder (Order order) {
-        return orderDAO.getMastersByOrder(order);
+        return orderDao.getMastersByOrder(order);
     }
 
     @Override
-    public List<Order> getOrdersByPeriod (GregorianCalendar startPeriod, GregorianCalendar endPeriod, String sortBy) {
+    public List<Order> getOrdersByPeriod (LocalDateTime startPeriod, LocalDateTime endPeriod, String sortBy) {
         List<Order> ordersByPeriod = new ArrayList<>();
-        for (Order order : orderDAO.getAllOrders()) {
-            if (startPeriod.compareTo(order.getEndDate()) == -1 && endPeriod.compareTo(order.getEndDate()) == 1) {
-                ordersByPeriod.add(order);
-            }
-        }
+        orderDao.getAllOrders().stream()
+                .filter(order -> startPeriod.compareTo(order.getEndDate()) == -1 && endPeriod.compareTo(order.getEndDate()) == 1)
+                .forEach(order -> ordersByPeriod.add(order));
 
         Comparator orderComparator = getOrderComparator(sortBy);
         if (orderComparator != null) {
@@ -99,18 +94,16 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void updateOrderTime(Order order, GregorianCalendar newStartTime, GregorianCalendar newEndTime) {
-        orderDAO.updateOrderTime(order, newStartTime, newEndTime);
+    public void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) {
+        orderDao.updateOrderTime(order, newStartTime, newEndTime);
     }
 
     @Override
     public void shiftEndTimeOrders(int hours, int minutes) {
-        List<Order> allOrders = orderDAO.getAllOrders();
-        for (Order order : allOrders) {
-            order.getEndDate().add(GregorianCalendar.HOUR, hours);
-            order.getEndDate().add(GregorianCalendar.MINUTE, minutes);
-        }
-        orderDAO.updateAllOrders(allOrders);
+        List<Order> allOrders = orderDao.getAllOrders();
+        allOrders.stream().forEach(order -> {
+            orderDao.updateOrderTime(order, order.getStartDate(), order.getEndDate().plusHours(hours).plusMinutes(minutes));
+        });
     }
 
     private Comparator getOrderComparator(String sortBy) {

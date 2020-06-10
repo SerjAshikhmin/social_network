@@ -14,5 +14,4 @@ public interface IGarageService {
     boolean addGaragePlace(Garage garage, GaragePlace garagePlace);
     boolean removeGaragePlace(Garage garage, GaragePlace garagePlace);
     List<GaragePlace> getAllFreePlaces();
-
 }

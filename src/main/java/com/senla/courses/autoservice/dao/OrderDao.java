@@ -5,10 +5,11 @@ import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class OrderDao implements IOrderDao {
@@ -23,20 +24,13 @@ public class OrderDao implements IOrderDao {
     @Override
     public boolean removeOrder(Order order) {
         order.getGaragePlace().setBusy(false);
-        for (Master master : order.getMasters()) {
-            master.setBusy(false);
-        }
+        order.getMasters().stream().forEach(master -> master.setBusy(false));
         return orders.remove(order);
     }
 
     @Override
     public Order getOrderById(int id) {
-        for (Order order : orders) {
-            if (order.getId() == id) {
-                return order;
-            }
-        }
-        return null;
+        return orders.stream().filter(order -> order.getId() == id).findFirst().get();
     }
 
     @Override
@@ -54,13 +48,11 @@ public class OrderDao implements IOrderDao {
     public void cancelOrder(Order order) {
         Order daoOrder = getOrderById(order.getId());
         daoOrder.getGaragePlace().setBusy(false);
-        for (Master master : daoOrder.getMasters()) {
-            master.setBusy(false);
-        }
+        order.getMasters().stream().forEach(master -> master.setBusy(false));
         daoOrder.setStatus(OrderStatus.CANCELED);
     }
 
-    public void updateOrderTime(Order order, GregorianCalendar newStartTime, GregorianCalendar newEndTime) {
+    public void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) {
         Order daoOrder = getOrderById(order.getId());
         daoOrder.setStartDate(newStartTime);
         daoOrder.setEndDate(newEndTime);
@@ -77,12 +69,9 @@ public class OrderDao implements IOrderDao {
 
     @Override
     public List<Order> getAllOrdersInProgress(Comparator orderComparator) {
-        List<Order> completedOrders = new ArrayList<>();
-        for (Order order : getAllOrders()) {
-            if (order.getStatus() == OrderStatus.IN_WORK) {
-                completedOrders.add(order);
-            }
-        }
+        List<Order> completedOrders = getAllOrders().stream()
+                .filter(order -> order.getStatus() == OrderStatus.IN_WORK)
+                .collect(Collectors.toList());
 
         if (orderComparator != null) {
             completedOrders.sort(orderComparator);

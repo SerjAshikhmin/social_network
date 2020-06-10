@@ -2,11 +2,8 @@ package com.senla.courses.autoservice.service.interfaces;
 
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
-import com.senla.courses.autoservice.model.enums.OrderStatus;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IOrderService {
@@ -18,10 +15,10 @@ public interface IOrderService {
     List<Order> getAllOrders();
     List<Order> getAllOrdersSorted(String sortBy);
     List<Order> getAllOrdersInProgress(String sortBy);
-    GregorianCalendar getNearestFreeDate();
-    List<Master> getMastersByOrder (Order order);
-    List<Order> getOrdersByPeriod (GregorianCalendar startPeriod, GregorianCalendar endPeriod, String sortBy);
-    void updateOrderTime(Order order, GregorianCalendar newStartTime, GregorianCalendar newEndTime);
+    LocalDateTime getNearestFreeDate();
+    List<Master> getMastersByOrder(Order order);
+    List<Order> getOrdersByPeriod(LocalDateTime startPeriod, LocalDateTime endPeriod, String sortBy);
+    void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime);
     void shiftEndTimeOrders(int hours, int minutes);
 
 }

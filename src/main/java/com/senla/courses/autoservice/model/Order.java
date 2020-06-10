@@ -2,23 +2,22 @@ package com.senla.courses.autoservice.model;
 
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 
-import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Order {
 
     private int id;
-    private GregorianCalendar plannedStartDate;
-    private GregorianCalendar startDate;
-    private GregorianCalendar endDate;
+    private LocalDateTime plannedStartDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private String kindOfWork;
     private int cost;
     private GaragePlace garagePlace;
     private List<Master> masters;
     private OrderStatus status;
 
-    public Order(int id, GregorianCalendar plannedStartDate, GregorianCalendar startDate, GregorianCalendar endDate, String kindOfWork, int cost,
+    public Order(int id, LocalDateTime plannedStartDate, LocalDateTime startDate, LocalDateTime endDate, String kindOfWork, int cost,
                  GaragePlace garagePlace, List<Master> masters, OrderStatus status) {
         this.id = id;
         this.plannedStartDate = plannedStartDate;
@@ -36,11 +35,11 @@ public class Order {
         }
     }
 
-    public void setStartDate(GregorianCalendar startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public void setEndDate(GregorianCalendar endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 
@@ -56,19 +55,19 @@ public class Order {
         return id;
     }
 
-    public GregorianCalendar getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setPlannedStartDate(GregorianCalendar plannedStartDate) {
+    public void setPlannedStartDate(LocalDateTime plannedStartDate) {
         this.plannedStartDate = plannedStartDate;
     }
 
-    public GregorianCalendar getPlannedStartDate() {
+    public LocalDateTime getPlannedStartDate() {
         return plannedStartDate;
     }
 
-    public GregorianCalendar getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
@@ -106,10 +105,9 @@ public class Order {
 
     @Override
     public String toString() {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy, HH:mm");
         String result = String.format("Order № %d, planned start date: %s; start date: %s; end date: %s; kind of work: %s," +
-                " cost: %d, status: %s, garage place: %s; masters: %s", id, formatter.format(plannedStartDate.getTime()),
-                formatter.format(startDate.getTime()), formatter.format(endDate.getTime()), kindOfWork, cost, status.toString(), garagePlace, masters);
+                " cost: %d, status: %s, garage place: %s; masters: %s", id, plannedStartDate, startDate, endDate,
+                kindOfWork, cost, status.toString(), garagePlace, masters);
 
         return result;
     }

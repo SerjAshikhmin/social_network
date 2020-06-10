@@ -6,6 +6,7 @@ import com.senla.courses.autoservice.model.Order;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MasterDao implements IMasterDao {
 
@@ -23,12 +24,7 @@ public class MasterDao implements IMasterDao {
 
     @Override
     public Master getMasterById(int id) {
-        for (Master master : masters) {
-            if (master.getId() == id) {
-                return master;
-            }
-        }
-        return null;
+        return masters.stream().filter(master -> master.getId() == id).findFirst().get();
     }
 
     @Override
@@ -48,13 +44,7 @@ public class MasterDao implements IMasterDao {
 
     @Override
     public List<Master> getAllFreeMasters() {
-        List<Master> freeMasters = new ArrayList<>();
-        for (Master master : getAllMasters()) {
-            if (!master.isBusy()) {
-                freeMasters.add(master);
-            }
-        }
-        return freeMasters;
+        return getAllMasters().stream().filter(master -> !master.isBusy()).collect(Collectors.toList());
     }
 
     private Master updateMasterFields(Master master, Master daoMaster) {

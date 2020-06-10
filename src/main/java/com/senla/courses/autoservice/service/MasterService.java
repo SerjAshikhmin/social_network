@@ -13,31 +13,31 @@ import java.util.List;
 
 public class MasterService implements IMasterService {
 
-    private IMasterDao masterDAO;
+    private IMasterDao masterDao;
 
     public MasterService (IMasterDao masterDAO) {
-        this.masterDAO = masterDAO;
+        this.masterDao = masterDAO;
     }
 
     @Override
     public boolean addMaster(Master master) {
-        return masterDAO.addMaster(master);
+        return masterDao.addMaster(master);
     }
 
     @Override
     public boolean removeMaster(Master master) {
-        return masterDAO.removeMaster(master);
+        return masterDao.removeMaster(master);
     }
 
     @Override
     public List<Master> getAllMasters() {
-        return masterDAO.getAllMasters();
+        return masterDao.getAllMasters();
     }
 
     @Override
     public List<Master> getAllMastersSorted(String sortBy) {
         List<Master> allMastersSorted = new ArrayList<>();
-        allMastersSorted.addAll(masterDAO.getAllMasters());
+        allMastersSorted.addAll(masterDao.getAllMasters());
 
         Comparator masterComparator = getMasterComparator(sortBy);
         if (masterComparator != null) {
@@ -48,12 +48,12 @@ public class MasterService implements IMasterService {
 
     @Override
     public List<Master> getAllFreeMasters() {
-        return masterDAO.getAllFreeMasters();
+        return masterDao.getAllFreeMasters();
     }
 
     @Override
     public Order getCurrentOrder(Master master) {
-        return masterDAO.getCurrentOrder(master);
+        return masterDao.getCurrentOrder(master);
     }
 
     private Comparator getMasterComparator(String sortBy) {

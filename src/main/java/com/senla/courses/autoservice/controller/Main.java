@@ -17,6 +17,8 @@ import com.senla.courses.autoservice.service.MasterService;
 import com.senla.courses.autoservice.service.OrderService;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.*;
 
 public class Main {
@@ -65,17 +67,17 @@ public class Main {
         thirdMaster = new Master(3, "Ivan", 5);
         List<Master> thirdOrderMasters = new ArrayList<>();
         thirdOrderMasters.add(thirdMaster);
-        Order firstOrder = new Order(1, new GregorianCalendar(2020, Calendar.JUNE, 1, 11, 0),
-                                            new GregorianCalendar(2020, Calendar.JUNE, 1, 12, 0),
-                                            new GregorianCalendar(2020, Calendar.JUNE, 1, 13, 0),
+        Order firstOrder = new Order(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
+                                            LocalDateTime.of(2020, Month.JUNE, 1, 12, 0),
+                                            LocalDateTime.of(2020, Month.JUNE, 1, 13, 0),
                                 "Oil change", 500, firstGaragePlace, firstOrderMasters, OrderStatus.ACCEPTED);
-        Order secondOrder = new Order(2, new GregorianCalendar(2020, Calendar.MAY, 31, 13, 0),
-                                             new GregorianCalendar(2020, Calendar.MAY, 31, 14, 0),
-                                             new GregorianCalendar(2020, Calendar.MAY, 31, 15, 0),
+        Order secondOrder = new Order(2, LocalDateTime.of(2020, Month.MAY, 31, 13, 0),
+                                             LocalDateTime.of(2020, Month.MAY, 31, 14, 0),
+                                             LocalDateTime.of(2020, Month.MAY, 31, 15, 0),
                                  "Tire fitting", 500, secondGaragePlace, secondOrderMasters, OrderStatus.ACCEPTED);
-        Order thirdOrder = new Order(3, new GregorianCalendar(2020, Calendar.MAY, 31, 10, 0),
-                                            new GregorianCalendar(2020, Calendar.MAY, 31, 11, 0),
-                                            new GregorianCalendar(2020, Calendar.MAY, 31, 12, 0),
+        Order thirdOrder = new Order(3, LocalDateTime.of(2020, Month.MAY, 31, 10, 0),
+                                            LocalDateTime.of(2020, Month.MAY, 31, 11, 0),
+                                            LocalDateTime.of(2020, Month.MAY, 31, 12, 0),
                                             "Diagnostics", 500, thirdGaragePlace, thirdOrderMasters, OrderStatus.ACCEPTED);
         orderService.addOrder(firstOrder);
         orderService.addOrder(secondOrder);
@@ -83,9 +85,9 @@ public class Main {
         ConsoleHelper.writeMessage("Добавление заказов:");
         ConsoleHelper.writeMessage(orderService.getAllOrders());
         orderService.removeOrder(thirdOrder);
-        orderService.updateOrder(new Order(2, new GregorianCalendar(2020, Calendar.MAY, 31, 13, 0),
-                                                  new GregorianCalendar(2020, Calendar.MAY, 31, 14, 0),
-                                                  new GregorianCalendar(2020, Calendar.MAY, 31, 15, 0),
+        orderService.updateOrder(new Order(2, LocalDateTime.of(2020, Month.MAY, 31, 13, 0),
+                                                  LocalDateTime.of(2020, Month.MAY, 31, 14, 0),
+                                                  LocalDateTime.of(2020, Month.MAY, 31, 15, 0),
                                  "Oil change, diagnostics", 1000, secondGaragePlace, secondOrderMasters, OrderStatus.ACCEPTED));
         orderService.cancelOrder(firstOrder);
         ConsoleHelper.writeMessage("Удаление/изменение/отмена заказов:");
@@ -134,8 +136,8 @@ public class Main {
 
         // заказы за промежуток времени
         ConsoleHelper.writeMessage("Заказы за промежуток времени:");
-        ConsoleHelper.writeMessage(orderService.getOrdersByPeriod(new GregorianCalendar(2020, Calendar.MAY, 31, 13, 0),
-                new GregorianCalendar(2020, Calendar.JUNE, 1, 9, 0), "byCost"));
+        ConsoleHelper.writeMessage(orderService.getOrdersByPeriod(LocalDateTime.of(2020, Month.MAY, 31, 13, 0),
+                LocalDateTime.of(2020, Calendar.JUNE, 1, 9, 0), "byCost"));
 
         // кол-во свободных мест на любую дату в будущем
         ConsoleHelper.writeMessage("Количество свободных мест на любую дату в будущем:");
@@ -146,17 +148,18 @@ public class Main {
         if (garageService.getAllFreePlaces().size() > 0 || masterService.getAllFreeMasters().size() > 0) {
             ConsoleHelper.writeMessage(new GregorianCalendar().getTime());
         } else {
-            ConsoleHelper.writeMessage(orderService.getNearestFreeDate().getTime());
+            ConsoleHelper.writeMessage(orderService.getNearestFreeDate());
         }
+
     }
 
     private static void createServices() {
-        IOrderDao orderDAO = new OrderDao();
-        orderService = new OrderService(orderDAO);
-        IMasterDao masterDAO = new MasterDao();
-        masterService = new MasterService(masterDAO);
-        IGarageDao garageDAO = new GarageDao();
-        garageService = new GarageService(garageDAO);
+        IOrderDao orderDao = new OrderDao();
+        orderService = new OrderService(orderDao);
+        IMasterDao masterDao = new MasterDao();
+        masterService = new MasterService(masterDao);
+        IGarageDao garageDao = new GarageDao();
+        garageService = new GarageService(garageDao);
     }
 
 }

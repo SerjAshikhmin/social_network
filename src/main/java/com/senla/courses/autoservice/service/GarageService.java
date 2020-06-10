@@ -10,47 +10,46 @@ import java.util.List;
 
 public class GarageService implements IGarageService {
 
-    private IGarageDao garageDAO;
+    private IGarageDao garageDao;
 
     public GarageService(IGarageDao garageDAO) {
-        this.garageDAO = garageDAO;
+        this.garageDao = garageDAO;
     }
 
     @Override
     public boolean addGarage(Garage garage) {
-        return garageDAO.addGarage(garage);
+        return garageDao.addGarage(garage);
     }
 
     @Override
     public boolean removeGarage(Garage garage) {
-        return garageDAO.removeGarage(garage);
+        return garageDao.removeGarage(garage);
     }
 
     @Override
     public List<Garage> getAllGarages() {
-        return garageDAO.getAllGarages();
+        return garageDao.getAllGarages();
     }
 
     @Override
     public boolean addGaragePlace(Garage garage, GaragePlace garagePlace) {
-        return garageDAO.addGaragePlace(garage, garagePlace);
+        return garageDao.addGaragePlace(garage, garagePlace);
     }
 
     @Override
     public boolean removeGaragePlace(Garage garage, GaragePlace garagePlace) {
-        return garageDAO.removeGaragePlace(garage, garagePlace);
+        return garageDao.removeGaragePlace(garage, garagePlace);
     }
 
     @Override
     public List<GaragePlace> getAllFreePlaces() {
         List<GaragePlace> freePlaces = new ArrayList<>();
-        for (Garage garage : garageDAO.getAllGarages()) {
-            for (GaragePlace garagePlace : garage.getGaragePlaces()) {
-                if (!garagePlace.isBusy()) {
-                    freePlaces.add(garagePlace);
-                }
-            }
-        }
+        garageDao.getAllGarages().stream()
+                .forEach(garage -> garage.getGaragePlaces()
+                        .stream().filter(garagePlace -> !garagePlace.isBusy())
+                        .forEach(garagePlace -> freePlaces.add(garagePlace)));
+
         return freePlaces;
     }
+
 }
