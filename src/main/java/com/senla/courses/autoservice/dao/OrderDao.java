@@ -52,6 +52,15 @@ public class OrderDao implements IOrderDao {
         daoOrder.setStatus(OrderStatus.CANCELED);
     }
 
+    @Override
+    public void closeOrder(Order order) {
+        Order daoOrder = getOrderById(order.getId());
+        daoOrder.getGaragePlace().setBusy(false);
+        order.getMasters().stream().forEach(master -> master.setBusy(false));
+        daoOrder.setEndDate(LocalDateTime.now());
+        daoOrder.setStatus(OrderStatus.COMPLETED);
+    }
+
     public void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) {
         Order daoOrder = getOrderById(order.getId());
         daoOrder.setStartDate(newStartTime);

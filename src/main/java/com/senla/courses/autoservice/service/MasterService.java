@@ -20,13 +20,14 @@ public class MasterService implements IMasterService {
     }
 
     @Override
-    public boolean addMaster(Master master) {
+    public boolean addMaster(int id, String name, int category) {
+        Master master = new Master (id, name, category);
         return masterDao.addMaster(master);
     }
 
     @Override
-    public boolean removeMaster(Master master) {
-        return masterDao.removeMaster(master);
+    public boolean removeMaster(String name) {
+        return masterDao.removeMaster(findMasterByName(name));
     }
 
     @Override
@@ -52,8 +53,18 @@ public class MasterService implements IMasterService {
     }
 
     @Override
-    public Order getCurrentOrder(Master master) {
-        return masterDao.getCurrentOrder(master);
+    public Order getCurrentOrder(String name) {
+        return masterDao.getCurrentOrder(findMasterByName(name));
+    }
+
+    @Override
+    public Master findMasterByName(String name) {
+        for (Master master : getAllMasters()) {
+            if (master.getName().equals(name)) {
+                return master;
+            }
+        }
+        return null;
     }
 
     private Comparator getMasterComparator(String sortBy) {

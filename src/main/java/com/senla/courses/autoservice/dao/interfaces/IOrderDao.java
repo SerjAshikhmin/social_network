@@ -15,6 +15,7 @@ public interface IOrderDao {
     List<Order> getAllOrders();
     Order updateOrder(Order order);
     void cancelOrder(Order order);
+    void closeOrder(Order order);
     void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime);
     List<Master> getMastersByOrder(Order order);
     void updateAllOrders(List<Order> orders);

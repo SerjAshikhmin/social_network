@@ -1,12 +1,16 @@
 package com.senla.courses.autoservice.service;
 
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
+import com.senla.courses.autoservice.model.enums.OrderStatus;
 import com.senla.courses.autoservice.service.comparators.order.OrderByCostComparator;
 import com.senla.courses.autoservice.service.comparators.order.OrderByEndDateComparator;
 import com.senla.courses.autoservice.service.comparators.order.OrderByPlannedStartDateComparator;
 import com.senla.courses.autoservice.service.comparators.order.OrderByStartDateComparator;
+import com.senla.courses.autoservice.service.interfaces.IGarageService;
+import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
 
 import java.time.LocalDateTime;
@@ -17,18 +21,28 @@ import java.util.List;
 public class OrderService implements IOrderService {
 
     private IOrderDao orderDao;
+    private IMasterService masterService;
+    private IGarageService garageService;
 
-    public OrderService (IOrderDao orderDAO) {
+    public OrderService (IOrderDao orderDAO, IMasterService masterService, IGarageService garageService) {
         this.orderDao = orderDAO;
+        this.masterService = masterService;
+        this.garageService = garageService;
     }
 
     @Override
-    public boolean addOrder(Order order) {
+    public boolean addOrder(int id, LocalDateTime plannedStartDate, LocalDateTime startDate, LocalDateTime endDate,
+                            String kindOfWork, int cost, int garagePlaceId, String masterName, OrderStatus orderStatus) {
+        List<Master> masters = new ArrayList<>();
+        masters.add(masterService.findMasterByName(masterName));
+        Order order = new Order(id, plannedStartDate, startDate, endDate, kindOfWork, cost,
+                garageService.findGaragePlaceById(garagePlaceId), masters, orderStatus);
         return orderDao.addOrder(order);
     }
 
     @Override
-    public boolean removeOrder(Order order) {
+    public boolean removeOrder(int id) {
+        Order order = findOrderById(id);
         return orderDao.removeOrder(order);
     }
 
@@ -38,8 +52,15 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void cancelOrder(Order order) {
+    public void cancelOrder(int id) {
+        Order order = findOrderById(id);
         orderDao.cancelOrder(order);
+    }
+
+    @Override
+    public void closeOrder(int id) {
+        Order order = findOrderById(id);
+        orderDao.closeOrder(order);
     }
 
     @Override
@@ -75,7 +96,8 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<Master> getMastersByOrder (Order order) {
+    public List<Master> getMastersByOrder (int id) {
+        Order order = findOrderById(id);
         return orderDao.getMastersByOrder(order);
     }
 
@@ -104,6 +126,16 @@ public class OrderService implements IOrderService {
         allOrders.stream().forEach(order -> {
             orderDao.updateOrderTime(order, order.getStartDate(), order.getEndDate().plusHours(hours).plusMinutes(minutes));
         });
+    }
+
+    @Override
+    public Order findOrderById(int id) {
+        for (Order order : getAllOrders()) {
+            if (order.getId() == id) {
+                return order;
+            }
+        }
+        return null;
     }
 
     private Comparator getOrderComparator(String sortBy) {

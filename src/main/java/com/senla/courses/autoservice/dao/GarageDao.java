@@ -58,5 +58,4 @@ public class GarageDao implements IGarageDao {
         return daoGarage;
     }
 
-
 }
