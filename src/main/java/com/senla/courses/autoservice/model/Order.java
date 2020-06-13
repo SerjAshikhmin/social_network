@@ -8,7 +8,7 @@ import java.util.List;
 public class Order {
 
     private int id;
-    private LocalDateTime plannedStartDate;
+    private LocalDateTime submissionDate;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String kindOfWork;
@@ -17,10 +17,10 @@ public class Order {
     private List<Master> masters;
     private OrderStatus status;
 
-    public Order(int id, LocalDateTime plannedStartDate, LocalDateTime startDate, LocalDateTime endDate, String kindOfWork, int cost,
+    public Order(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate, String kindOfWork, int cost,
                  GaragePlace garagePlace, List<Master> masters, OrderStatus status) {
         this.id = id;
-        this.plannedStartDate = plannedStartDate;
+        this.submissionDate = submissionDate;
         this.startDate = startDate;
         this.endDate = endDate;
         this.kindOfWork = kindOfWork;
@@ -59,12 +59,12 @@ public class Order {
         return startDate;
     }
 
-    public void setPlannedStartDate(LocalDateTime plannedStartDate) {
-        this.plannedStartDate = plannedStartDate;
+    public void setSubmissionDate(LocalDateTime submissionDate) {
+        this.submissionDate = submissionDate;
     }
 
-    public LocalDateTime getPlannedStartDate() {
-        return plannedStartDate;
+    public LocalDateTime getSubmissionDate() {
+        return submissionDate;
     }
 
     public LocalDateTime getEndDate() {
@@ -105,8 +105,8 @@ public class Order {
 
     @Override
     public String toString() {
-        String result = String.format("Order № %d, planned start date: %s; start date: %s; end date: %s; kind of work: %s," +
-                " cost: %d, status: %s, garage place: %s; masters: %s", id, plannedStartDate, startDate, endDate,
+        String result = String.format("Order № %d, submission date: %s; start date: %s; end date: %s; kind of work: %s," +
+                " cost: %d, status: %s, garage place: %s; masters: %s", id, submissionDate, startDate, endDate,
                 kindOfWork, cost, status.toString(), garagePlace, masters);
 
         return result;

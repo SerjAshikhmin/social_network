@@ -1,4 +1,6 @@
-package com.senla.courses.autoservice.view;
+package com.senla.courses.view.menu;
+
+import com.senla.courses.view.action.interfaces.IAction;
 
 public class MenuItem {
 
@@ -17,7 +19,7 @@ public class MenuItem {
     }
 
     public void doAction() {
-        action.execute(title);
+        action.execute();
     }
 
     public String getTitle() {

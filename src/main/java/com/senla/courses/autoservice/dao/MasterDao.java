@@ -24,7 +24,9 @@ public class MasterDao implements IMasterDao {
 
     @Override
     public Master getMasterById(int id) {
-        return masters.stream().filter(master -> master.getId() == id).findFirst().get();
+        return masters.stream()
+                .filter(master -> master.getId() == id)
+                .findFirst().get();
     }
 
     @Override
@@ -44,7 +46,9 @@ public class MasterDao implements IMasterDao {
 
     @Override
     public List<Master> getAllFreeMasters() {
-        return getAllMasters().stream().filter(master -> !master.isBusy()).collect(Collectors.toList());
+        return getAllMasters().stream()
+                .filter(master -> !master.isBusy())
+                .collect(Collectors.toList());
     }
 
     private Master updateMasterFields(Master master, Master daoMaster) {

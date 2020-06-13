@@ -1,4 +1,4 @@
-package com.senla.courses.autoservice.view;
+package com.senla.courses.view.menu;
 
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 

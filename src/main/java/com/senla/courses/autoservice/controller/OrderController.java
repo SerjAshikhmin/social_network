@@ -16,9 +16,9 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    public boolean addOrder(int id, LocalDateTime plannedStartDate, LocalDateTime startDate, LocalDateTime endDate,
+    public boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
                             String kindOfWork, int cost, int garagePlaceId, String masterName, OrderStatus orderStatus) {
-        return orderService.addOrder(id, plannedStartDate, startDate, endDate, kindOfWork, cost, garagePlaceId, masterName, orderStatus);
+        return orderService.addOrder(id, submissionDate, startDate, endDate, kindOfWork, cost, garagePlaceId, masterName, orderStatus);
     }
 
     public boolean removeOrder(int id) {

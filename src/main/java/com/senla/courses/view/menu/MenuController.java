@@ -1,6 +1,6 @@
-package com.senla.courses.autoservice.view;
+package com.senla.courses.view.menu;
 
-import com.senla.courses.autoservice.controller.Main;
+import com.senla.courses.view.Main;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 
 public class MenuController {
@@ -9,8 +9,7 @@ public class MenuController {
     private Navigator navigator;
 
     public MenuController() {
-        this.menuBuilder = new MenuBuilder(new MasterAction(Main.getMasterController()),
-                new OrderAction(Main.getOrderController()), new GarageAction(Main.getGarageController()));
+        this.menuBuilder = new MenuBuilder(Main.getMasterController(), Main.getOrderController(), Main.getGarageController());
     }
 
     public void run() {

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IOrderService {
 
-    boolean addOrder(int id, LocalDateTime plannedStartDate, LocalDateTime startDate, LocalDateTime endDate,
+    boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
                      String kindOfWork, int cost, int garagePlaceId, String masterName, OrderStatus orderStatus);
     boolean removeOrder(int id);
     Order updateOrder(Order order);

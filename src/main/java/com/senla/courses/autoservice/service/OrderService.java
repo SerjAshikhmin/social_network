@@ -1,13 +1,12 @@
 package com.senla.courses.autoservice.service;
 
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
-import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 import com.senla.courses.autoservice.service.comparators.order.OrderByCostComparator;
 import com.senla.courses.autoservice.service.comparators.order.OrderByEndDateComparator;
-import com.senla.courses.autoservice.service.comparators.order.OrderByPlannedStartDateComparator;
+import com.senla.courses.autoservice.service.comparators.order.OrderBySubmissionDateComparator;
 import com.senla.courses.autoservice.service.comparators.order.OrderByStartDateComparator;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
@@ -31,11 +30,11 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public boolean addOrder(int id, LocalDateTime plannedStartDate, LocalDateTime startDate, LocalDateTime endDate,
+    public boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
                             String kindOfWork, int cost, int garagePlaceId, String masterName, OrderStatus orderStatus) {
         List<Master> masters = new ArrayList<>();
         masters.add(masterService.findMasterByName(masterName));
-        Order order = new Order(id, plannedStartDate, startDate, endDate, kindOfWork, cost,
+        Order order = new Order(id, submissionDate, startDate, endDate, kindOfWork, cost,
                 garageService.findGaragePlaceById(garagePlaceId), masters, orderStatus);
         return orderDao.addOrder(order);
     }
@@ -147,8 +146,8 @@ public class OrderService implements IOrderService {
             case "byEndDate":
                 orderComparator = OrderByEndDateComparator.getInstance();
                 break;
-            case "byPlannedStartDate":
-                orderComparator = OrderByPlannedStartDateComparator.getInstance();
+            case "bySubmissionDate":
+                orderComparator = OrderBySubmissionDateComparator.getInstance();
                 break;
             case "byStartDate":
                 orderComparator = OrderByStartDateComparator.getInstance();

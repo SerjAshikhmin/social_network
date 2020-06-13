@@ -27,7 +27,9 @@ public class GarageDao implements IGarageDao {
 
     @Override
     public Garage getGarageById(int id) {
-        return garages.stream().filter(garage -> garage.getId() == id).findFirst().get();
+        return garages.stream()
+                .filter(garage -> garage.getId() == id)
+                .findFirst().get();
     }
 
     @Override

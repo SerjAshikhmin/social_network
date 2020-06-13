@@ -24,13 +24,16 @@ public class OrderDao implements IOrderDao {
     @Override
     public boolean removeOrder(Order order) {
         order.getGaragePlace().setBusy(false);
-        order.getMasters().stream().forEach(master -> master.setBusy(false));
+        order.getMasters().stream()
+                .forEach(master -> master.setBusy(false));
         return orders.remove(order);
     }
 
     @Override
     public Order getOrderById(int id) {
-        return orders.stream().filter(order -> order.getId() == id).findFirst().get();
+        return orders.stream()
+                .filter(order -> order.getId() == id)
+                .findFirst().get();
     }
 
     @Override
@@ -48,7 +51,8 @@ public class OrderDao implements IOrderDao {
     public void cancelOrder(Order order) {
         Order daoOrder = getOrderById(order.getId());
         daoOrder.getGaragePlace().setBusy(false);
-        order.getMasters().stream().forEach(master -> master.setBusy(false));
+        order.getMasters().stream()
+                .forEach(master -> master.setBusy(false));
         daoOrder.setStatus(OrderStatus.CANCELED);
     }
 
@@ -56,7 +60,8 @@ public class OrderDao implements IOrderDao {
     public void closeOrder(Order order) {
         Order daoOrder = getOrderById(order.getId());
         daoOrder.getGaragePlace().setBusy(false);
-        order.getMasters().stream().forEach(master -> master.setBusy(false));
+        order.getMasters().stream()
+                .forEach(master -> master.setBusy(false));
         daoOrder.setEndDate(LocalDateTime.now());
         daoOrder.setStatus(OrderStatus.COMPLETED);
     }

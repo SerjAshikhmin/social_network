@@ -1,5 +1,8 @@
-package com.senla.courses.autoservice.controller;
+package com.senla.courses.view;
 
+import com.senla.courses.autoservice.controller.GarageController;
+import com.senla.courses.autoservice.controller.MasterController;
+import com.senla.courses.autoservice.controller.OrderController;
 import com.senla.courses.autoservice.dao.GarageDao;
 import com.senla.courses.autoservice.dao.MasterDao;
 import com.senla.courses.autoservice.dao.OrderDao;
@@ -8,21 +11,15 @@ import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
-import com.senla.courses.autoservice.utils.ConsoleHelper;
-import com.senla.courses.autoservice.model.Garage;
-import com.senla.courses.autoservice.model.GaragePlace;
-import com.senla.courses.autoservice.model.Master;
-import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 import com.senla.courses.autoservice.service.GarageService;
 import com.senla.courses.autoservice.service.MasterService;
 import com.senla.courses.autoservice.service.OrderService;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
-import com.senla.courses.autoservice.view.MenuController;
+import com.senla.courses.view.menu.MenuController;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.*;
 
 public class Main {
 
@@ -75,15 +72,16 @@ public class Main {
         garageService.addGaragePlace(1, 1, "Car lift", 8);
         garageService.addGaragePlace(1, 2, "Pit", 12);
         garageService.addGaragePlace(1, 3, "Car lift", 8);
+        garageService.addGaragePlace(1, 4, "Car lift", 8);
 
         orderService.addOrder(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
                                      LocalDateTime.of(2020, Month.JUNE, 1, 12, 0),
                                      LocalDateTime.of(2020, Month.JUNE, 1, 13, 0),
-                "Oil change", 500, 1, "Evgeniy", OrderStatus.ACCEPTED);
+                "Oil change", 1000, 1, "Evgeniy", OrderStatus.ACCEPTED);
         orderService.addOrder(2, LocalDateTime.of(2020, Month.MAY, 31, 13, 0),
                                      LocalDateTime.of(2020, Month.MAY, 31, 14, 0),
                                      LocalDateTime.of(2020, Month.MAY, 31, 15, 0),
-                "Tire fitting", 500, 2, "Alex", OrderStatus.ACCEPTED);
+                "Tire fitting", 300, 2, "Alex", OrderStatus.ACCEPTED);
         orderService.addOrder(3, LocalDateTime.of(2020, Month.MAY, 31, 10, 0),
                                      LocalDateTime.of(2020, Month.MAY, 31, 11, 0),
                                      LocalDateTime.of(2020, Month.MAY, 31, 12, 0),

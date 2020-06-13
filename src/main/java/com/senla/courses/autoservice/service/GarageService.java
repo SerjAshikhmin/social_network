@@ -50,8 +50,8 @@ public class GarageService implements IGarageService {
     public List<GaragePlace> getAllFreePlaces() {
         List<GaragePlace> freePlaces = new ArrayList<>();
         garageDao.getAllGarages().stream()
-                .forEach(garage -> garage.getGaragePlaces()
-                        .stream().filter(garagePlace -> !garagePlace.isBusy())
+                .forEach(garage -> garage.getGaragePlaces().stream()
+                        .filter(garagePlace -> !garagePlace.isBusy())
                         .forEach(garagePlace -> freePlaces.add(garagePlace)));
 
         return freePlaces;
