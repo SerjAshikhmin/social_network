@@ -4,24 +4,25 @@ import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IOrderService {
 
-    boolean addOrder(Order order);
-    boolean removeOrder(Order order);
+    boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
+                     String kindOfWork, int cost, int garagePlaceId, String masterName, OrderStatus orderStatus);
+    boolean removeOrder(int id);
     Order updateOrder(Order order);
-    void cancelOrder(Order order);
+    void cancelOrder(int id);
+    void closeOrder(int id);
     List<Order> getAllOrders();
     List<Order> getAllOrdersSorted(String sortBy);
     List<Order> getAllOrdersInProgress(String sortBy);
-    GregorianCalendar getNearestFreeDate();
-    List<Master> getMastersByOrder (Order order);
-    List<Order> getOrdersByPeriod (GregorianCalendar startPeriod, GregorianCalendar endPeriod, String sortBy);
-    void updateOrderTime(Order order, GregorianCalendar newStartTime, GregorianCalendar newEndTime);
+    LocalDateTime getNearestFreeDate();
+    List<Master> getMastersByOrder(int id);
+    List<Order> getOrdersByPeriod(LocalDateTime startPeriod, LocalDateTime endPeriod, String sortBy);
+    void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime);
     void shiftEndTimeOrders(int hours, int minutes);
+    Order findOrderById(int id);
 
 }

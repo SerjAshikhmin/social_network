@@ -13,31 +13,32 @@ import java.util.List;
 
 public class MasterService implements IMasterService {
 
-    private IMasterDao masterDAO;
+    private IMasterDao masterDao;
 
     public MasterService (IMasterDao masterDAO) {
-        this.masterDAO = masterDAO;
+        this.masterDao = masterDAO;
     }
 
     @Override
-    public boolean addMaster(Master master) {
-        return masterDAO.addMaster(master);
+    public boolean addMaster(int id, String name, int category) {
+        Master master = new Master (id, name, category);
+        return masterDao.addMaster(master);
     }
 
     @Override
-    public boolean removeMaster(Master master) {
-        return masterDAO.removeMaster(master);
+    public boolean removeMaster(String name) {
+        return masterDao.removeMaster(findMasterByName(name));
     }
 
     @Override
     public List<Master> getAllMasters() {
-        return masterDAO.getAllMasters();
+        return masterDao.getAllMasters();
     }
 
     @Override
     public List<Master> getAllMastersSorted(String sortBy) {
         List<Master> allMastersSorted = new ArrayList<>();
-        allMastersSorted.addAll(masterDAO.getAllMasters());
+        allMastersSorted.addAll(masterDao.getAllMasters());
 
         Comparator masterComparator = getMasterComparator(sortBy);
         if (masterComparator != null) {
@@ -48,12 +49,22 @@ public class MasterService implements IMasterService {
 
     @Override
     public List<Master> getAllFreeMasters() {
-        return masterDAO.getAllFreeMasters();
+        return masterDao.getAllFreeMasters();
     }
 
     @Override
-    public Order getCurrentOrder(Master master) {
-        return masterDAO.getCurrentOrder(master);
+    public Order getCurrentOrder(String name) {
+        return masterDao.getCurrentOrder(findMasterByName(name));
+    }
+
+    @Override
+    public Master findMasterByName(String name) {
+        for (Master master : getAllMasters()) {
+            if (master.getName().equals(name)) {
+                return master;
+            }
+        }
+        return null;
     }
 
     private Comparator getMasterComparator(String sortBy) {
