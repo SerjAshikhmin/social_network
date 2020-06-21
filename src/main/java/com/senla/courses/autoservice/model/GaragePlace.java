@@ -3,14 +3,28 @@ package com.senla.courses.autoservice.model;
 public class GaragePlace {
 
     private int id;
+    private int garageId;
     private String type;
     private int area;
     private boolean busy;
 
-    public GaragePlace(int id, String type, int area) {
+    public GaragePlace(int id, int garageId, String type, int area) {
         this.id = id;
+        this.garageId = garageId;
         this.type = type;
         this.area = area;
+    }
+
+    public GaragePlace(int id, int garageId, String type, int area, boolean busy) {
+        this.id = id;
+        this.garageId = garageId;
+        this.type = type;
+        this.area = area;
+        this.busy = busy;
+    }
+
+    public int getGarageId() {
+        return garageId;
     }
 
     public void setType(String type) {

@@ -10,9 +10,11 @@ public interface IGarageDao {
     boolean addGarage(Garage garage);
     boolean removeGarage(Garage garage);
     Garage getGarageById(int id);
+    GaragePlace getGaragePlaceById(int garageId, int garagePlaceId);
     List<Garage> getAllGarages();
     Garage updateGarage(Garage garage);
-    boolean addGaragePlace(Garage garage, GaragePlace garagePlace);
+    GaragePlace updateGaragePlace(GaragePlace garagePlace);
+    boolean addGaragePlace(GaragePlace garagePlace);
     boolean removeGaragePlace(Garage garage, GaragePlace garagePlace);
 
 }

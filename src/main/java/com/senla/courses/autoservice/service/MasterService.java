@@ -1,11 +1,13 @@
 package com.senla.courses.autoservice.service;
 
 import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
+import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.service.comparators.master.MasterByBusyComparator;
 import com.senla.courses.autoservice.service.comparators.master.MasterByNameComparator;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
+import com.senla.courses.autoservice.utils.CsvHelper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,9 +16,11 @@ import java.util.List;
 public class MasterService implements IMasterService {
 
     private IMasterDao masterDao;
+    private IOrderDao orderDao;
 
-    public MasterService (IMasterDao masterDAO) {
-        this.masterDao = masterDAO;
+    public MasterService (IMasterDao masterDao, IOrderDao orderDao) {
+        this.masterDao = masterDao;
+        this.orderDao = orderDao;
     }
 
     @Override
@@ -65,6 +69,46 @@ public class MasterService implements IMasterService {
             }
         }
         return null;
+    }
+
+    @Override
+    public Master findMasterById(int id) {
+        return masterDao.getMasterById(id);
+    }
+
+    @Override
+    public boolean importMaster(String fileName) {
+        List<String> masterDataList = CsvHelper.importCsvFile(fileName);
+        Master importMaster = new Master(Integer.parseInt(masterDataList.get(0)), masterDataList.get(1), Integer.parseInt(masterDataList.get(2)),
+                Boolean.parseBoolean(masterDataList.get(3)), orderDao.getOrderById(Integer.parseInt(masterDataList.get(4))));
+
+        if (masterDao.getMasterById(importMaster.getId()) != null) {
+            masterDao.updateMaster(importMaster);
+            return true;
+        } else {
+            return masterDao.addMaster(importMaster);
+        }
+    }
+
+    @Override
+    public boolean exportMaster(int id, String fileName) {
+        Master masterToExport = masterDao.getMasterById(id);
+        if (masterToExport != null) {
+            return CsvHelper.exportCsvFile(toList(masterToExport), fileName);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public List<String> toList(Master master) {
+        List<String> masterAsList = new ArrayList<>();
+        masterAsList.add(String.valueOf(master.getId()));
+        masterAsList.add(master.getName());
+        masterAsList.add(String.valueOf(master.getCategory()));
+        masterAsList.add(String.valueOf(master.isBusy()));
+        masterAsList.add(String.valueOf(master.getCurrentOrder().getId()));
+        return masterAsList;
     }
 
     private Comparator getMasterComparator(String sortBy) {

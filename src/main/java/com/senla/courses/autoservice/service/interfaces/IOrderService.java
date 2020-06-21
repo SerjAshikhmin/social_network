@@ -10,9 +10,8 @@ import java.util.List;
 public interface IOrderService {
 
     boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
-                     String kindOfWork, int cost, int garagePlaceId, String masterName, OrderStatus orderStatus);
+                     String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus);
     boolean removeOrder(int id);
-    Order updateOrder(Order order);
     void cancelOrder(int id);
     void closeOrder(int id);
     List<Order> getAllOrders();
@@ -24,5 +23,7 @@ public interface IOrderService {
     void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime);
     void shiftEndTimeOrders(int hours, int minutes);
     Order findOrderById(int id);
-
+    boolean importOrder(String fileName);
+    boolean exportOrder(int id, String fileName);
+    List<String> toList(Order order);
 }

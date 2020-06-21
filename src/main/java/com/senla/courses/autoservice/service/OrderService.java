@@ -1,6 +1,7 @@
 package com.senla.courses.autoservice.service;
 
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
@@ -11,6 +12,7 @@ import com.senla.courses.autoservice.service.comparators.order.OrderByStartDateC
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
+import com.senla.courses.autoservice.utils.CsvHelper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,11 +33,11 @@ public class OrderService implements IOrderService {
 
     @Override
     public boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
-                            String kindOfWork, int cost, int garagePlaceId, String masterName, OrderStatus orderStatus) {
+                            String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {
         List<Master> masters = new ArrayList<>();
         masters.add(masterService.findMasterByName(masterName));
         Order order = new Order(id, submissionDate, startDate, endDate, kindOfWork, cost,
-                garageService.findGaragePlaceById(garagePlaceId), masters, orderStatus);
+                garageService.findGaragePlaceById(garageId, garagePlaceId), masters, orderStatus);
         return orderDao.addOrder(order);
     }
 
@@ -43,11 +45,6 @@ public class OrderService implements IOrderService {
     public boolean removeOrder(int id) {
         Order order = findOrderById(id);
         return orderDao.removeOrder(order);
-    }
-
-    @Override
-    public Order updateOrder(Order order) {
-        return orderDao.updateOrder(order);
     }
 
     @Override
@@ -135,6 +132,56 @@ public class OrderService implements IOrderService {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean importOrder(String fileName) {
+        List<String> orderDataList = CsvHelper.importCsvFile(fileName);
+        Order importOrder;
+        GaragePlace importGaragePlace = garageService.findGaragePlaceById(Integer.parseInt(orderDataList.get(7)), Integer.parseInt(orderDataList.get(8)));
+                List<Master> importMasters = new ArrayList<>();
+
+        for (int i = 9; i < orderDataList.size(); i++) {
+            importMasters.add(masterService.findMasterById(Integer.parseInt(orderDataList.get(i))));
+        }
+        importOrder = new Order(Integer.parseInt(orderDataList.get(0)), LocalDateTime.parse(orderDataList.get(1)),
+                LocalDateTime.parse(orderDataList.get(2)), LocalDateTime.parse(orderDataList.get(3)), orderDataList.get(4),
+                Integer.parseInt(orderDataList.get(5)), importGaragePlace, importMasters, OrderStatus.valueOf(orderDataList.get(6)));
+
+        /*if (orderDao.getOrderById(importOrder.getId()) != null) {
+            orderDao.updateOrder(importOrder);
+            return true;
+        } else {*/
+            return orderDao.addOrder(importOrder);
+        //}
+
+    }
+
+    @Override
+    public boolean exportOrder(int id, String fileName) {
+        Order orderToExport = orderDao.getOrderById(id);
+        if (orderToExport != null) {
+            return CsvHelper.exportCsvFile(toList(orderToExport), fileName);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public List<String> toList(Order order) {
+        List<String> orderAsList = new ArrayList<>();
+        orderAsList.add(String.valueOf(order.getId()));
+        orderAsList.add(String.valueOf(order.getSubmissionDate()));
+        orderAsList.add(String.valueOf(order.getStartDate()));
+        orderAsList.add(String.valueOf(order.getEndDate()));
+        orderAsList.add(order.getKindOfWork());
+        orderAsList.add(String.valueOf(order.getCost()));
+        orderAsList.add(order.getStatus().toString());
+        orderAsList.add(String.valueOf(order.getGaragePlace().getGarageId()));
+        orderAsList.add(String.valueOf(order.getGaragePlace().getId()));
+        order.getMasters().stream()
+                .forEach(master -> orderAsList.add(String.valueOf(master.getId())));
+        return orderAsList;
     }
 
     private Comparator getOrderComparator(String sortBy) {

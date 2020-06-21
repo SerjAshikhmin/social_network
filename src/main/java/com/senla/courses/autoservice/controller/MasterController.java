@@ -29,4 +29,12 @@ public class MasterController {
     public Order getCurrentOrder(String name) {
         return masterService.getCurrentOrder(name);
     }
+
+    public boolean importMaster(String fileName) {
+        return masterService.importMaster(fileName);
+    }
+
+    public boolean exportMaster(int id, String fileName) {
+        return masterService.exportMaster(id, fileName);
+    }
 }

@@ -36,4 +36,20 @@ public class GarageController {
     public int getFreePlacesCountInFuture() {
         return garageService.getFreePlacesCountInFuture();
     }
+
+    public boolean importGarage(String fileName) {
+        return garageService.importGarage(fileName);
+    }
+
+    public boolean exportGarage(int id, String fileName) {
+        return garageService.exportGarage(id, fileName);
+    }
+
+    public boolean importGaragePlace(String fileName) {
+        return garageService.importGaragePlace(fileName);
+    }
+
+    public boolean exportGaragePlace(int garageId, int garagePlaceId, String fileName) {
+        return garageService.exportGaragePlace(garageId, garagePlaceId, fileName);
+    }
 }

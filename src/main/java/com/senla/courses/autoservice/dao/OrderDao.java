@@ -94,10 +94,11 @@ public class OrderDao implements IOrderDao {
     }
 
     private Order updateOrderFields(Order order, Order daoOrder) {
-        daoOrder.setCost(order.getCost());
+        daoOrder.setSubmissionDate(order.getSubmissionDate());
         daoOrder.setStartDate(order.getStartDate());
         daoOrder.setEndDate(order.getEndDate());
         daoOrder.setKindOfWork(order.getKindOfWork());
+        daoOrder.setCost(order.getCost());
         daoOrder.setGaragePlace(order.getGaragePlace());
         daoOrder.setMasters(order.getMasters());
         daoOrder.setStatus(order.getStatus());

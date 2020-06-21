@@ -19,6 +19,7 @@ public class AddOrderAction extends AbstractOrderAction {
         String kindOfWork;
         int cost;
         int garagePlaceId;
+        int garageId;
         String masterName;
 
         ConsoleHelper.writeMessage("Введите номер заказа:");
@@ -28,12 +29,14 @@ public class AddOrderAction extends AbstractOrderAction {
         kindOfWork = ConsoleHelper.readString();
         ConsoleHelper.writeMessage("Введите стоимость работ:");
         cost = Integer.parseInt(ConsoleHelper.readString());
+        ConsoleHelper.writeMessage("Введите номер гаража:");
+        garageId = Integer.parseInt(ConsoleHelper.readString());
         ConsoleHelper.writeMessage("Введите номер места в гараже:");
         garagePlaceId = Integer.parseInt(ConsoleHelper.readString());
         ConsoleHelper.writeMessage("Введите имя мастера:");
         masterName = ConsoleHelper.readString();
 
-        if (orderController.addOrder(id, submissionDate, null, null, kindOfWork, cost,
+        if (orderController.addOrder(id, submissionDate, null, null, kindOfWork, cost, garageId,
                 garagePlaceId, masterName, OrderStatus.ACCEPTED)) {
             ConsoleHelper.writeMessage(String.format("Заказ №%d успешно добавлен", id));
         } else {

@@ -17,8 +17,8 @@ public class OrderController {
     }
 
     public boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
-                            String kindOfWork, int cost, int garagePlaceId, String masterName, OrderStatus orderStatus) {
-        return orderService.addOrder(id, submissionDate, startDate, endDate, kindOfWork, cost, garagePlaceId, masterName, orderStatus);
+                            String kindOfWork, int cost,int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {
+        return orderService.addOrder(id, submissionDate, startDate, endDate, kindOfWork, cost, garageId, garagePlaceId, masterName, orderStatus);
     }
 
     public boolean removeOrder(int id) {
@@ -55,5 +55,13 @@ public class OrderController {
 
     public LocalDateTime getNearestFreeDate() {
         return orderService.getNearestFreeDate();
+    }
+
+    public boolean importOrder(String fileName) {
+        return orderService.importOrder(fileName);
+    }
+
+    public boolean exportOrder(int id, String fileName) {
+        return orderService.exportOrder(id, fileName);
     }
 }

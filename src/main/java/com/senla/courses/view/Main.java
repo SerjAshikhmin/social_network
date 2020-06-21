@@ -51,15 +51,15 @@ public class Main {
 
     private static void createServices() {
         IMasterDao masterDao = new MasterDao();
-        masterService = new MasterService(masterDao);
-        masterController = new MasterController(masterService);
-
         IGarageDao garageDao = new GarageDao();
-        garageService = new GarageService(garageDao, masterService);
-        garageController = new GarageController(garageService);
-
         IOrderDao orderDao = new OrderDao();
+
+        masterService = new MasterService(masterDao, orderDao);
+        garageService = new GarageService(garageDao, masterService);
         orderService = new OrderService(orderDao, masterService, garageService);
+
+        masterController = new MasterController(masterService);
+        garageController = new GarageController(garageService);
         orderController = new OrderController(orderService);
     }
 
@@ -68,7 +68,8 @@ public class Main {
         masterService.addMaster(2, "Alex", 2);
         masterService.addMaster(3, "Ivan", 5);
 
-        garageService.addGarage(1, "Orel, Moskovskaya-22");
+        garageService.addGarage(1, "Orel-Moskovskaya-22");
+        garageService.addGarage(2, "Orel-Naugorskaya-20");
         garageService.addGaragePlace(1, 1, "Car lift", 8);
         garageService.addGaragePlace(1, 2, "Pit", 12);
         garageService.addGaragePlace(1, 3, "Car lift", 8);
@@ -77,15 +78,15 @@ public class Main {
         orderService.addOrder(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
                                      LocalDateTime.of(2020, Month.JUNE, 1, 12, 0),
                                      LocalDateTime.of(2020, Month.JUNE, 1, 13, 0),
-                "Oil change", 1000, 1, "Evgeniy", OrderStatus.ACCEPTED);
+                "Oil change", 1000, 1, 1, "Evgeniy", OrderStatus.ACCEPTED);
         orderService.addOrder(2, LocalDateTime.of(2020, Month.MAY, 31, 13, 0),
                                      LocalDateTime.of(2020, Month.MAY, 31, 14, 0),
                                      LocalDateTime.of(2020, Month.MAY, 31, 15, 0),
-                "Tire fitting", 300, 2, "Alex", OrderStatus.ACCEPTED);
+                "Tire fitting", 300, 1, 2, "Alex", OrderStatus.ACCEPTED);
         orderService.addOrder(3, LocalDateTime.of(2020, Month.MAY, 31, 10, 0),
                                      LocalDateTime.of(2020, Month.MAY, 31, 11, 0),
                                      LocalDateTime.of(2020, Month.MAY, 31, 12, 0),
-                "Diagnostics", 500, 3, "Ivan", OrderStatus.ACCEPTED);
+                "Diagnostics", 500, 1, 3, "Ivan", OrderStatus.ACCEPTED);
     }
 
 }

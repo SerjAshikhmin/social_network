@@ -33,6 +33,14 @@ public class GarageDao implements IGarageDao {
     }
 
     @Override
+    public GaragePlace getGaragePlaceById(int garageId, int garagePlaceId) {
+        Garage garage = getGarageById(garageId);
+        return garage.getGaragePlaces().stream()
+                .filter(garagePlace -> garagePlace.getId() == garagePlaceId)
+                .findFirst().get();
+    }
+
+    @Override
     public List<Garage> getAllGarages() {
         return garages;
     }
@@ -44,8 +52,14 @@ public class GarageDao implements IGarageDao {
     }
 
     @Override
-    public boolean addGaragePlace(Garage garage, GaragePlace garagePlace) {
-        Garage daoGarage = getGarageById(garage.getId());
+    public GaragePlace updateGaragePlace(GaragePlace garagePlace) {
+        GaragePlace daoGaragePlace = getGaragePlaceById(garagePlace.getGarageId(), garagePlace.getId());
+        return updateGaragePlaceFields(garagePlace, daoGaragePlace);
+    }
+
+    @Override
+    public boolean addGaragePlace(GaragePlace garagePlace) {
+        Garage daoGarage = getGarageById(garagePlace.getGarageId());
         return daoGarage.getGaragePlaces().add(garagePlace);
     }
 
@@ -56,8 +70,16 @@ public class GarageDao implements IGarageDao {
     }
 
     private Garage updateGarageFields(Garage garage, Garage daoGarage) {
+        daoGarage.setAddress(garage.getAddress());
         daoGarage.setGaragePlaces(garage.getGaragePlaces());
         return daoGarage;
+    }
+
+    private GaragePlace updateGaragePlaceFields(GaragePlace garagePlace, GaragePlace daoGaragePlace) {
+        daoGaragePlace.setType(garagePlace.getType());
+        daoGaragePlace.setBusy(garagePlace.isBusy());
+        daoGaragePlace.setArea(garagePlace.getArea());
+        return daoGaragePlace;
     }
 
 }

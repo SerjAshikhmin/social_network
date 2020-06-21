@@ -52,6 +52,8 @@ public class MasterDao implements IMasterDao {
     }
 
     private Master updateMasterFields(Master master, Master daoMaster) {
+        daoMaster.setName(master.getName());
+        daoMaster.setCurrentOrder(master.getCurrentOrder());
         daoMaster.setCategory(master.getCategory());
         daoMaster.setBusy(master.isBusy());
         return daoMaster;
