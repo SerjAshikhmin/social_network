@@ -6,6 +6,7 @@ import com.senla.courses.autoservice.model.GaragePlace;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class GarageDao implements IGarageDao {
 
@@ -27,17 +28,28 @@ public class GarageDao implements IGarageDao {
 
     @Override
     public Garage getGarageById(int id) {
-        return garages.stream()
-                .filter(garage -> garage.getId() == id)
-                .findFirst().get();
+        try {
+            return garages.stream()
+                    .filter(garage -> garage.getId() == id)
+                    .findFirst().get();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     @Override
     public GaragePlace getGaragePlaceById(int garageId, int garagePlaceId) {
         Garage garage = getGarageById(garageId);
-        return garage.getGaragePlaces().stream()
-                .filter(garagePlace -> garagePlace.getId() == garagePlaceId)
-                .findFirst().get();
+        if (garage == null) {
+            return null;
+        }
+        try {
+            return garage.getGaragePlaces().stream()
+                    .filter(garagePlace -> garagePlace.getId() == garagePlaceId)
+                    .findFirst().get();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     @Override
@@ -65,6 +77,9 @@ public class GarageDao implements IGarageDao {
 
     @Override
     public boolean removeGaragePlace(Garage garage, GaragePlace garagePlace) {
+        if (garage == null || garagePlace == null) {
+            return false;
+        }
         Garage daoGarage = getGarageById(garage.getId());
         return daoGarage.getGaragePlaces().remove(garagePlace);
     }

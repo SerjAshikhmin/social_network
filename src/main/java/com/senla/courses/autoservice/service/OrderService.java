@@ -1,6 +1,8 @@
 package com.senla.courses.autoservice.service;
 
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
+import com.senla.courses.autoservice.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
@@ -12,8 +14,11 @@ import com.senla.courses.autoservice.service.comparators.order.OrderByStartDateC
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
+import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.utils.CsvHelper;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,13 +55,24 @@ public class OrderService implements IOrderService {
     @Override
     public void cancelOrder(int id) {
         Order order = findOrderById(id);
-        orderDao.cancelOrder(order);
+        if (order != null) {
+            orderDao.cancelOrder(order);
+            ConsoleHelper.writeMessage(String.format("Заказ №%d отменен", id));
+        } else {
+            ConsoleHelper.writeMessage("При отмене заказа произошла ошибка");
+        }
+
     }
 
     @Override
     public void closeOrder(int id) {
         Order order = findOrderById(id);
-        orderDao.closeOrder(order);
+        if (order != null) {
+            orderDao.closeOrder(order);
+            ConsoleHelper.writeMessage(String.format("Заказ №%d закрыт", id));
+        } else {
+            ConsoleHelper.writeMessage("При закрытии заказа произошла ошибка");
+        }
     }
 
     @Override
@@ -94,7 +110,12 @@ public class OrderService implements IOrderService {
     @Override
     public List<Master> getMastersByOrder (int id) {
         Order order = findOrderById(id);
-        return orderDao.getMastersByOrder(order);
+        try {
+            return orderDao.getMastersByOrder(order);
+        } catch (OrderNotFoundException e) {
+            ConsoleHelper.writeMessage("Неправильный номер заказа");
+            return null;
+        }
     }
 
     @Override
@@ -136,33 +157,52 @@ public class OrderService implements IOrderService {
 
     @Override
     public boolean importOrder(String fileName) {
-        List<String> orderDataList = CsvHelper.importCsvFile(fileName);
-        Order importOrder;
-        GaragePlace importGaragePlace = garageService.findGaragePlaceById(Integer.parseInt(orderDataList.get(7)), Integer.parseInt(orderDataList.get(8)));
-                List<Master> importMasters = new ArrayList<>();
+        try {
+            List<String> orderDataList = CsvHelper.importCsvFile(fileName);
+            if (orderDataList == null) {
+                throw new FileNotFoundException();
+            }
+            Order importOrder;
+            GaragePlace importGaragePlace = garageService.findGaragePlaceById(Integer.parseInt(orderDataList.get(7)), Integer.parseInt(orderDataList.get(8)));
+            List<Master> importMasters = new ArrayList<>();
 
-        for (int i = 9; i < orderDataList.size(); i++) {
-            importMasters.add(masterService.findMasterById(Integer.parseInt(orderDataList.get(i))));
+            for (int i = 9; i < orderDataList.size(); i++) {
+                importMasters.add(masterService.findMasterById(Integer.parseInt(orderDataList.get(i))));
+            }
+            importOrder = new Order(Integer.parseInt(orderDataList.get(0)), LocalDateTime.parse(orderDataList.get(1)),
+                    LocalDateTime.parse(orderDataList.get(2)), LocalDateTime.parse(orderDataList.get(3)), orderDataList.get(4),
+                    Integer.parseInt(orderDataList.get(5)), importGaragePlace, importMasters, OrderStatus.valueOf(orderDataList.get(6)));
+
+            if (orderDao.getOrderById(importOrder.getId()) != null) {
+                orderDao.updateOrder(importOrder);
+                return true;
+            } else {
+                return orderDao.addOrder(importOrder);
+            }
+        } catch (WrongFileFormatException e) {
+            ConsoleHelper.writeMessage("Неверный формат файла");
+            return false;
+        } catch (FileNotFoundException e) {
+            ConsoleHelper.writeMessage("Файл не найден");
+            return false;
+        } catch (Exception e) {
+            ConsoleHelper.writeMessage("Файл содержит неверные данные");
+            return false;
         }
-        importOrder = new Order(Integer.parseInt(orderDataList.get(0)), LocalDateTime.parse(orderDataList.get(1)),
-                LocalDateTime.parse(orderDataList.get(2)), LocalDateTime.parse(orderDataList.get(3)), orderDataList.get(4),
-                Integer.parseInt(orderDataList.get(5)), importGaragePlace, importMasters, OrderStatus.valueOf(orderDataList.get(6)));
-
-        /*if (orderDao.getOrderById(importOrder.getId()) != null) {
-            orderDao.updateOrder(importOrder);
-            return true;
-        } else {*/
-            return orderDao.addOrder(importOrder);
-        //}
-
     }
 
     @Override
     public boolean exportOrder(int id, String fileName) {
         Order orderToExport = orderDao.getOrderById(id);
-        if (orderToExport != null) {
-            return CsvHelper.exportCsvFile(toList(orderToExport), fileName);
-        } else {
+        try {
+            if (orderToExport != null) {
+                return CsvHelper.exportCsvFile(toList(orderToExport), fileName);
+            } else {
+                ConsoleHelper.writeMessage("Неверный № заказа");
+                return false;
+            }
+        } catch (WrongFileFormatException e) {
+            ConsoleHelper.writeMessage("Неверный формат файла");
             return false;
         }
     }

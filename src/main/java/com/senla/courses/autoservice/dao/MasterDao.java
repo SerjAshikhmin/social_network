@@ -1,11 +1,13 @@
 package com.senla.courses.autoservice.dao;
 
 import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
+import com.senla.courses.autoservice.exceptions.MasterNotFoundException;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class MasterDao implements IMasterDao {
@@ -24,9 +26,13 @@ public class MasterDao implements IMasterDao {
 
     @Override
     public Master getMasterById(int id) {
-        return masters.stream()
-                .filter(master -> master.getId() == id)
-                .findFirst().get();
+        try {
+            return masters.stream()
+                    .filter(master -> master.getId() == id)
+                    .findFirst().get();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     @Override
@@ -40,8 +46,12 @@ public class MasterDao implements IMasterDao {
         return updateMasterFields(master, daoMaster);
     }
 
-    public Order getCurrentOrder(Master master) {
-        return master.getCurrentOrder();
+    public Order getCurrentOrder(Master master) throws MasterNotFoundException {
+        if (master != null) {
+            return master.getCurrentOrder();
+        } else {
+            throw new MasterNotFoundException();
+        }
     }
 
     @Override

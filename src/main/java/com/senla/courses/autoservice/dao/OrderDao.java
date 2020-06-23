@@ -1,6 +1,7 @@
 package com.senla.courses.autoservice.dao;
 
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 
@@ -23,6 +25,9 @@ public class OrderDao implements IOrderDao {
 
     @Override
     public boolean removeOrder(Order order) {
+        if (order == null) {
+            return false;
+        }
         order.getGaragePlace().setBusy(false);
         order.getMasters().stream()
                 .forEach(master -> master.setBusy(false));
@@ -31,9 +36,13 @@ public class OrderDao implements IOrderDao {
 
     @Override
     public Order getOrderById(int id) {
-        return orders.stream()
-                .filter(order -> order.getId() == id)
-                .findFirst().get();
+        try {
+            return orders.stream()
+                    .filter(order -> order.getId() == id)
+                    .findFirst().get();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     @Override
@@ -72,8 +81,12 @@ public class OrderDao implements IOrderDao {
         daoOrder.setEndDate(newEndTime);
     }
 
-    public List<Master> getMastersByOrder (Order order) {
-        return order.getMasters();
+    public List<Master> getMastersByOrder (Order order) throws OrderNotFoundException {
+        if (order != null) {
+            return order.getMasters();
+        } else {
+            throw new OrderNotFoundException();
+        }
     }
 
     @Override
