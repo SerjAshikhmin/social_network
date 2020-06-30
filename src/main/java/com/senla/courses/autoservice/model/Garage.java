@@ -14,6 +14,10 @@ public class Garage {
         this.garagePlaces = garagePlaces;
     }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public int getId() {
         return id;
     }

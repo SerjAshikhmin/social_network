@@ -1,6 +1,9 @@
 package com.senla.courses.view.menu;
 
+import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.view.action.interfaces.IAction;
+
+import java.time.format.DateTimeParseException;
 
 public class MenuItem {
 
@@ -19,7 +22,13 @@ public class MenuItem {
     }
 
     public void doAction() {
-        action.execute();
+        try {
+            action.execute();
+        } catch (NumberFormatException e) {
+            ConsoleHelper.writeMessage("Неверный формат ввода");
+        } catch (DateTimeParseException e) {
+            ConsoleHelper.writeMessage("Неверный формат даты");
+        }
     }
 
     public String getTitle() {

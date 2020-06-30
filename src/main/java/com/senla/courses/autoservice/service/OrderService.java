@@ -1,6 +1,9 @@
 package com.senla.courses.autoservice.service;
 
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
+import com.senla.courses.autoservice.exceptions.WrongFileFormatException;
+import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
@@ -11,7 +14,11 @@ import com.senla.courses.autoservice.service.comparators.order.OrderByStartDateC
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
+import com.senla.courses.autoservice.utils.ConsoleHelper;
+import com.senla.courses.autoservice.utils.CsvHelper;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,11 +38,11 @@ public class OrderService implements IOrderService {
 
     @Override
     public boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
-                            String kindOfWork, int cost, int garagePlaceId, String masterName, OrderStatus orderStatus) {
+                            String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {
         List<Master> masters = new ArrayList<>();
         masters.add(masterService.findMasterByName(masterName));
         Order order = new Order(id, submissionDate, startDate, endDate, kindOfWork, cost,
-                garageService.findGaragePlaceById(garagePlaceId), masters, orderStatus);
+                garageService.findGaragePlaceById(garageId, garagePlaceId), masters, orderStatus);
         return orderDao.addOrder(order);
     }
 
@@ -46,20 +53,26 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Order updateOrder(Order order) {
-        return orderDao.updateOrder(order);
-    }
-
-    @Override
     public void cancelOrder(int id) {
         Order order = findOrderById(id);
-        orderDao.cancelOrder(order);
+        if (order != null) {
+            orderDao.cancelOrder(order);
+            ConsoleHelper.writeMessage(String.format("Заказ №%d отменен", id));
+        } else {
+            ConsoleHelper.writeMessage("При отмене заказа произошла ошибка");
+        }
+
     }
 
     @Override
     public void closeOrder(int id) {
         Order order = findOrderById(id);
-        orderDao.closeOrder(order);
+        if (order != null) {
+            orderDao.closeOrder(order);
+            ConsoleHelper.writeMessage(String.format("Заказ №%d закрыт", id));
+        } else {
+            ConsoleHelper.writeMessage("При закрытии заказа произошла ошибка");
+        }
     }
 
     @Override
@@ -97,7 +110,12 @@ public class OrderService implements IOrderService {
     @Override
     public List<Master> getMastersByOrder (int id) {
         Order order = findOrderById(id);
-        return orderDao.getMastersByOrder(order);
+        try {
+            return orderDao.getMastersByOrder(order);
+        } catch (OrderNotFoundException e) {
+            ConsoleHelper.writeMessage("Неправильный номер заказа");
+            return null;
+        }
     }
 
     @Override
@@ -135,6 +153,75 @@ public class OrderService implements IOrderService {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean importOrder(String fileName) {
+        try {
+            List<String> orderDataList = CsvHelper.importCsvFile(fileName);
+            if (orderDataList == null) {
+                throw new FileNotFoundException();
+            }
+            Order importOrder;
+            GaragePlace importGaragePlace = garageService.findGaragePlaceById(Integer.parseInt(orderDataList.get(7)), Integer.parseInt(orderDataList.get(8)));
+            List<Master> importMasters = new ArrayList<>();
+
+            for (int i = 9; i < orderDataList.size(); i++) {
+                importMasters.add(masterService.findMasterById(Integer.parseInt(orderDataList.get(i))));
+            }
+            importOrder = new Order(Integer.parseInt(orderDataList.get(0)), LocalDateTime.parse(orderDataList.get(1)),
+                    LocalDateTime.parse(orderDataList.get(2)), LocalDateTime.parse(orderDataList.get(3)), orderDataList.get(4),
+                    Integer.parseInt(orderDataList.get(5)), importGaragePlace, importMasters, OrderStatus.valueOf(orderDataList.get(6)));
+
+            if (orderDao.getOrderById(importOrder.getId()) != null) {
+                orderDao.updateOrder(importOrder);
+                return true;
+            } else {
+                return orderDao.addOrder(importOrder);
+            }
+        } catch (WrongFileFormatException e) {
+            ConsoleHelper.writeMessage("Неверный формат файла");
+            return false;
+        } catch (FileNotFoundException e) {
+            ConsoleHelper.writeMessage("Файл не найден");
+            return false;
+        } catch (Exception e) {
+            ConsoleHelper.writeMessage("Файл содержит неверные данные");
+            return false;
+        }
+    }
+
+    @Override
+    public boolean exportOrder(int id, String fileName) {
+        Order orderToExport = orderDao.getOrderById(id);
+        try {
+            if (orderToExport != null) {
+                return CsvHelper.exportCsvFile(toList(orderToExport), fileName);
+            } else {
+                ConsoleHelper.writeMessage("Неверный № заказа");
+                return false;
+            }
+        } catch (WrongFileFormatException e) {
+            ConsoleHelper.writeMessage("Неверный формат файла");
+            return false;
+        }
+    }
+
+    @Override
+    public List<String> toList(Order order) {
+        List<String> orderAsList = new ArrayList<>();
+        orderAsList.add(String.valueOf(order.getId()));
+        orderAsList.add(String.valueOf(order.getSubmissionDate()));
+        orderAsList.add(String.valueOf(order.getStartDate()));
+        orderAsList.add(String.valueOf(order.getEndDate()));
+        orderAsList.add(order.getKindOfWork());
+        orderAsList.add(String.valueOf(order.getCost()));
+        orderAsList.add(order.getStatus().toString());
+        orderAsList.add(String.valueOf(order.getGaragePlace().getGarageId()));
+        orderAsList.add(String.valueOf(order.getGaragePlace().getId()));
+        order.getMasters().stream()
+                .forEach(master -> orderAsList.add(String.valueOf(master.getId())));
+        return orderAsList;
     }
 
     private Comparator getOrderComparator(String sortBy) {

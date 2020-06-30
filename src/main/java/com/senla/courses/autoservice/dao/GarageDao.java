@@ -6,6 +6,7 @@ import com.senla.courses.autoservice.model.GaragePlace;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class GarageDao implements IGarageDao {
 
@@ -27,9 +28,28 @@ public class GarageDao implements IGarageDao {
 
     @Override
     public Garage getGarageById(int id) {
-        return garages.stream()
-                .filter(garage -> garage.getId() == id)
-                .findFirst().get();
+        try {
+            return garages.stream()
+                    .filter(garage -> garage.getId() == id)
+                    .findFirst().get();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public GaragePlace getGaragePlaceById(int garageId, int garagePlaceId) {
+        Garage garage = getGarageById(garageId);
+        if (garage == null) {
+            return null;
+        }
+        try {
+            return garage.getGaragePlaces().stream()
+                    .filter(garagePlace -> garagePlace.getId() == garagePlaceId)
+                    .findFirst().get();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     @Override
@@ -44,20 +64,37 @@ public class GarageDao implements IGarageDao {
     }
 
     @Override
-    public boolean addGaragePlace(Garage garage, GaragePlace garagePlace) {
-        Garage daoGarage = getGarageById(garage.getId());
+    public GaragePlace updateGaragePlace(GaragePlace garagePlace) {
+        GaragePlace daoGaragePlace = getGaragePlaceById(garagePlace.getGarageId(), garagePlace.getId());
+        return updateGaragePlaceFields(garagePlace, daoGaragePlace);
+    }
+
+    @Override
+    public boolean addGaragePlace(GaragePlace garagePlace) {
+        Garage daoGarage = getGarageById(garagePlace.getGarageId());
         return daoGarage.getGaragePlaces().add(garagePlace);
     }
 
     @Override
     public boolean removeGaragePlace(Garage garage, GaragePlace garagePlace) {
+        if (garage == null || garagePlace == null) {
+            return false;
+        }
         Garage daoGarage = getGarageById(garage.getId());
         return daoGarage.getGaragePlaces().remove(garagePlace);
     }
 
     private Garage updateGarageFields(Garage garage, Garage daoGarage) {
+        daoGarage.setAddress(garage.getAddress());
         daoGarage.setGaragePlaces(garage.getGaragePlaces());
         return daoGarage;
+    }
+
+    private GaragePlace updateGaragePlaceFields(GaragePlace garagePlace, GaragePlace daoGaragePlace) {
+        daoGaragePlace.setType(garagePlace.getType());
+        daoGaragePlace.setBusy(garagePlace.isBusy());
+        daoGaragePlace.setArea(garagePlace.getArea());
+        return daoGaragePlace;
     }
 
 }

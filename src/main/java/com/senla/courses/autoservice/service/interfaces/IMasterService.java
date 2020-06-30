@@ -1,5 +1,6 @@
 package com.senla.courses.autoservice.service.interfaces;
 
+import com.senla.courses.autoservice.model.Garage;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 
@@ -14,5 +15,8 @@ public interface IMasterService {
     List<Master> getAllFreeMasters();
     Order getCurrentOrder(String name);
     Master findMasterByName(String name);
-
+    Master findMasterById(int id);
+    boolean importMaster(String fileName);
+    boolean exportMaster(int id, String fileName);
+    List<String> toList(Master master);
 }

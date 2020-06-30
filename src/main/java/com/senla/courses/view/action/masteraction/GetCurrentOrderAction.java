@@ -17,10 +17,6 @@ public class GetCurrentOrderAction extends AbstractMasterAction {
         name = ConsoleHelper.readString();
 
         Order currentOrder = masterController.getCurrentOrder(name);
-        if (currentOrder != null) {
-            ConsoleHelper.writeMessage(currentOrder);
-        } else {
-            ConsoleHelper.writeMessage("Заказ не найден");
-        }
+        ConsoleHelper.writeMessage(currentOrder);
     }
 }

@@ -4,10 +4,7 @@ import com.senla.courses.autoservice.controller.GarageController;
 import com.senla.courses.autoservice.controller.MasterController;
 import com.senla.courses.autoservice.controller.OrderController;
 import com.senla.courses.view.action.garageaction.*;
-import com.senla.courses.view.action.masteraction.AddMasterAction;
-import com.senla.courses.view.action.masteraction.GetAllMastersSortedAction;
-import com.senla.courses.view.action.masteraction.GetCurrentOrderAction;
-import com.senla.courses.view.action.masteraction.RemoveMasterAction;
+import com.senla.courses.view.action.masteraction.*;
 import com.senla.courses.view.action.orderaction.*;
 
 import java.util.ArrayList;
@@ -54,7 +51,11 @@ public class MenuBuilder {
                 new GetAllMastersSortedAction(masterController), null, rootMenu));
         masterMenu.addMenuItem(new MenuItem(4, "заказ конкретного мастера",
                 new GetCurrentOrderAction(masterController), null, rootMenu));
-        masterMenu.addMenuItem(new MenuItem(5, "назад",
+        masterMenu.addMenuItem(new MenuItem(5, "импорт мастера",
+                new ImportMasterAction(masterController), null, rootMenu));
+        masterMenu.addMenuItem(new MenuItem(6, "экспорт мастера",
+                new ExportMasterAction(masterController), null, rootMenu));
+        masterMenu.addMenuItem(new MenuItem(7, "назад",
                 null, null, rootMenu));
     }
 
@@ -83,7 +84,12 @@ public class MenuBuilder {
 
         orderMenu.addMenuItem(new MenuItem(10, "ближайшая свободная дата",
                 new GetNearestFreeDateAction(orderController), null, rootMenu));
-        orderMenu.addMenuItem(new MenuItem(11, "назад",
+
+        orderMenu.addMenuItem(new MenuItem(11, "импорт заказа",
+                new ImportOrderAction(orderController), null, rootMenu));
+        orderMenu.addMenuItem(new MenuItem(12, "экспорт заказа",
+                new ExportOrderAction(orderController), null, rootMenu));
+        orderMenu.addMenuItem(new MenuItem(13, "назад",
                 null, null, rootMenu));
     }
 
@@ -100,7 +106,15 @@ public class MenuBuilder {
                 new GetAllFreePlacesAction(garageController), null, rootMenu));
         garageMenu.addMenuItem(new MenuItem(6, "кол-во свободных мест на любую дату в будущем",
                 new GetFreePlacesCountInFutureAction(garageController), null, rootMenu));
-        garageMenu.addMenuItem(new MenuItem(7, "назад",
+        garageMenu.addMenuItem(new MenuItem(7, "импорт гаража",
+                new ImportGarageAction(garageController), null, rootMenu));
+        garageMenu.addMenuItem(new MenuItem(8, "экспорт гаража",
+                new ExportGarageAction(garageController), null, rootMenu));
+        garageMenu.addMenuItem(new MenuItem(9, "импорт места в гараже",
+                new ImportGaragePlaceAction(garageController), null, rootMenu));
+        garageMenu.addMenuItem(new MenuItem(10, "экспорт места в гараже",
+                new ExportGaragePlaceAction(garageController), null, rootMenu));
+        garageMenu.addMenuItem(new MenuItem(11, "назад",
                 null, null, rootMenu));
     }
 

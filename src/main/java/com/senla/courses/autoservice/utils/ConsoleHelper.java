@@ -10,12 +10,14 @@ public class ConsoleHelper {
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     public static void writeMessage(Object message) {
-        if (message instanceof List) {
-            for (Object object : (List) message) {
-                System.out.println(object);
+        if (message != null) {
+            if (message instanceof List) {
+                for (Object object : (List) message) {
+                    System.out.println(object);
+                }
+            } else {
+                System.out.println(message);
             }
-        } else {
-            System.out.println(message);
         }
     }
 
@@ -23,7 +25,7 @@ public class ConsoleHelper {
         try {
             return reader.readLine();
         } catch (IOException e) {
-            System.out.println("An error has occurred. Please, try again");
+            System.out.println("Ошибка ввода/вывода");
             return readString();
         }
     }

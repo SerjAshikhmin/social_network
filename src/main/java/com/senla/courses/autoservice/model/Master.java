@@ -14,6 +14,14 @@ public class Master {
         this.category = category;
     }
 
+    public Master(int id, String name, int category, boolean busy, Order currentOrder) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
+        this.busy = busy;
+        this.currentOrder = currentOrder;
+    }
+
     public void setCategory(int category) {
         this.category = category;
     }
@@ -44,6 +52,10 @@ public class Master {
 
     public void setCurrentOrder(Order currentOrder) {
         this.currentOrder = currentOrder;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
