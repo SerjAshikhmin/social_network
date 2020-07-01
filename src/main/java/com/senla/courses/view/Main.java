@@ -16,10 +16,16 @@ import com.senla.courses.autoservice.service.GarageService;
 import com.senla.courses.autoservice.service.MasterService;
 import com.senla.courses.autoservice.service.OrderService;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
+import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.view.menu.MenuController;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Properties;
 
 public class Main {
 
@@ -29,11 +35,14 @@ public class Main {
     private static OrderController orderController;
     private static MasterController masterController;
     private static GarageController garageController;
+    private static Properties config;
 
     public static void main(String[] args) {
+        loadConfig();
         createServices();
-        fillInTestData();
-        MenuController menuController = new MenuController();
+        loadObjects();
+        //fillInTestData();
+        MenuController menuController = new MenuController(config);
         menuController.run();
     }
 
@@ -47,6 +56,24 @@ public class Main {
 
     public static GarageController getGarageController() {
         return garageController;
+    }
+
+    private static void loadConfig() {
+        try {
+            File configFile = new File("src/main/resources/config.properties");
+            config = new Properties();
+            config.load(new FileReader(configFile));
+        } catch (FileNotFoundException e) {
+            ConsoleHelper.writeMessage("Файл настроек не найден");
+        } catch (IOException e) {
+            ConsoleHelper.writeMessage("Ошибка ввода/вывода");
+        }
+    }
+
+    private static void loadObjects() {
+        masterController.loadState();
+        garageController.loadState();
+        orderController.loadState();
     }
 
     private static void createServices() {

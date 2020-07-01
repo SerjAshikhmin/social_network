@@ -58,6 +58,11 @@ public class GarageDao implements IGarageDao {
     }
 
     @Override
+    public void setAllGarages(List<Garage> allGarages) {
+        this.garages = allGarages;
+    }
+
+    @Override
     public Garage updateGarage(Garage garage) {
         Garage daoGarage = getGarageById(garage.getId());
         return updateGarageFields(garage, daoGarage);

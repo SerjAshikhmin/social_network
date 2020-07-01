@@ -17,7 +17,7 @@ public class OrderController {
     }
 
     public boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
-                            String kindOfWork, int cost,int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {
+                            String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {
         return orderService.addOrder(id, submissionDate, startDate, endDate, kindOfWork, cost, garageId, garagePlaceId, masterName, orderStatus);
     }
 
@@ -63,5 +63,13 @@ public class OrderController {
 
     public boolean exportOrder(int id, String fileName) {
         return orderService.exportOrder(id, fileName);
+    }
+
+    public void saveState() {
+        orderService.saveState();
+    }
+
+    public void loadState() {
+        orderService.loadState();
     }
 }

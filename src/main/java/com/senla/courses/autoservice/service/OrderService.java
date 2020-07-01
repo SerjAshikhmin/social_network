@@ -3,6 +3,7 @@ package com.senla.courses.autoservice.service;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
 import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
 import com.senla.courses.autoservice.exceptions.WrongFileFormatException;
+import com.senla.courses.autoservice.model.Garage;
 import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
@@ -17,8 +18,7 @@ import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.utils.CsvHelper;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -222,6 +222,38 @@ public class OrderService implements IOrderService {
         order.getMasters().stream()
                 .forEach(master -> orderAsList.add(String.valueOf(master.getId())));
         return orderAsList;
+    }
+
+    @Override
+    public void saveState() {
+        List<Order> allOrders = getAllOrders();
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("SerialsOrders.out"))) {
+            out.writeInt(allOrders.size());
+            for (Order order: allOrders) {
+                out.writeObject(order);
+            }
+        } catch (IOException e) {
+            ConsoleHelper.writeMessage("Ошибка ввода/вывода");
+        }
+    }
+
+    @Override
+    public void loadState() {
+        List<Order> allOrders = new ArrayList<>();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("SerialsOrders.out"))) {
+            Order order;
+            int numberOfOrders = ois.readInt();
+            for (int i = 0; i < numberOfOrders; i++) {
+                order = (Order) ois.readObject();
+                allOrders.add(order);
+            }
+        } catch (IOException e) {
+            ConsoleHelper.writeMessage("Ошибка ввода/вывода");
+        } catch (ClassNotFoundException e) {
+            ConsoleHelper.writeMessage("Ошибка десериализации");
+        } finally {
+            orderDao.setAllOrders(allOrders);
+        }
     }
 
     private Comparator getOrderComparator(String sortBy) {

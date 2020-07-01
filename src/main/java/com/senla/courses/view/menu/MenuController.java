@@ -3,13 +3,15 @@ package com.senla.courses.view.menu;
 import com.senla.courses.view.Main;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 
+import java.util.Properties;
+
 public class MenuController {
 
     private MenuBuilder menuBuilder;
     private Navigator navigator;
 
-    public MenuController() {
-        this.menuBuilder = new MenuBuilder(Main.getMasterController(), Main.getOrderController(), Main.getGarageController());
+    public MenuController(Properties config) {
+        this.menuBuilder = new MenuBuilder(Main.getMasterController(), Main.getOrderController(), Main.getGarageController(), config);
     }
 
     public void run() {

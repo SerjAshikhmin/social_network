@@ -19,4 +19,6 @@ public interface IMasterService {
     boolean importMaster(String fileName);
     boolean exportMaster(int id, String fileName);
     List<String> toList(Master master);
+    void saveState();
+    void loadState();
 }

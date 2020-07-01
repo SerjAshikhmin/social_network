@@ -26,4 +26,6 @@ public interface IOrderService {
     boolean importOrder(String fileName);
     boolean exportOrder(int id, String fileName);
     List<String> toList(Order order);
+    void saveState();
+    void loadState();
 }

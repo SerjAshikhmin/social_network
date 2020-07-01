@@ -12,7 +12,7 @@ import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.utils.CsvHelper;
 
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -138,6 +138,38 @@ public class MasterService implements IMasterService {
         masterAsList.add(String.valueOf(master.isBusy()));
         masterAsList.add(String.valueOf(master.getCurrentOrder().getId()));
         return masterAsList;
+    }
+
+    @Override
+    public void saveState() {
+        List<Master> allMasters = getAllMasters();
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("SerialsMasters.out"))) {
+            out.writeInt(allMasters.size());
+            for (Master master: allMasters) {
+                out.writeObject(master);
+            }
+        } catch (IOException e) {
+            ConsoleHelper.writeMessage("Ошибка ввода/вывода");
+        }
+    }
+
+    @Override
+    public void loadState() {
+        List<Master> allMasters = new ArrayList<>();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("SerialsMasters.out"))) {
+            Master master;
+            int numberOfMasters = ois.readInt();
+            for (int i = 0; i < numberOfMasters; i++) {
+                master = (Master) ois.readObject();
+                allMasters.add(master);
+            }
+        } catch (IOException e) {
+            ConsoleHelper.writeMessage("Ошибка ввода/вывода");
+        } catch (ClassNotFoundException e) {
+            ConsoleHelper.writeMessage("Ошибка десериализации");
+        } finally {
+            masterDao.setAllMasters(allMasters);
+        }
     }
 
     private Comparator getMasterComparator(String sortBy) {

@@ -2,11 +2,13 @@ package com.senla.courses.autoservice.model;
 
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class Order {
+public class Order implements Serializable {
 
+    private static final long serialVersionUID = -4862926644813433704L;
     private int id;
     private LocalDateTime submissionDate;
     private LocalDateTime startDate;

@@ -9,8 +9,7 @@ import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.utils.CsvHelper;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,6 +197,38 @@ public class GarageService implements IGarageService {
         garagePlaceAsList.add(String.valueOf(garagePlace.getArea()));
         garagePlaceAsList.add(String.valueOf(garagePlace.isBusy()));
         return garagePlaceAsList;
+    }
+
+    @Override
+    public void saveState() {
+        List<Garage> allGarages = getAllGarages();
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("SerialsGarages.out"))) {
+            out.writeInt(allGarages.size());
+            for (Garage garage: allGarages) {
+                out.writeObject(garage);
+            }
+        } catch (IOException e) {
+            ConsoleHelper.writeMessage("Ошибка ввода/вывода");
+        }
+    }
+
+    @Override
+    public void loadState() {
+        List<Garage> allGarages = new ArrayList<>();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("SerialsGarages.out"))) {
+            Garage garage;
+            int numberOfGarages = ois.readInt();
+            for (int i = 0; i < numberOfGarages; i++) {
+                garage = (Garage) ois.readObject();
+                allGarages.add(garage);
+            }
+        } catch (IOException e) {
+            ConsoleHelper.writeMessage("Ошибка ввода/вывода");
+        } catch (ClassNotFoundException e) {
+            ConsoleHelper.writeMessage("Ошибка десериализации");
+        } finally {
+            garageDao.setAllGarages(allGarages);
+        }
     }
 
 }

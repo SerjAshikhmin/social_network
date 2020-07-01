@@ -52,4 +52,12 @@ public class GarageController {
     public boolean exportGaragePlace(int garageId, int garagePlaceId, String fileName) {
         return garageService.exportGaragePlace(garageId, garagePlaceId, fileName);
     }
+
+    public void saveState() {
+        garageService.saveState();
+    }
+
+    public void loadState() {
+        garageService.loadState();
+    }
 }

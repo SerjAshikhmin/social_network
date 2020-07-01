@@ -23,4 +23,6 @@ public interface IGarageService {
     boolean exportGaragePlace(int garageId, int garagePlaceId, String fileName);
     List<String> garageToList(Garage garage);
     List<String> garagePlaceToList(GaragePlace garagePlace);
+    void saveState();
+    void loadState();
 }

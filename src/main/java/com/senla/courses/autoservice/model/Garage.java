@@ -1,9 +1,11 @@
 package com.senla.courses.autoservice.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Garage {
+public class Garage implements Serializable {
 
+    private static final long serialVersionUID = -4862926644813433702L;
     private int id;
     private String address;
     private List<GaragePlace> garagePlaces;
