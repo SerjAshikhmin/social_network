@@ -16,6 +16,7 @@ import com.senla.courses.autoservice.service.GarageService;
 import com.senla.courses.autoservice.service.MasterService;
 import com.senla.courses.autoservice.service.OrderService;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
+import com.senla.courses.autoservice.utils.ConfigUtil;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.view.menu.MenuController;
 
@@ -35,14 +36,14 @@ public class Main {
     private static OrderController orderController;
     private static MasterController masterController;
     private static GarageController garageController;
-    private static Properties config;
+    private static ConfigUtil configUtil;
 
     public static void main(String[] args) {
         loadConfig();
         createServices();
         loadObjects();
         //fillInTestData();
-        MenuController menuController = new MenuController(config);
+        MenuController menuController = new MenuController();
         menuController.run();
     }
 
@@ -61,8 +62,9 @@ public class Main {
     private static void loadConfig() {
         try {
             File configFile = new File("src/main/resources/config.properties");
-            config = new Properties();
+            Properties config = new Properties();
             config.load(new FileReader(configFile));
+            configUtil = new ConfigUtil(config);
         } catch (FileNotFoundException e) {
             ConsoleHelper.writeMessage("Файл настроек не найден");
         } catch (IOException e) {
@@ -82,8 +84,10 @@ public class Main {
         IOrderDao orderDao = new OrderDao();
 
         masterService = new MasterService(masterDao, orderDao);
-        garageService = new GarageService(garageDao, masterService);
-        orderService = new OrderService(orderDao, masterService, garageService);
+        garageService = new GarageService(garageDao, masterService, configUtil.getProperties().get("addGaragePlaceOption"),
+                                                                    configUtil.getProperties().get("removeGaragePlaceOption"));
+        orderService = new OrderService(orderDao, masterService, garageService, configUtil.getProperties().get("shiftEndTimeOrdersOption"),
+                                                                                configUtil.getProperties().get("removeOrderOption"));
 
         masterController = new MasterController(masterService);
         garageController = new GarageController(garageService);

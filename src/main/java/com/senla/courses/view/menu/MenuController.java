@@ -10,8 +10,8 @@ public class MenuController {
     private MenuBuilder menuBuilder;
     private Navigator navigator;
 
-    public MenuController(Properties config) {
-        this.menuBuilder = new MenuBuilder(Main.getMasterController(), Main.getOrderController(), Main.getGarageController(), config);
+    public MenuController() {
+        this.menuBuilder = new MenuBuilder(Main.getMasterController(), Main.getOrderController(), Main.getGarageController());
     }
 
     public void run() {

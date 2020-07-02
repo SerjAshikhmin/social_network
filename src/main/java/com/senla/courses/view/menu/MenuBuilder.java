@@ -19,11 +19,10 @@ public class MenuBuilder {
     private GarageController garageController;
     private Properties config;
 
-    public MenuBuilder(MasterController masterController, OrderController orderController, GarageController garageController, Properties config) {
+    public MenuBuilder(MasterController masterController, OrderController orderController, GarageController garageController) {
         this.masterController = masterController;
         this.orderController = orderController;
         this.garageController = garageController;
-        this.config = config;
     }
 
     public Menu getRootMenu() {
@@ -68,19 +67,15 @@ public class MenuBuilder {
     private void buildOrderMenu(Menu orderMenu) {
         orderMenu.addMenuItem(new MenuItem(1, "добавить заказ",
                 new AddOrderAction(orderController), null, rootMenu));
-        if (Boolean.parseBoolean(config.getProperty("removeOrderOption"))) {
-            orderMenu.addMenuItem(new MenuItem(2, "удалить заказ",
-                    new RemoveOrderAction(orderController), null, rootMenu));
-        }
+        orderMenu.addMenuItem(new MenuItem(2, "удалить заказ",
+                new RemoveOrderAction(orderController), null, rootMenu));
         orderMenu.addMenuItem(new MenuItem(3, "закрыть заказ",
                 new CloseOrderAction(orderController), null, rootMenu));
         orderMenu.addMenuItem(new MenuItem(4, "отменить заказ",
                 new CancelOrderAction(orderController), null, rootMenu));
 
-        if (Boolean.parseBoolean(config.getProperty("shiftEndTimeOrdersOption"))) {
-            orderMenu.addMenuItem(new MenuItem(5, "сместить время выполнения заказов",
-                    new ShiftEndTimeOrdersAction(orderController), null, rootMenu));
-        }
+        orderMenu.addMenuItem(new MenuItem(5, "сместить время выполнения заказов",
+                new ShiftEndTimeOrdersAction(orderController), null, rootMenu));
 
         orderMenu.addMenuItem(new MenuItem(6, "список заказов",
                 new GetAllOrdersSortedAction(orderController), null, rootMenu));
@@ -108,14 +103,10 @@ public class MenuBuilder {
                 new AddGarageAction(garageController), null, rootMenu));
         garageMenu.addMenuItem(new MenuItem(2, "удалить гараж",
                 new RemoveGarageAction(garageController), null, rootMenu));
-        if (Boolean.parseBoolean(config.getProperty("addGaragePlaceOption"))) {
-            garageMenu.addMenuItem(new MenuItem(3, "добавить место в гараже",
-                    new AddGaragePlaceAction(garageController), null, rootMenu));
-        }
-        if (Boolean.parseBoolean(config.getProperty("removeGaragePlaceOption"))) {
-            garageMenu.addMenuItem(new MenuItem(4, "удалить место в гараже",
-                    new RemoveGaragePlaceAction(garageController), null, rootMenu));
-        }
+        garageMenu.addMenuItem(new MenuItem(3, "добавить место в гараже",
+                new AddGaragePlaceAction(garageController), null, rootMenu));
+        garageMenu.addMenuItem(new MenuItem(4, "удалить место в гараже",
+                new RemoveGaragePlaceAction(garageController), null, rootMenu));
         garageMenu.addMenuItem(new MenuItem(5, "список свободных мест в гаражах",
                 new GetAllFreePlacesAction(garageController), null, rootMenu));
         garageMenu.addMenuItem(new MenuItem(6, "кол-во свободных мест на любую дату в будущем",

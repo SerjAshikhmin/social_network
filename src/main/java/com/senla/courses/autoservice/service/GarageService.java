@@ -17,10 +17,14 @@ public class GarageService implements IGarageService {
 
     private IGarageDao garageDao;
     private IMasterService masterService;
+    private boolean addGaragePlaceOption = true;
+    private boolean removeGaragePlaceOption = true;
 
-    public GarageService(IGarageDao garageDAO, IMasterService masterService) {
+    public GarageService(IGarageDao garageDAO, IMasterService masterService, boolean addGaragePlaceOption, boolean removeGaragePlaceOption) {
         this.garageDao = garageDAO;
         this.masterService = masterService;
+        this.addGaragePlaceOption = addGaragePlaceOption;
+        this.removeGaragePlaceOption = removeGaragePlaceOption;
     }
 
     @Override
@@ -41,13 +45,23 @@ public class GarageService implements IGarageService {
 
     @Override
     public boolean addGaragePlace(int garageId, int garagePlaceId, String type, int area) {
-        GaragePlace garagePlace = new GaragePlace(garagePlaceId, garageId, type, area);
-        return garageDao.addGaragePlace(garagePlace);
+        if (addGaragePlaceOption) {
+            GaragePlace garagePlace = new GaragePlace(garagePlaceId, garageId, type, area);
+            return garageDao.addGaragePlace(garagePlace);
+        } else {
+            ConsoleHelper.writeMessage("Возможность добавления места в гараже отключена");
+            return false;
+        }
     }
 
     @Override
     public boolean removeGaragePlace(int garageId, int garagePlaceId) {
-        return garageDao.removeGaragePlace(findGarageById(garageId), findGaragePlaceById(garageId, garagePlaceId));
+        if (removeGaragePlaceOption) {
+            return garageDao.removeGaragePlace(findGarageById(garageId), findGaragePlaceById(garageId, garagePlaceId));
+        } else {
+            ConsoleHelper.writeMessage("Возможность удаления места в гараже отключена");
+            return false;
+        }
     }
 
     @Override
