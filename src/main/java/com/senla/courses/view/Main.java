@@ -16,17 +16,11 @@ import com.senla.courses.autoservice.service.GarageService;
 import com.senla.courses.autoservice.service.MasterService;
 import com.senla.courses.autoservice.service.OrderService;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
-import com.senla.courses.autoservice.utils.ConfigUtil;
-import com.senla.courses.autoservice.utils.ConsoleHelper;
+import com.senla.courses.autoservice.utils.PropertyUtil;
 import com.senla.courses.view.menu.MenuController;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Properties;
 
 public class Main {
 
@@ -36,10 +30,8 @@ public class Main {
     private static OrderController orderController;
     private static MasterController masterController;
     private static GarageController garageController;
-    private static ConfigUtil configUtil;
 
     public static void main(String[] args) {
-        loadConfig();
         createServices();
         loadObjects();
         //fillInTestData();
@@ -59,19 +51,6 @@ public class Main {
         return garageController;
     }
 
-    private static void loadConfig() {
-        try {
-            File configFile = new File("src/main/resources/config.properties");
-            Properties config = new Properties();
-            config.load(new FileReader(configFile));
-            configUtil = new ConfigUtil(config);
-        } catch (FileNotFoundException e) {
-            ConsoleHelper.writeMessage("Файл настроек не найден");
-        } catch (IOException e) {
-            ConsoleHelper.writeMessage("Ошибка ввода/вывода");
-        }
-    }
-
     private static void loadObjects() {
         masterController.loadState();
         garageController.loadState();
@@ -83,12 +62,13 @@ public class Main {
         IGarageDao garageDao = new GarageDao();
         IOrderDao orderDao = new OrderDao();
 
-        masterService = new MasterService(masterDao, orderDao);
-        garageService = new GarageService(garageDao, masterService, configUtil.getProperties().get("addGaragePlaceOption"),
-                                                                    configUtil.getProperties().get("removeGaragePlaceOption"));
-        orderService = new OrderService(orderDao, masterService, garageService, configUtil.getProperties().get("shiftEndTimeOrdersOption"),
-                                                                                configUtil.getProperties().get("removeOrderOption"));
+        PropertyUtil.loadConfig();
 
+        masterService = new MasterService(masterDao, orderDao);
+        garageService = new GarageService(garageDao, masterService, Boolean.parseBoolean(PropertyUtil.getProperty("addGaragePlaceOption")),
+                                                                    Boolean.parseBoolean(PropertyUtil.getProperty("removeGaragePlaceOption")));
+        orderService = new OrderService(orderDao, masterService, garageService, Boolean.parseBoolean(PropertyUtil.getProperty("shiftEndTimeOrdersOption")),
+                                                                                Boolean.parseBoolean(PropertyUtil.getProperty("removeOrderOption")));
         masterController = new MasterController(masterService);
         garageController = new GarageController(garageService);
         orderController = new OrderController(orderService);

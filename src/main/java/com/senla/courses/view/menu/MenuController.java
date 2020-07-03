@@ -3,7 +3,6 @@ package com.senla.courses.view.menu;
 import com.senla.courses.view.Main;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 
-import java.util.Properties;
 
 public class MenuController {
 

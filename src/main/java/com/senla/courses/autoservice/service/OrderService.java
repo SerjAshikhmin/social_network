@@ -3,7 +3,6 @@ package com.senla.courses.autoservice.service;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
 import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
 import com.senla.courses.autoservice.exceptions.WrongFileFormatException;
-import com.senla.courses.autoservice.model.Garage;
 import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
@@ -17,6 +16,7 @@ import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.utils.CsvHelper;
+import com.senla.courses.autoservice.utils.SerializeUtil;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -239,34 +239,12 @@ public class OrderService implements IOrderService {
 
     @Override
     public void saveState() {
-        List<Order> allOrders = getAllOrders();
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("SerialsOrders.out"))) {
-            out.writeInt(allOrders.size());
-            for (Order order: allOrders) {
-                out.writeObject(order);
-            }
-        } catch (IOException e) {
-            ConsoleHelper.writeMessage("Ошибка ввода/вывода");
-        }
+        SerializeUtil.saveState(getAllOrders(), "SerialsOrders.out");
     }
 
     @Override
     public void loadState() {
-        List<Order> allOrders = new ArrayList<>();
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("SerialsOrders.out"))) {
-            Order order;
-            int numberOfOrders = ois.readInt();
-            for (int i = 0; i < numberOfOrders; i++) {
-                order = (Order) ois.readObject();
-                allOrders.add(order);
-            }
-        } catch (IOException e) {
-            ConsoleHelper.writeMessage("Ошибка ввода/вывода");
-        } catch (ClassNotFoundException e) {
-            ConsoleHelper.writeMessage("Ошибка десериализации");
-        } finally {
-            orderDao.setAllOrders(allOrders);
-        }
+        orderDao.setAllOrders(SerializeUtil.loadState(Order.class, "SerialsOrders.out"));
     }
 
     private Comparator getOrderComparator(String sortBy) {
