@@ -51,6 +51,11 @@ public class OrderDao implements IOrderDao {
     }
 
     @Override
+    public void setAllOrders(List<Order> allOrders) {
+        this.orders = allOrders;
+    }
+
+    @Override
     public Order updateOrder(Order order) {
         Order daoOrder = getOrderById(order.getId());
         return updateOrderFields(order, daoOrder);

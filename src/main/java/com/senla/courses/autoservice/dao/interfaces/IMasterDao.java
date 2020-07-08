@@ -12,6 +12,7 @@ public interface IMasterDao {
     boolean removeMaster(Master master);
     Master getMasterById(int id);
     List<Master> getAllMasters();
+    void setAllMasters(List<Master> allMasters);
     Master updateMaster(Master master);
     Order getCurrentOrder(Master master) throws MasterNotFoundException;
     List<Master> getAllFreeMasters();

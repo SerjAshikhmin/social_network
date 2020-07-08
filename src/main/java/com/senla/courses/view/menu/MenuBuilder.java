@@ -6,8 +6,10 @@ import com.senla.courses.autoservice.controller.OrderController;
 import com.senla.courses.view.action.garageaction.*;
 import com.senla.courses.view.action.masteraction.*;
 import com.senla.courses.view.action.orderaction.*;
+import com.senla.courses.view.action.savestateaction.SaveStateAction;
 
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class MenuBuilder {
 
@@ -15,6 +17,7 @@ public class MenuBuilder {
     private MasterController masterController;
     private OrderController orderController;
     private GarageController garageController;
+    private Properties config;
 
     public MenuBuilder(MasterController masterController, OrderController orderController, GarageController garageController) {
         this.masterController = masterController;
@@ -35,6 +38,8 @@ public class MenuBuilder {
         rootMenu.addMenuItem(new MenuItem(1, "мастера", null, masterMenu, null));
         rootMenu.addMenuItem(new MenuItem(2, "заказы", null, orderMenu, null));
         rootMenu.addMenuItem(new MenuItem(3, "гараж", null, garageMenu, null));
+        rootMenu.addMenuItem(new MenuItem(4, "сохранить состояние",
+                new SaveStateAction(masterController, orderController, garageController), null, null));
         rootMenu.addMenuItem(new MenuItem(0, "выход", null, null, null));
 
         buildMasterMenu(masterMenu);

@@ -11,8 +11,9 @@ import com.senla.courses.autoservice.service.comparators.master.MasterByNameComp
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.utils.CsvHelper;
+import com.senla.courses.autoservice.utils.SerializeUtil;
 
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -138,6 +139,16 @@ public class MasterService implements IMasterService {
         masterAsList.add(String.valueOf(master.isBusy()));
         masterAsList.add(String.valueOf(master.getCurrentOrder().getId()));
         return masterAsList;
+    }
+
+    @Override
+    public void saveState() {
+        SerializeUtil.saveState(getAllMasters(), "SerialsMasters.out");
+    }
+
+    @Override
+    public void loadState() {
+        masterDao.setAllMasters(SerializeUtil.loadState(Master.class, "SerialsMasters.out"));
     }
 
     private Comparator getMasterComparator(String sortBy) {

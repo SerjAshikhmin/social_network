@@ -1,7 +1,10 @@
 package com.senla.courses.autoservice.model;
 
-public class Master {
+import java.io.Serializable;
 
+public class Master implements Serializable {
+
+    private static final long serialVersionUID = -4862926644813433703L;
     private int id;
     private String name;
     private int category;

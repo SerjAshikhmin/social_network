@@ -12,6 +12,7 @@ public interface IGarageDao {
     Garage getGarageById(int id);
     GaragePlace getGaragePlaceById(int garageId, int garagePlaceId);
     List<Garage> getAllGarages();
+    void setAllGarages(List<Garage> allGarages);
     Garage updateGarage(Garage garage);
     GaragePlace updateGaragePlace(GaragePlace garagePlace);
     boolean addGaragePlace(GaragePlace garagePlace);

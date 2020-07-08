@@ -16,6 +16,7 @@ import com.senla.courses.autoservice.service.GarageService;
 import com.senla.courses.autoservice.service.MasterService;
 import com.senla.courses.autoservice.service.OrderService;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
+import com.senla.courses.autoservice.utils.PropertyUtil;
 import com.senla.courses.view.menu.MenuController;
 
 import java.time.LocalDateTime;
@@ -32,7 +33,8 @@ public class Main {
 
     public static void main(String[] args) {
         createServices();
-        fillInTestData();
+        loadObjects();
+        //fillInTestData();
         MenuController menuController = new MenuController();
         menuController.run();
     }
@@ -49,15 +51,24 @@ public class Main {
         return garageController;
     }
 
+    private static void loadObjects() {
+        masterController.loadState();
+        garageController.loadState();
+        orderController.loadState();
+    }
+
     private static void createServices() {
         IMasterDao masterDao = new MasterDao();
         IGarageDao garageDao = new GarageDao();
         IOrderDao orderDao = new OrderDao();
 
-        masterService = new MasterService(masterDao, orderDao);
-        garageService = new GarageService(garageDao, masterService);
-        orderService = new OrderService(orderDao, masterService, garageService);
+        PropertyUtil.loadConfig();
 
+        masterService = new MasterService(masterDao, orderDao);
+        garageService = new GarageService(garageDao, masterService, Boolean.parseBoolean(PropertyUtil.getProperty("addGaragePlaceOption")),
+                                                                    Boolean.parseBoolean(PropertyUtil.getProperty("removeGaragePlaceOption")));
+        orderService = new OrderService(orderDao, masterService, garageService, Boolean.parseBoolean(PropertyUtil.getProperty("shiftEndTimeOrdersOption")),
+                                                                                Boolean.parseBoolean(PropertyUtil.getProperty("removeOrderOption")));
         masterController = new MasterController(masterService);
         garageController = new GarageController(garageService);
         orderController = new OrderController(orderService);

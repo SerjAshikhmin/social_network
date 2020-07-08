@@ -16,9 +16,9 @@ import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.utils.CsvHelper;
+import com.senla.courses.autoservice.utils.SerializeUtil;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,11 +29,15 @@ public class OrderService implements IOrderService {
     private IOrderDao orderDao;
     private IMasterService masterService;
     private IGarageService garageService;
+    private boolean shiftEndTimeOrdersOption = true;
+    private boolean removeOrderOption = true;
 
-    public OrderService (IOrderDao orderDAO, IMasterService masterService, IGarageService garageService) {
+    public OrderService (IOrderDao orderDAO, IMasterService masterService, IGarageService garageService, boolean shiftEndTimeOrdersOption, boolean removeOrderOption) {
         this.orderDao = orderDAO;
         this.masterService = masterService;
         this.garageService = garageService;
+        this.shiftEndTimeOrdersOption = shiftEndTimeOrdersOption;
+        this.removeOrderOption = removeOrderOption;
     }
 
     @Override
@@ -48,8 +52,13 @@ public class OrderService implements IOrderService {
 
     @Override
     public boolean removeOrder(int id) {
-        Order order = findOrderById(id);
-        return orderDao.removeOrder(order);
+        if (removeOrderOption) {
+            Order order = findOrderById(id);
+            return orderDao.removeOrder(order);
+        } else {
+            ConsoleHelper.writeMessage("Возможность удаления заказов отключена");
+            return false;
+        }
     }
 
     @Override
@@ -139,10 +148,14 @@ public class OrderService implements IOrderService {
 
     @Override
     public void shiftEndTimeOrders(int hours, int minutes) {
-        List<Order> allOrders = orderDao.getAllOrders();
-        allOrders.stream().forEach(order -> {
-            orderDao.updateOrderTime(order, order.getStartDate(), order.getEndDate().plusHours(hours).plusMinutes(minutes));
-        });
+        if (shiftEndTimeOrdersOption) {
+            List<Order> allOrders = orderDao.getAllOrders();
+            allOrders.stream().forEach(order -> {
+                orderDao.updateOrderTime(order, order.getStartDate(), order.getEndDate().plusHours(hours).plusMinutes(minutes));
+            });
+        } else {
+            ConsoleHelper.writeMessage("Возможность смещать время выполнения заказов отключена");
+        }
     }
 
     @Override
@@ -222,6 +235,16 @@ public class OrderService implements IOrderService {
         order.getMasters().stream()
                 .forEach(master -> orderAsList.add(String.valueOf(master.getId())));
         return orderAsList;
+    }
+
+    @Override
+    public void saveState() {
+        SerializeUtil.saveState(getAllOrders(), "SerialsOrders.out");
+    }
+
+    @Override
+    public void loadState() {
+        orderDao.setAllOrders(SerializeUtil.loadState(Order.class, "SerialsOrders.out"));
     }
 
     private Comparator getOrderComparator(String sortBy) {

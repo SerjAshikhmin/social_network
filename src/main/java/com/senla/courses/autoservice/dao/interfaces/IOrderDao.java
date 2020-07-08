@@ -14,6 +14,7 @@ public interface IOrderDao {
     boolean removeOrder(Order order);
     Order getOrderById(int id);
     List<Order> getAllOrders();
+    void setAllOrders(List<Order> allOrders);
     Order updateOrder(Order order);
     void cancelOrder(Order order);
     void closeOrder(Order order);

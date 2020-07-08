@@ -37,4 +37,12 @@ public class MasterController {
     public boolean exportMaster(int id, String fileName) {
         return masterService.exportMaster(id, fileName);
     }
+
+    public void saveState() {
+        masterService.saveState();
+    }
+
+    public void loadState() {
+        masterService.loadState();
+    }
 }

@@ -41,6 +41,11 @@ public class MasterDao implements IMasterDao {
     }
 
     @Override
+    public void setAllMasters(List<Master> allMasters) {
+        this.masters = allMasters;
+    }
+
+    @Override
     public Master updateMaster(Master master) {
         Master daoMaster = getMasterById(master.getId());
         return updateMasterFields(master, daoMaster);
