@@ -1,5 +1,7 @@
 package com.senla.courses.autoservice.controller;
 
+import com.senla.courses.autoservice.ioc.annotations.InjectByType;
+import com.senla.courses.autoservice.ioc.annotations.Singleton;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
@@ -8,13 +10,11 @@ import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Singleton
 public class OrderController {
 
+    @InjectByType
     private IOrderService orderService;
-
-    public OrderController(IOrderService orderService) {
-        this.orderService = orderService;
-    }
 
     public boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
                             String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {

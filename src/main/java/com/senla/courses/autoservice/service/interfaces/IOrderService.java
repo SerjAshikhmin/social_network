@@ -1,5 +1,6 @@
 package com.senla.courses.autoservice.service.interfaces;
 
+import com.senla.courses.autoservice.ioc.annotations.Singleton;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
@@ -7,6 +8,7 @@ import com.senla.courses.autoservice.model.enums.OrderStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Singleton
 public interface IOrderService {
 
     boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,

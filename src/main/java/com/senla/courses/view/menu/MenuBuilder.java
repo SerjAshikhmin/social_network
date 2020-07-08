@@ -3,27 +3,25 @@ package com.senla.courses.view.menu;
 import com.senla.courses.autoservice.controller.GarageController;
 import com.senla.courses.autoservice.controller.MasterController;
 import com.senla.courses.autoservice.controller.OrderController;
+import com.senla.courses.autoservice.ioc.annotations.InjectByType;
+import com.senla.courses.autoservice.ioc.annotations.Singleton;
 import com.senla.courses.view.action.garageaction.*;
 import com.senla.courses.view.action.masteraction.*;
 import com.senla.courses.view.action.orderaction.*;
 import com.senla.courses.view.action.savestateaction.SaveStateAction;
 
 import java.util.ArrayList;
-import java.util.Properties;
 
+@Singleton
 public class MenuBuilder {
 
     private Menu rootMenu;
+    @InjectByType
     private MasterController masterController;
+    @InjectByType
     private OrderController orderController;
+    @InjectByType
     private GarageController garageController;
-    private Properties config;
-
-    public MenuBuilder(MasterController masterController, OrderController orderController, GarageController garageController) {
-        this.masterController = masterController;
-        this.orderController = orderController;
-        this.garageController = garageController;
-    }
 
     public Menu getRootMenu() {
         return rootMenu;

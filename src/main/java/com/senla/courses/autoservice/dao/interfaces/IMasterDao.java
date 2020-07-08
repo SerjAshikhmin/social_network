@@ -1,11 +1,13 @@
 package com.senla.courses.autoservice.dao.interfaces;
 
 import com.senla.courses.autoservice.exceptions.MasterNotFoundException;
+import com.senla.courses.autoservice.ioc.annotations.Singleton;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 
 import java.util.List;
 
+@Singleton
 public interface IMasterDao {
 
     boolean addMaster(Master master);

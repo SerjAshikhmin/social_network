@@ -17,6 +17,8 @@ import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.utils.CsvHelper;
 import com.senla.courses.autoservice.utils.SerializeUtil;
+import com.senla.courses.autoservice.ioc.annotations.InjectByType;
+import com.senla.courses.autoservice.ioc.annotations.InjectProperty;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -26,19 +28,16 @@ import java.util.List;
 
 public class OrderService implements IOrderService {
 
+    @InjectByType
     private IOrderDao orderDao;
+    @InjectByType
     private IMasterService masterService;
+    @InjectByType
     private IGarageService garageService;
-    private boolean shiftEndTimeOrdersOption = true;
-    private boolean removeOrderOption = true;
-
-    public OrderService (IOrderDao orderDAO, IMasterService masterService, IGarageService garageService, boolean shiftEndTimeOrdersOption, boolean removeOrderOption) {
-        this.orderDao = orderDAO;
-        this.masterService = masterService;
-        this.garageService = garageService;
-        this.shiftEndTimeOrdersOption = shiftEndTimeOrdersOption;
-        this.removeOrderOption = removeOrderOption;
-    }
+    @InjectProperty
+    private boolean shiftEndTimeOrdersOption;
+    @InjectProperty
+    private boolean removeOrderOption;
 
     @Override
     public boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,

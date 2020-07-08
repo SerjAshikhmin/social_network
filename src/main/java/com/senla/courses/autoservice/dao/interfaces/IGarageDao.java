@@ -1,10 +1,12 @@
 package com.senla.courses.autoservice.dao.interfaces;
 
+import com.senla.courses.autoservice.ioc.annotations.Singleton;
 import com.senla.courses.autoservice.model.Garage;
 import com.senla.courses.autoservice.model.GaragePlace;
 
 import java.util.List;
 
+@Singleton
 public interface IGarageDao {
 
     boolean addGarage(Garage garage);
