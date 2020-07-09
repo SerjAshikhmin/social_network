@@ -12,6 +12,7 @@ import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.utils.CsvHelper;
 import com.senla.courses.autoservice.utils.SerializeUtil;
+import com.senla.courses.autoservice.ioc.annotations.InjectByType;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -20,13 +21,10 @@ import java.util.List;
 
 public class MasterService implements IMasterService {
 
+    @InjectByType
     private IMasterDao masterDao;
+    @InjectByType
     private IOrderDao orderDao;
-
-    public MasterService (IMasterDao masterDao, IOrderDao orderDao) {
-        this.masterDao = masterDao;
-        this.orderDao = orderDao;
-    }
 
     @Override
     public boolean addMaster(int id, String name, int category) {

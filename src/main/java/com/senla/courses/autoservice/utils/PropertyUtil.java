@@ -31,4 +31,8 @@ public class PropertyUtil {
     public static String getProperty(String propertyName) {
         return properties.get(propertyName);
     }
+
+    public static Map<String, String> getProperties() {
+        return properties;
+    }
 }

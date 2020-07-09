@@ -1,17 +1,15 @@
 package com.senla.courses.view.menu;
 
-import com.senla.courses.view.Main;
+import com.senla.courses.autoservice.ioc.annotations.InjectByType;
+import com.senla.courses.autoservice.ioc.annotations.Singleton;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 
-
+@Singleton
 public class MenuController {
 
+    @InjectByType
     private MenuBuilder menuBuilder;
     private Navigator navigator;
-
-    public MenuController() {
-        this.menuBuilder = new MenuBuilder(Main.getMasterController(), Main.getOrderController(), Main.getGarageController());
-    }
 
     public void run() {
         menuBuilder.buildMenu();

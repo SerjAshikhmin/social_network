@@ -3,18 +3,15 @@ package com.senla.courses.view;
 import com.senla.courses.autoservice.controller.GarageController;
 import com.senla.courses.autoservice.controller.MasterController;
 import com.senla.courses.autoservice.controller.OrderController;
-import com.senla.courses.autoservice.dao.GarageDao;
-import com.senla.courses.autoservice.dao.MasterDao;
-import com.senla.courses.autoservice.dao.OrderDao;
 import com.senla.courses.autoservice.dao.interfaces.IGarageDao;
 import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.ioc.Application;
+import com.senla.courses.autoservice.ioc.annotations.InjectByType;
+import com.senla.courses.autoservice.ioc.annotations.Singleton;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
-import com.senla.courses.autoservice.service.GarageService;
-import com.senla.courses.autoservice.service.MasterService;
-import com.senla.courses.autoservice.service.OrderService;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.utils.PropertyUtil;
 import com.senla.courses.view.menu.MenuController;
@@ -22,33 +19,35 @@ import com.senla.courses.view.menu.MenuController;
 import java.time.LocalDateTime;
 import java.time.Month;
 
+@Singleton
 public class Main {
-
-    private static IOrderService orderService;
-    private static IMasterService masterService;
-    private static IGarageService garageService;
+    @InjectByType
     private static OrderController orderController;
+    @InjectByType
     private static MasterController masterController;
+    @InjectByType
     private static GarageController garageController;
+    @InjectByType
+    private static IOrderService orderService;
+    @InjectByType
+    private static IMasterService masterService;
+    @InjectByType
+    private static IGarageService garageService;
+    @InjectByType
+    private static IOrderDao orderDao;
+    @InjectByType
+    private static IMasterDao masterDao;
+    @InjectByType
+    private static IGarageDao garageDao;
+    @InjectByType
+    private static MenuController menuController;
+
 
     public static void main(String[] args) {
         createServices();
         loadObjects();
         //fillInTestData();
-        MenuController menuController = new MenuController();
         menuController.run();
-    }
-
-    public static OrderController getOrderController() {
-        return orderController;
-    }
-
-    public static MasterController getMasterController() {
-        return masterController;
-    }
-
-    public static GarageController getGarageController() {
-        return garageController;
     }
 
     private static void loadObjects() {
@@ -58,20 +57,8 @@ public class Main {
     }
 
     private static void createServices() {
-        IMasterDao masterDao = new MasterDao();
-        IGarageDao garageDao = new GarageDao();
-        IOrderDao orderDao = new OrderDao();
-
         PropertyUtil.loadConfig();
-
-        masterService = new MasterService(masterDao, orderDao);
-        garageService = new GarageService(garageDao, masterService, Boolean.parseBoolean(PropertyUtil.getProperty("addGaragePlaceOption")),
-                                                                    Boolean.parseBoolean(PropertyUtil.getProperty("removeGaragePlaceOption")));
-        orderService = new OrderService(orderDao, masterService, garageService, Boolean.parseBoolean(PropertyUtil.getProperty("shiftEndTimeOrdersOption")),
-                                                                                Boolean.parseBoolean(PropertyUtil.getProperty("removeOrderOption")));
-        masterController = new MasterController(masterService);
-        garageController = new GarageController(garageService);
-        orderController = new OrderController(orderService);
+        Application.run("com.senla.courses");
     }
 
     private static void fillInTestData() {

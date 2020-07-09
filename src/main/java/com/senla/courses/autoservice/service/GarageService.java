@@ -9,6 +9,8 @@ import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.ConsoleHelper;
 import com.senla.courses.autoservice.utils.CsvHelper;
 import com.senla.courses.autoservice.utils.SerializeUtil;
+import com.senla.courses.autoservice.ioc.annotations.InjectByType;
+import com.senla.courses.autoservice.ioc.annotations.InjectProperty;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,17 +18,14 @@ import java.util.List;
 
 public class GarageService implements IGarageService {
 
+    @InjectByType
     private IGarageDao garageDao;
+    @InjectByType
     private IMasterService masterService;
-    private boolean addGaragePlaceOption = true;
-    private boolean removeGaragePlaceOption = true;
-
-    public GarageService(IGarageDao garageDAO, IMasterService masterService, boolean addGaragePlaceOption, boolean removeGaragePlaceOption) {
-        this.garageDao = garageDAO;
-        this.masterService = masterService;
-        this.addGaragePlaceOption = addGaragePlaceOption;
-        this.removeGaragePlaceOption = removeGaragePlaceOption;
-    }
+    @InjectProperty
+    private boolean addGaragePlaceOption;
+    @InjectProperty
+    private boolean removeGaragePlaceOption;
 
     @Override
     public boolean addGarage(int id, String address) {

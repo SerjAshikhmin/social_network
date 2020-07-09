@@ -1,11 +1,12 @@
 package com.senla.courses.autoservice.service.interfaces;
 
+import com.senla.courses.autoservice.ioc.annotations.Singleton;
 import com.senla.courses.autoservice.model.Garage;
 import com.senla.courses.autoservice.model.GaragePlace;
-import com.senla.courses.autoservice.model.Master;
 
 import java.util.List;
 
+@Singleton
 public interface IGarageService {
 
     boolean addGarage(int id, String address);

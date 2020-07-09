@@ -1,18 +1,18 @@
 package com.senla.courses.autoservice.controller;
 
+import com.senla.courses.autoservice.ioc.annotations.InjectByType;
+import com.senla.courses.autoservice.ioc.annotations.Singleton;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 
 import java.util.List;
 
+@Singleton
 public class MasterController {
 
+    @InjectByType
     private IMasterService masterService;
-
-    public MasterController(IMasterService masterService) {
-        this.masterService = masterService;
-    }
 
     public boolean addMaster(int id, String name, int category) {
         return masterService.addMaster(id, name, category);

@@ -1,17 +1,17 @@
 package com.senla.courses.autoservice.controller;
 
+import com.senla.courses.autoservice.ioc.annotations.InjectByType;
+import com.senla.courses.autoservice.ioc.annotations.Singleton;
 import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 
 import java.util.List;
 
+@Singleton
 public class GarageController {
 
+    @InjectByType
     private IGarageService garageService;
-
-    public GarageController(IGarageService garageService) {
-        this.garageService = garageService;
-    }
 
     public boolean addGarage(int id, String address) {
         return garageService.addGarage(id, address);
