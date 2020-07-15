@@ -1,5 +1,13 @@
-/.idea
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+.idea
 /.class
 *.iml
-/out
+out
 *.MF
+/autoservice.iws
+/autoservice.ipr
