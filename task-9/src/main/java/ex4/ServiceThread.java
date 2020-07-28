@@ -5,17 +5,17 @@ import java.util.Date;
 
 public class ServiceThread implements Runnable {
 
-    private final long timeInterval;
+    private final long timeInSecInterval;
 
-    public ServiceThread(long timeInterval) {
-        this.timeInterval = timeInterval;
+    public ServiceThread(long timeInSecInterval) {
+        this.timeInSecInterval = timeInSecInterval;
     }
 
     @Override
     public void run() {
-        while (true) {
+        while (!Thread.interrupted()) {
             try {
-                Thread.sleep(timeInterval * 1000);
+                Thread.sleep(timeInSecInterval * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

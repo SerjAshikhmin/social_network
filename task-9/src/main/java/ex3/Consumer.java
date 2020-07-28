@@ -12,11 +12,10 @@ public class Consumer implements Runnable {
 
     public void run() {
         try {
-            while (true) {
-                Thread.sleep(400);
+            while (!Thread.interrupted()) {
+                Thread.sleep((int) (Math.random() * 600));
                 String productName = (String) queue.take();
-                System.out.println(String.format("Consumer take %s", productName));
-                System.out.println(String.format("There are %d items in stock", queue.size()));
+                System.out.println(String.format("Consumer take %s. There are %d items in stock", productName, queue.size()));
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

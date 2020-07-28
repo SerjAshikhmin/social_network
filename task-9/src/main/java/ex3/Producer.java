@@ -13,14 +13,13 @@ public class Producer implements Runnable {
     public void run() {
         try {
             int i = 0;
-            while (true) {
+            while (!Thread.interrupted()) {
+                String productName = String.valueOf(String.format("Product № %d", ++i));
                 synchronized (queue) {
-                    String productName = String.valueOf(String.format("Product № %d", ++i));
                     queue.put(productName);
-                    System.out.println(String.format("Producer add %s", productName));
-                    System.out.println(String.format("There are %d items in stock", queue.size()));
+                    System.out.println(String.format("Producer add %s. There are %d items in stock", productName, queue.size()));
                 }
-                Thread.sleep(300);
+                Thread.sleep((int) (Math.random() * 600));
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

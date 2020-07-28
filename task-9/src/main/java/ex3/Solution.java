@@ -6,7 +6,7 @@ import java.util.concurrent.BlockingQueue;
 public class Solution {
 
     public static void main(String[] args) {
-        BlockingQueue queue = new ArrayBlockingQueue(10);
+        BlockingQueue queue = new ArrayBlockingQueue(5);
 
         Producer producer = new Producer(queue);
         Consumer consumer = new Consumer(queue);
