@@ -25,7 +25,7 @@ public class AddGaragePlaceAction extends AbstractGarageAction {
         ConsoleHelper.writeMessage("Введите площадь:");
         area = Integer.parseInt(ConsoleHelper.readString());
 
-        if (garageController.addGaragePlace(garageId, garagePlaceId, type, area)) {
+        if (garageController.addGaragePlace(garageId, garagePlaceId, type, area) == 1) {
             ConsoleHelper.writeMessage(String.format("Место в гараже №%d успешно добавлено", garagePlaceId));
         } else {
             ConsoleHelper.writeMessage("При добавлении места в гараже произошла ошибка");

@@ -37,7 +37,7 @@ public class AddOrderAction extends AbstractOrderAction {
         masterName = ConsoleHelper.readString();
 
         if (orderController.addOrder(id, submissionDate, null, null, kindOfWork, cost, garageId,
-                garagePlaceId, masterName, OrderStatus.ACCEPTED)) {
+                garagePlaceId, masterName, OrderStatus.ACCEPTED) == 1) {
             ConsoleHelper.writeMessage(String.format("Заказ №%d успешно добавлен", id));
         } else {
             ConsoleHelper.writeMessage("При добавлении заказа произошла ошибка");

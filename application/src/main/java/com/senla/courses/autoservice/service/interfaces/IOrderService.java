@@ -11,9 +11,9 @@ import java.util.List;
 @Singleton
 public interface IOrderService {
 
-    boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
+    int addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
                      String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus);
-    boolean removeOrder(int id);
+    int removeOrder(int id);
     void cancelOrder(int id);
     void closeOrder(int id);
     List<Order> getAllOrders();
@@ -25,7 +25,7 @@ public interface IOrderService {
     void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime);
     void shiftEndTimeOrders(int hours, int minutes);
     Order findOrderById(int id);
-    boolean importOrder(String fileName);
+    int importOrder(String fileName);
     boolean exportOrder(int id, String fileName);
     List<String> toList(Order order);
     void saveState();

@@ -1,105 +1,70 @@
 package com.senla.courses.autoservice.dao;
 
+import com.lib.dicontainer.annotations.InjectByType;
 import com.senla.courses.autoservice.dao.interfaces.IGarageDao;
+import com.senla.courses.autoservice.dao.jdbcdao.GarageJdbcDao;
+import com.senla.courses.autoservice.dao.jdbcdao.GaragePlaceJdbcDao;
 import com.senla.courses.autoservice.model.Garage;
 import com.senla.courses.autoservice.model.GaragePlace;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class GarageDao implements IGarageDao {
 
-    private List<Garage> garages;
+    @InjectByType
+    GarageJdbcDao garageJdbcDao;
+    @InjectByType
+    GaragePlaceJdbcDao garagePlaceJdbcDao;
 
-    public GarageDao() {
-        this.garages = new ArrayList<>();
+    @Override
+    public int addGarage(Garage garage) throws SQLException {
+        return garageJdbcDao.insert(garage);
     }
 
     @Override
-    public boolean addGarage(Garage garage) {
-        return this.garages.add(garage);
+    public int removeGarage(Garage garage) throws SQLException {
+        return garageJdbcDao.delete(garage);
     }
 
     @Override
-    public boolean removeGarage(Garage garage) {
-        return this.garages.remove(garage);
+    public Garage getGarageById(int id) throws SQLException {
+        return garageJdbcDao.findById(id);
     }
 
     @Override
-    public Garage getGarageById(int id) {
-        try {
-            return garages.stream()
-                    .filter(garage -> garage.getId() == id)
-                    .findFirst().get();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
+    public GaragePlace getGaragePlaceById(int garageId, int garagePlaceId) throws SQLException {
+        return garagePlaceJdbcDao.findGaragePlaceById(garageId, garagePlaceId);
     }
 
     @Override
-    public GaragePlace getGaragePlaceById(int garageId, int garagePlaceId) {
-        Garage garage = getGarageById(garageId);
-        if (garage == null) {
-            return null;
-        }
-        try {
-            return garage.getGaragePlaces().stream()
-                    .filter(garagePlace -> garagePlace.getId() == garagePlaceId)
-                    .findFirst().get();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public List<Garage> getAllGarages() {
-        return garages;
+    public List<Garage> getAllGarages() throws SQLException {
+        return garageJdbcDao.findAll();
     }
 
     @Override
     public void setAllGarages(List<Garage> allGarages) {
-        this.garages = allGarages;
+        //this.garages = allGarages;
     }
 
     @Override
-    public Garage updateGarage(Garage garage) {
-        Garage daoGarage = getGarageById(garage.getId());
-        return updateGarageFields(garage, daoGarage);
+    public int updateGarage(Garage garage) throws SQLException {
+        return garageJdbcDao.update(garage);
     }
 
     @Override
-    public GaragePlace updateGaragePlace(GaragePlace garagePlace) {
-        GaragePlace daoGaragePlace = getGaragePlaceById(garagePlace.getGarageId(), garagePlace.getId());
-        return updateGaragePlaceFields(garagePlace, daoGaragePlace);
+    public int updateGaragePlace(GaragePlace garagePlace) throws SQLException {
+        return garagePlaceJdbcDao.update(garagePlace);
     }
 
     @Override
-    public boolean addGaragePlace(GaragePlace garagePlace) {
-        Garage daoGarage = getGarageById(garagePlace.getGarageId());
-        return daoGarage.getGaragePlaces().add(garagePlace);
+    public int addGaragePlace(GaragePlace garagePlace) throws SQLException {
+        return garagePlaceJdbcDao.insert(garagePlace);
     }
 
     @Override
-    public boolean removeGaragePlace(Garage garage, GaragePlace garagePlace) {
-        if (garage == null || garagePlace == null) {
-            return false;
-        }
-        Garage daoGarage = getGarageById(garage.getId());
-        return daoGarage.getGaragePlaces().remove(garagePlace);
-    }
-
-    private Garage updateGarageFields(Garage garage, Garage daoGarage) {
-        daoGarage.setAddress(garage.getAddress());
-        daoGarage.setGaragePlaces(garage.getGaragePlaces());
-        return daoGarage;
-    }
-
-    private GaragePlace updateGaragePlaceFields(GaragePlace garagePlace, GaragePlace daoGaragePlace) {
-        daoGaragePlace.setType(garagePlace.getType());
-        daoGaragePlace.setBusy(garagePlace.isBusy());
-        daoGaragePlace.setArea(garagePlace.getArea());
-        return daoGaragePlace;
+    public int removeGaragePlace(GaragePlace garagePlace) throws SQLException {
+        return garagePlaceJdbcDao.delete(garagePlace);
     }
 
 }

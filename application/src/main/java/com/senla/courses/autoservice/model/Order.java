@@ -32,7 +32,7 @@ public class Order implements Serializable {
         this.status = status;
         this.garagePlace.setBusy(true);
         for (Master master : this.masters) {
-            master.setCurrentOrder(this);
+            master.setOrderId(this.getId());
             master.setBusy(true);
         }
     }

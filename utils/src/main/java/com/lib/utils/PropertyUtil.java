@@ -10,14 +10,13 @@ import java.util.Map;
 import java.util.Properties;
 
 public class PropertyUtil {
-    private static Map<String, String> properties;
+    private static Map<String, String> properties = new HashMap<>();
 
     public static void loadConfig(String propertiesPath) {
         try {
             File configFile = new File(propertiesPath);
             Properties config = new Properties();
             config.load(new FileReader(configFile));
-            properties = new HashMap<>();
             for (String propertyName : config.stringPropertyNames()) {
                 properties.put(propertyName, config.getProperty(propertyName));
             }

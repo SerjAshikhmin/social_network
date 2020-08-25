@@ -12,10 +12,10 @@ public class RemoveOrderAction extends AbstractOrderAction {
     @Override
     public void execute() {
         int orderId;
-        ConsoleHelper.writeMessage("Введите номер номер:");
+        ConsoleHelper.writeMessage("Введите номер заказа:");
         orderId = Integer.parseInt(ConsoleHelper.readString());
 
-        if (orderController.removeOrder(orderId)) {
+        if (orderController.removeOrder(orderId) == 1) {
             ConsoleHelper.writeMessage(String.format("Заказ №%d успешно удален", orderId));
         } else {
             ConsoleHelper.writeMessage("При удалении заказа произошла ошибка");

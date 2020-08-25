@@ -9,18 +9,18 @@ import java.util.List;
 @Singleton
 public interface IGarageService {
 
-    boolean addGarage(int id, String address);
-    boolean removeGarage(int garageId);
+    int addGarage(int id, String address);
+    int removeGarage(int garageId);
     List<Garage> getAllGarages();
-    boolean addGaragePlace(int garageId, int garagePlaceId, String type, int area);
-    boolean removeGaragePlace(int garageId, int garagePlaceId);
+    int addGaragePlace(int garageId, int garagePlaceId, String type, int area);
+    int removeGaragePlace(int garageId, int garagePlaceId);
     List<GaragePlace> getAllFreePlaces();
     int getFreePlacesCountInFuture();
     GaragePlace findGaragePlaceById(int garageId, int garagePlaceId);
     Garage findGarageById(int id);
-    boolean importGarage(String fileName);
+    int importGarage(String fileName);
     boolean exportGarage(int id, String fileName);
-    boolean importGaragePlace(String fileName);
+    int importGaragePlace(String fileName);
     boolean exportGaragePlace(int garageId, int garagePlaceId, String fileName);
     List<String> garageToList(Garage garage);
     List<String> garagePlaceToList(GaragePlace garagePlace);

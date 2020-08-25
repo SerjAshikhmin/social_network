@@ -22,7 +22,7 @@ public class AddMasterAction extends AbstractMasterAction {
         ConsoleHelper.writeMessage("Введите разряд мастера:");
         category = Integer.parseInt(ConsoleHelper.readString());
 
-        if (masterController.addMaster(id, name, category)) {
+        if (masterController.addMaster(id, name, category) != 0) {
             ConsoleHelper.writeMessage(String.format("Мастер %s успешно добавлен", name));
         } else {
             ConsoleHelper.writeMessage("При добавлении мастера произошла ошибка");
