@@ -9,15 +9,15 @@ import java.util.List;
 @Singleton
 public interface IMasterService {
 
-    boolean addMaster(int id, String name, int category);
-    boolean removeMaster(String name);
+    int addMaster(int id, String name, int category);
+    int removeMaster(String name);
     List<Master> getAllMasters();
     List<Master> getAllMastersSorted(String sortBy);
     List<Master> getAllFreeMasters();
     Order getCurrentOrder(String name);
     Master findMasterByName(String name);
     Master findMasterById(int id);
-    boolean importMaster(String fileName);
+    int importMaster(String fileName);
     boolean exportMaster(int id, String fileName);
     List<String> toList(Master master);
     void saveState();

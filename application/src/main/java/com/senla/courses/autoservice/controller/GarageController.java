@@ -13,19 +13,19 @@ public class GarageController {
     @InjectByType
     private IGarageService garageService;
 
-    public boolean addGarage(int id, String address) {
+    public int addGarage(int id, String address) {
         return garageService.addGarage(id, address);
     }
 
-    public boolean removeGarage(int id) {
+    public int removeGarage(int id) {
         return garageService.removeGarage(id);
     }
 
-    public boolean addGaragePlace(int garageId, int garagePlaceId, String type, int area) {
+    public int addGaragePlace(int garageId, int garagePlaceId, String type, int area) {
         return garageService.addGaragePlace(garageId, garagePlaceId, type, area);
     }
 
-    public boolean removeGaragePlace(int garageId, int garagePlaceId) {
+    public int removeGaragePlace(int garageId, int garagePlaceId) {
         return garageService.removeGaragePlace(garageId, garagePlaceId);
     }
 
@@ -37,7 +37,7 @@ public class GarageController {
         return garageService.getFreePlacesCountInFuture();
     }
 
-    public boolean importGarage(String fileName) {
+    public int importGarage(String fileName) {
         return garageService.importGarage(fileName);
     }
 
@@ -45,7 +45,7 @@ public class GarageController {
         return garageService.exportGarage(id, fileName);
     }
 
-    public boolean importGaragePlace(String fileName) {
+    public int importGaragePlace(String fileName) {
         return garageService.importGaragePlace(fileName);
     }
 

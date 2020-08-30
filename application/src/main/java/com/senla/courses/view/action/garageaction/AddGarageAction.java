@@ -19,7 +19,7 @@ public class AddGarageAction extends AbstractGarageAction {
         ConsoleHelper.writeMessage("Введите адрес гаража:");
         address = ConsoleHelper.readString();
 
-        if (garageController.addGarage(id, address)) {
+        if (garageController.addGarage(id, address) == 1) {
             ConsoleHelper.writeMessage(String.format("Гараж №%d успешно добавлен", id));
         } else {
             ConsoleHelper.writeMessage("При добавлении гаража произошла ошибка");

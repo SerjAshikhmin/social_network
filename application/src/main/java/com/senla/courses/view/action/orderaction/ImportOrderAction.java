@@ -17,7 +17,7 @@ public class ImportOrderAction extends AbstractOrderAction {
         ConsoleHelper.writeMessage("Введите путь к файлу (*.csv):");
         fileName = ConsoleHelper.readString();
 
-        if (orderController.importOrder(fileName)) {
+        if (orderController.importOrder(fileName) == 1) {
             ConsoleHelper.writeMessage(String.format("Заказ успешно импортирован из файла %s", fileName));
         } else {
             ConsoleHelper.writeMessage("При импорте заказа произошла ошибка");

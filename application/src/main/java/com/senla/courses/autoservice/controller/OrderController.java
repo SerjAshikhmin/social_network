@@ -16,12 +16,12 @@ public class OrderController {
     @InjectByType
     private IOrderService orderService;
 
-    public boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
+    public int addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
                             String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {
         return orderService.addOrder(id, submissionDate, startDate, endDate, kindOfWork, cost, garageId, garagePlaceId, masterName, orderStatus);
     }
 
-    public boolean removeOrder(int id) {
+    public int removeOrder(int id) {
         return orderService.removeOrder(id);
     }
 
@@ -57,7 +57,7 @@ public class OrderController {
         return orderService.getNearestFreeDate();
     }
 
-    public boolean importOrder(String fileName) {
+    public int importOrder(String fileName) {
         return orderService.importOrder(fileName);
     }
 

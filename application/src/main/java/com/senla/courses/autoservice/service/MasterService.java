@@ -15,6 +15,7 @@ import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -27,26 +28,43 @@ public class MasterService implements IMasterService {
     private IOrderDao orderDao;
 
     @Override
-    public boolean addMaster(int id, String name, int category) {
+    public int addMaster(int id, String name, int category) {
         Master master = new Master (id, name, category);
-        return masterDao.addMaster(master);
+        try {
+            return masterDao.addMaster(master);
+        } catch (SQLException e) {
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            return 0;
+        }
     }
 
     @Override
-    public boolean removeMaster(String name) {
-        return masterDao.removeMaster(findMasterByName(name));
+    public int removeMaster(String name) {
+        try {
+            return masterDao.removeMaster(findMasterByName(name));
+        } catch (SQLException e) {
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            return 0;
+        }
     }
 
     @Override
     public List<Master> getAllMasters() {
-        return masterDao.getAllMasters();
+        try {
+            return masterDao.getAllMasters();
+        } catch (SQLException e) {
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+        } return null;
     }
 
     @Override
     public List<Master> getAllMastersSorted(String sortBy) {
         List<Master> allMastersSorted = new ArrayList<>();
-        allMastersSorted.addAll(masterDao.getAllMasters());
-
+        try {
+            allMastersSorted.addAll(masterDao.getAllMasters());
+        } catch (SQLException e) {
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+        }
         Comparator masterComparator = getMasterComparator(sortBy);
         if (masterComparator != null) {
             allMastersSorted.sort(masterComparator);
@@ -56,7 +74,12 @@ public class MasterService implements IMasterService {
 
     @Override
     public List<Master> getAllFreeMasters() {
-        return masterDao.getAllFreeMasters();
+        try {
+            return masterDao.getAllFreeMasters();
+        } catch (SQLException e) {
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            return null;
+        }
     }
 
     @Override
@@ -65,8 +88,10 @@ public class MasterService implements IMasterService {
             return masterDao.getCurrentOrder(findMasterByName(name));
         } catch (MasterNotFoundException e) {
             ConsoleHelper.writeMessage("Мастер не найден");
-            return null;
+        } catch (SQLException e) {
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
         }
+        return null;
     }
 
     @Override
@@ -81,51 +106,55 @@ public class MasterService implements IMasterService {
 
     @Override
     public Master findMasterById(int id) {
-        return masterDao.getMasterById(id);
+        try {
+            return masterDao.getMasterById(id);
+        } catch (SQLException e) {
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            return null;
+        }
     }
 
     @Override
-    public boolean importMaster(String fileName) {
+    public int importMaster(String fileName) {
         try {
             List<String> masterDataList = CsvUtil.importCsvFile(fileName);
             if (masterDataList == null) {
                 throw new FileNotFoundException();
             }
             Master importMaster = new Master(Integer.parseInt(masterDataList.get(0)), masterDataList.get(1), Integer.parseInt(masterDataList.get(2)),
-                    Boolean.parseBoolean(masterDataList.get(3)), orderDao.getOrderById(Integer.parseInt(masterDataList.get(4))));
+                    Boolean.parseBoolean(masterDataList.get(3)), Integer.parseInt(masterDataList.get(4)));
 
             if (masterDao.getMasterById(importMaster.getId()) != null) {
                 masterDao.updateMaster(importMaster);
-                return true;
+                return 1;
             } else {
                 return masterDao.addMaster(importMaster);
             }
         } catch (WrongFileFormatException e) {
             ConsoleHelper.writeMessage("Неверный формат файла");
-            return false;
         } catch (FileNotFoundException e) {
             ConsoleHelper.writeMessage("Файл не найден");
-            return false;
         } catch (Exception e) {
             ConsoleHelper.writeMessage("Файл содержит неверные данные");
-            return false;
         }
+        return 0;
     }
 
     @Override
     public boolean exportMaster(int id, String fileName) {
-        Master masterToExport = masterDao.getMasterById(id);
         try {
+            Master masterToExport = masterDao.getMasterById(id);
             if (masterToExport != null) {
                 return CsvUtil.exportCsvFile(toList(masterToExport), fileName);
             } else {
                 ConsoleHelper.writeMessage("Неверный № мастера");
-                return false;
             }
         } catch (WrongFileFormatException e) {
             ConsoleHelper.writeMessage("Неверный формат файла");
-            return false;
+        } catch (SQLException e) {
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
         }
+        return false;
     }
 
     @Override
@@ -135,7 +164,7 @@ public class MasterService implements IMasterService {
         masterAsList.add(master.getName());
         masterAsList.add(String.valueOf(master.getCategory()));
         masterAsList.add(String.valueOf(master.isBusy()));
-        masterAsList.add(String.valueOf(master.getCurrentOrder().getId()));
+        masterAsList.add(String.valueOf(master.getOrderId()));
         return masterAsList;
     }
 

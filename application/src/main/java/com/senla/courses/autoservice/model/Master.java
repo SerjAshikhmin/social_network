@@ -9,20 +9,22 @@ public class Master implements Serializable {
     private String name;
     private int category;
     private boolean busy;
-    private Order currentOrder;
+    private int orderId;
 
     public Master(int id, String name, int category) {
         this.id = id;
         this.name = name;
         this.category = category;
+        this.busy = false;
+        this.orderId = 0;
     }
 
-    public Master(int id, String name, int category, boolean busy, Order currentOrder) {
+    public Master(int id, String name, int category, boolean busy, int orderId) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.busy = busy;
-        this.currentOrder = currentOrder;
+        this.orderId = orderId;
     }
 
     public void setCategory(int category) {
@@ -49,12 +51,12 @@ public class Master implements Serializable {
         this.busy = busy;
     }
 
-    public Order getCurrentOrder() {
-        return currentOrder;
+    public int getOrderId() {
+        return orderId;
     }
 
-    public void setCurrentOrder(Order currentOrder) {
-        this.currentOrder = currentOrder;
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
     }
 
     public void setName(String name) {

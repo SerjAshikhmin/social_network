@@ -16,7 +16,7 @@ public class ImportMasterAction extends AbstractMasterAction{
         ConsoleHelper.writeMessage("Введите путь к файлу (*.csv):");
         fileName = ConsoleHelper.readString();
 
-        if (masterController.importMaster(fileName)) {
+        if (masterController.importMaster(fileName) != 0) {
             ConsoleHelper.writeMessage(String.format("Мастер успешно импортирован из файла %s", fileName));
         } else {
             ConsoleHelper.writeMessage("При импорте мастера произошла ошибка");

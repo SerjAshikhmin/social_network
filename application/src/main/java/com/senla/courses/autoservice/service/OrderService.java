@@ -6,6 +6,7 @@ import com.lib.utils.ConsoleHelper;
 import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.dao.jdbcdao.DbJdbcConnector;
 import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
 import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
@@ -21,6 +22,8 @@ import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,31 +43,90 @@ public class OrderService implements IOrderService {
     private boolean removeOrderOption;
 
     @Override
-    public boolean addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
+    public int addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
                             String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {
         List<Master> masters = new ArrayList<>();
-        masters.add(masterService.findMasterByName(masterName));
+        Master master = masterService.findMasterByName(masterName);
+        master.setBusy(true);
+        masters.add(master);
         Order order = new Order(id, submissionDate, startDate, endDate, kindOfWork, cost,
                 garageService.findGaragePlaceById(garageId, garagePlaceId), masters, orderStatus);
-        return orderDao.addOrder(order);
+        Connection connection = DbJdbcConnector.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            orderDao.addOrder(order);
+            connection.commit();
+            return 1;
+        } catch (SQLException ex) {
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+            }
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            }
+        }
+        return 0;
     }
 
     @Override
-    public boolean removeOrder(int id) {
+    public int removeOrder(int id) {
         if (removeOrderOption) {
             Order order = findOrderById(id);
-            return orderDao.removeOrder(order);
+            Connection connection = DbJdbcConnector.getConnection();
+            try {
+                connection.setAutoCommit(false);
+                orderDao.removeOrder(order);
+                connection.commit();
+                return 1;
+            } catch (SQLException ex) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e) {
+                    ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                }
+                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            } finally {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException e) {
+                    ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                }
+            }
         } else {
             ConsoleHelper.writeMessage("Возможность удаления заказов отключена");
-            return false;
         }
+        return 0;
     }
 
     @Override
     public void cancelOrder(int id) {
         Order order = findOrderById(id);
         if (order != null) {
-            orderDao.cancelOrder(order);
+            Connection connection = DbJdbcConnector.getConnection();
+            try {
+                connection.setAutoCommit(false);
+                orderDao.cancelOrder(order);
+                connection.commit();
+            } catch (SQLException ex) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e) {
+                    ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                }
+                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            } finally {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException e) {
+                    ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                }
+            }
             ConsoleHelper.writeMessage(String.format("Заказ №%d отменен", id));
         } else {
             ConsoleHelper.writeMessage("При отмене заказа произошла ошибка");
@@ -76,7 +138,25 @@ public class OrderService implements IOrderService {
     public void closeOrder(int id) {
         Order order = findOrderById(id);
         if (order != null) {
-            orderDao.closeOrder(order);
+            Connection connection = DbJdbcConnector.getConnection();
+            try {
+                connection.setAutoCommit(false);
+                orderDao.closeOrder(order);
+                connection.commit();
+            } catch (SQLException ex) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e) {
+                    ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                }
+                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            } finally {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException e) {
+                    ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                }
+            }
             ConsoleHelper.writeMessage(String.format("Заказ №%d закрыт", id));
         } else {
             ConsoleHelper.writeMessage("При закрытии заказа произошла ошибка");
@@ -85,14 +165,33 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<Order> getAllOrders() {
-        return orderDao.getAllOrders();
+        List<Order> orders = null;
+        Connection connection = DbJdbcConnector.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            orders = orderDao.getAllOrders();
+            connection.commit();
+        } catch (SQLException ex) {
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+            }
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            }
+        }
+        return orders;
     }
 
     @Override
     public List<Order> getAllOrdersSorted(String sortBy) {
         List<Order> allOrdersSorted = new ArrayList<>();
-        allOrdersSorted.addAll(orderDao.getAllOrders());
-
+        allOrdersSorted.addAll(getAllOrders());
         Comparator orderComparator = getOrderComparator(sortBy);
         if (orderComparator != null) {
             allOrdersSorted.sort(orderComparator);
@@ -103,12 +202,32 @@ public class OrderService implements IOrderService {
     @Override
     public List<Order> getAllOrdersInProgress(String sortBy) {
         Comparator orderComparator = getOrderComparator(sortBy);
-        return orderDao.getAllOrdersInProgress(orderComparator);
+        List<Order> orders = null;
+        Connection connection = DbJdbcConnector.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            orders = orderDao.getAllOrdersInProgress(orderComparator);
+            connection.commit();
+        } catch (SQLException ex) {
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+            }
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            }
+        }
+        return orders;
     }
 
     @Override
     public LocalDateTime getNearestFreeDate() {
-        List<Order> allOrders = orderDao.getAllOrders();
+        List<Order> allOrders = getAllOrders();
         final LocalDateTime nearestFreeDate = allOrders.get(0).getEndDate();
         return allOrders.stream()
                 .filter(order -> order.getEndDate().compareTo(nearestFreeDate) == -1)
@@ -129,7 +248,7 @@ public class OrderService implements IOrderService {
     @Override
     public List<Order> getOrdersByPeriod (LocalDateTime startPeriod, LocalDateTime endPeriod, String sortBy) {
         List<Order> ordersByPeriod = new ArrayList<>();
-        orderDao.getAllOrders().stream()
+        getAllOrders().stream()
                 .filter(order -> startPeriod.compareTo(order.getEndDate()) == -1 && endPeriod.compareTo(order.getEndDate()) == 1)
                 .forEach(order -> ordersByPeriod.add(order));
 
@@ -142,15 +261,33 @@ public class OrderService implements IOrderService {
 
     @Override
     public void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) {
-        orderDao.updateOrderTime(order, newStartTime, newEndTime);
+        Connection connection = DbJdbcConnector.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            orderDao.updateOrderTime(order, newStartTime, newEndTime);
+            connection.commit();
+        } catch (SQLException ex) {
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+            }
+            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            }
+        }
     }
 
     @Override
     public void shiftEndTimeOrders(int hours, int minutes) {
         if (shiftEndTimeOrdersOption) {
-            List<Order> allOrders = orderDao.getAllOrders();
+            List<Order> allOrders = getAllOrders();
             allOrders.stream().forEach(order -> {
-                orderDao.updateOrderTime(order, order.getStartDate(), order.getEndDate().plusHours(hours).plusMinutes(minutes));
+                updateOrderTime(order, order.getStartDate(), order.getEndDate().plusHours(hours).plusMinutes(minutes));
             });
         } else {
             ConsoleHelper.writeMessage("Возможность смещать время выполнения заказов отключена");
@@ -168,7 +305,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public boolean importOrder(String fileName) {
+    public int importOrder(String fileName) {
         try {
             List<String> orderDataList = CsvUtil.importCsvFile(fileName);
             if (orderDataList == null) {
@@ -187,25 +324,25 @@ public class OrderService implements IOrderService {
 
             if (orderDao.getOrderById(importOrder.getId()) != null) {
                 orderDao.updateOrder(importOrder);
-                return true;
+                return 1;
             } else {
                 return orderDao.addOrder(importOrder);
             }
         } catch (WrongFileFormatException e) {
             ConsoleHelper.writeMessage("Неверный формат файла");
-            return false;
+            return 0;
         } catch (FileNotFoundException e) {
             ConsoleHelper.writeMessage("Файл не найден");
-            return false;
+            return 0;
         } catch (Exception e) {
             ConsoleHelper.writeMessage("Файл содержит неверные данные");
-            return false;
+            return 0;
         }
     }
 
     @Override
     public boolean exportOrder(int id, String fileName) {
-        Order orderToExport = orderDao.getOrderById(id);
+        Order orderToExport = findOrderById(id);
         try {
             if (orderToExport != null) {
                 return CsvUtil.exportCsvFile(toList(orderToExport), fileName);

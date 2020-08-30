@@ -18,7 +18,7 @@ public class RemoveGaragePlaceAction extends AbstractGarageAction {
         ConsoleHelper.writeMessage("Введите номер места в гараже:");
         garagePlaceId = Integer.parseInt(ConsoleHelper.readString());
 
-        if (garageController.removeGaragePlace(garageId, garagePlaceId)) {
+        if (garageController.removeGaragePlace(garageId, garagePlaceId) == 1) {
             ConsoleHelper.writeMessage(String.format("Место №%d в гараже №%d успешно удалено", garagePlaceId, garageId));
         } else {
             ConsoleHelper.writeMessage("При удалении места в гараже произошла ошибка");

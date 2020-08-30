@@ -16,7 +16,7 @@ public class ImportGarageAction extends AbstractGarageAction {
         ConsoleHelper.writeMessage("Введите путь к файлу (*.csv):");
         fileName = ConsoleHelper.readString();
 
-        if (garageController.importGarage(fileName)) {
+        if (garageController.importGarage(fileName) == 1) {
             ConsoleHelper.writeMessage(String.format("Гараж успешно импортирован из файла %s", fileName));
         } else {
             ConsoleHelper.writeMessage("При импорте гаража произошла ошибка");

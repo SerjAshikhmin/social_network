@@ -15,7 +15,7 @@ public class RemoveMasterAction extends AbstractMasterAction {
         ConsoleHelper.writeMessage("Введите имя мастера:");
         name = ConsoleHelper.readString();
 
-        if (masterController.removeMaster(name)) {
+        if (masterController.removeMaster(name) != 0) {
             ConsoleHelper.writeMessage(String.format("Мастер %s успешно удален", name));
         } else {
             ConsoleHelper.writeMessage("При удалении мастера произошла ошибка");

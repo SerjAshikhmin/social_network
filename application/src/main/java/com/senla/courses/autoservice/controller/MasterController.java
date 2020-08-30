@@ -14,11 +14,11 @@ public class MasterController {
     @InjectByType
     private IMasterService masterService;
 
-    public boolean addMaster(int id, String name, int category) {
+    public int addMaster(int id, String name, int category) {
         return masterService.addMaster(id, name, category);
     }
 
-    public boolean removeMaster(String name) {
+    public int removeMaster(String name) {
         return masterService.removeMaster(name);
     }
 
@@ -30,7 +30,7 @@ public class MasterController {
         return masterService.getCurrentOrder(name);
     }
 
-    public boolean importMaster(String fileName) {
+    public int importMaster(String fileName) {
         return masterService.importMaster(fileName);
     }
 
