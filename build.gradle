@@ -24,6 +24,10 @@ checkstyleMain {
     source ='application/src/main/java'
 }
 
+build {
+    tasks.checkstyleMain.run()
+}
+
 
 
 
