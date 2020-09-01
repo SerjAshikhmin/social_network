@@ -62,7 +62,9 @@ public class Main {
     }
 
     private static void createServices() {
-        PropertyUtil.loadConfig("application/src/main/resources/config.properties");
+        /*PropertyUtil.loadConfig("application/src/main/resources/config.properties");
+        Application.run("com");*/
+        PropertyUtil.loadConfig("C:\\Users\\slone_000\\IdeaProjects\\sergey_ashikhmin\\application\\src\\main\\resources\\config.properties");
         Application.run("com");
     }
 

@@ -10,10 +10,5 @@
 rootProject.name = 'sergey_ashikhmin'
 
 include 'application'
-//project(':application').projectDir = new File(settingsDir, '../application')
-
 include 'utils'
-//project(':utils').projectDir = new File(settingsDir, '..utils')
-
 include 'ioc'
-//project(':ioc').projectDir = new File(settingsDir, '../ioc')

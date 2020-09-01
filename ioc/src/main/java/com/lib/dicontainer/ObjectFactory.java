@@ -1,7 +1,11 @@
 package com.lib.dicontainer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ObjectFactory {
+
+    private static final Logger logger = LoggerFactory.getLogger(ObjectFactory.class);
 
     private final ApplicationContext context;
 
@@ -15,7 +19,7 @@ public class ObjectFactory {
             T obj = implClass.getDeclaredConstructor().newInstance();
             return obj;
         } catch (Exception e) {
-            System.out.println("Ошибка создания объекта типа " + implClass);
+            logger.error("Ошибка создания объекта типа " + implClass);
             return null;
         }
     }

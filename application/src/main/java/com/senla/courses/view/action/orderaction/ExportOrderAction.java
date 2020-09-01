@@ -2,8 +2,12 @@ package com.senla.courses.view.action.orderaction;
 
 import com.lib.utils.ConsoleHelper;
 import com.senla.courses.autoservice.controller.OrderController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExportOrderAction extends AbstractOrderAction {
+
+    private static final Logger logger = LoggerFactory.getLogger(ExportOrderAction.class);
 
     public ExportOrderAction(OrderController orderController) {
         super(orderController);
@@ -20,9 +24,9 @@ public class ExportOrderAction extends AbstractOrderAction {
         fileName = ConsoleHelper.readString();
 
         if (orderController.exportOrder(id, fileName)) {
-            ConsoleHelper.writeMessage(String.format("Заказ №%d успешно экспортирован в файл %s", id, fileName));
+            logger.info(String.format("Заказ №%d успешно экспортирован в файл %s", id, fileName));
         } else {
-            ConsoleHelper.writeMessage("При экпорте заказа произошла ошибка");
+            logger.error("При экпорте заказа произошла ошибка");
         }
     }
 }

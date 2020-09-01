@@ -2,8 +2,12 @@ package com.senla.courses.view.action.masteraction;
 
 import com.lib.utils.ConsoleHelper;
 import com.senla.courses.autoservice.controller.MasterController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ImportMasterAction extends AbstractMasterAction{
+public class ImportMasterAction extends AbstractMasterAction {
+
+    private static final Logger logger = LoggerFactory.getLogger(ImportMasterAction.class);
 
     public ImportMasterAction(MasterController masterController) {
         super(masterController);
@@ -17,9 +21,9 @@ public class ImportMasterAction extends AbstractMasterAction{
         fileName = ConsoleHelper.readString();
 
         if (masterController.importMaster(fileName) != 0) {
-            ConsoleHelper.writeMessage(String.format("Мастер успешно импортирован из файла %s", fileName));
+            logger.info(String.format("Мастер успешно импортирован из файла %s", fileName));
         } else {
-            ConsoleHelper.writeMessage("При импорте мастера произошла ошибка");
+            logger.error("При импорте мастера произошла ошибка");
         }
     }
 }

@@ -4,9 +4,17 @@ package com.senla.courses.view.menu;
 import com.lib.dicontainer.annotations.InjectByType;
 import com.lib.dicontainer.annotations.Singleton;
 import com.lib.utils.ConsoleHelper;
+import com.senla.courses.view.action.garageaction.RemoveGarageAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 @Singleton
 public class MenuController {
+
+    private static final Logger logger = LoggerFactory.getLogger(MenuController.class);
 
     @InjectByType
     private MenuBuilder menuBuilder;
@@ -24,7 +32,7 @@ public class MenuController {
             try {
                 navigator.navigate(Integer.parseInt(command));
             } catch (NumberFormatException e) {
-                ConsoleHelper.writeMessage("Ошибка: выбран неверный пункт меню");
+                logger.error("Ошибка: выбран неверный пункт меню");
             }
 
         }

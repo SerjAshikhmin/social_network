@@ -1,11 +1,16 @@
 package com.senla.courses.view.menu;
 
 import com.lib.utils.ConsoleHelper;
+import com.senla.courses.view.action.garageaction.RemoveGarageAction;
 import com.senla.courses.view.action.interfaces.IAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.format.DateTimeParseException;
 
 public class MenuItem {
+
+    private static final Logger logger = LoggerFactory.getLogger(MenuItem.class);
 
     private int number;
     private String title;
@@ -25,9 +30,9 @@ public class MenuItem {
         try {
             action.execute();
         } catch (NumberFormatException e) {
-            ConsoleHelper.writeMessage("Неверный формат ввода");
+            logger.error("Неверный формат ввода");
         } catch (DateTimeParseException e) {
-            ConsoleHelper.writeMessage("Неверный формат даты");
+            logger.error("Неверный формат даты");
         }
     }
 

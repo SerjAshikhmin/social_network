@@ -2,8 +2,12 @@ package com.senla.courses.view.action.garageaction;
 
 import com.lib.utils.ConsoleHelper;
 import com.senla.courses.autoservice.controller.GarageController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImportGaragePlaceAction extends AbstractGarageAction {
+
+    private static final Logger logger = LoggerFactory.getLogger(ImportGaragePlaceAction.class);
 
     public ImportGaragePlaceAction(GarageController garageController) {
         super(garageController);
@@ -17,9 +21,9 @@ public class ImportGaragePlaceAction extends AbstractGarageAction {
         fileName = ConsoleHelper.readString();
 
         if (garageController.importGaragePlace(fileName) == 1) {
-            ConsoleHelper.writeMessage(String.format("Место в гараже успешно импортировано из файла %s", fileName));
+            logger.info(String.format("Место в гараже успешно импортировано из файла %s", fileName));
         } else {
-            ConsoleHelper.writeMessage("При импорте места в гараже произошла ошибка");
+            logger.error("При импорте места в гараже произошла ошибка");
         }
     }
 }

@@ -2,8 +2,12 @@ package com.senla.courses.view.action.masteraction;
 
 import com.lib.utils.ConsoleHelper;
 import com.senla.courses.autoservice.controller.MasterController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AddMasterAction extends AbstractMasterAction {
+
+    private static final Logger logger = LoggerFactory.getLogger(AddMasterAction.class);
 
     public AddMasterAction(MasterController masterController) {
         super(masterController);
@@ -23,9 +27,9 @@ public class AddMasterAction extends AbstractMasterAction {
         category = Integer.parseInt(ConsoleHelper.readString());
 
         if (masterController.addMaster(id, name, category) != 0) {
-            ConsoleHelper.writeMessage(String.format("Мастер %s успешно добавлен", name));
+            logger.info(String.format("Мастер %s успешно добавлен", name));
         } else {
-            ConsoleHelper.writeMessage("При добавлении мастера произошла ошибка");
+            logger.error("При добавлении мастера произошла ошибка");
         }
     }
 }

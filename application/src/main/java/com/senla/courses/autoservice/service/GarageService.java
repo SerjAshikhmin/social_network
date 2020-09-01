@@ -2,7 +2,6 @@ package com.senla.courses.autoservice.service;
 
 import com.lib.dicontainer.annotations.InjectByType;
 import com.lib.dicontainer.annotations.InjectProperty;
-import com.lib.utils.ConsoleHelper;
 import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IGarageDao;
@@ -12,6 +11,8 @@ import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.sql.Connection;
@@ -29,6 +30,7 @@ public class GarageService implements IGarageService {
     private boolean addGaragePlaceOption;
     @InjectProperty
     private boolean removeGaragePlaceOption;
+    private static final Logger logger = LoggerFactory.getLogger(GarageService.class);
 
     @Override
     public int addGarage(int id, String address) {
@@ -36,7 +38,7 @@ public class GarageService implements IGarageService {
         try {
             return garageDao.addGarage(garage);
         } catch (SQLException e) {
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
             return 0;
         }
     }
@@ -44,9 +46,14 @@ public class GarageService implements IGarageService {
     @Override
     public int removeGarage(int garageId) {
         try {
-            return garageDao.removeGarage(findGarageById(garageId));
+            Garage garage = findGarageById(garageId);
+            if (garage == null) {
+                logger.error("Гараж с указанным номером не существует");
+                return 0;
+            }
+            return garageDao.removeGarage(garage);
         } catch (SQLException e) {
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
             return 0;
         }
     }
@@ -63,14 +70,14 @@ public class GarageService implements IGarageService {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                logger.error("Ошибка отмены транзакции");
             }
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         }
         return garages;
@@ -83,10 +90,10 @@ public class GarageService implements IGarageService {
             try {
                 return garageDao.addGaragePlace(garagePlace);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         } else {
-            ConsoleHelper.writeMessage("Возможность добавления места в гараже отключена");
+            logger.warn("Возможность добавления места в гараже отключена");
         }
         return 0;
     }
@@ -95,12 +102,17 @@ public class GarageService implements IGarageService {
     public int removeGaragePlace(int garageId, int garagePlaceId) {
         if (removeGaragePlaceOption) {
             try {
-                return garageDao.removeGaragePlace(findGaragePlaceById(garageId, garagePlaceId));
+                GaragePlace garagePlace = findGaragePlaceById(garageId, garagePlaceId);
+                if (garagePlace == null) {
+                    logger.error("Место в гараже с указанным номером не существует");
+                    return 0;
+                }
+                return garageDao.removeGaragePlace(garagePlace);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         } else {
-            ConsoleHelper.writeMessage("Возможность удаления места в гараже отключена");
+            logger.warn("Возможность удаления места в гараже отключена");
         }
         return 0;
     }
@@ -120,14 +132,14 @@ public class GarageService implements IGarageService {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                logger.error("Ошибка отмены транзакции");
             }
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         }
         return freePlaces;
@@ -150,14 +162,14 @@ public class GarageService implements IGarageService {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                logger.error("Ошибка отмены транзакции");
             }
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         }
         return garagePlace;
@@ -175,14 +187,14 @@ public class GarageService implements IGarageService {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                logger.error("Ошибка отмены транзакции");
             }
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         }
         return garage;
@@ -215,11 +227,11 @@ public class GarageService implements IGarageService {
                 return garageDao.addGarage(importGarage);
             }
         } catch (WrongFileFormatException e) {
-            ConsoleHelper.writeMessage("Неверный формат файла");
+            logger.error("Неверный формат файла");
         } catch (FileNotFoundException e) {
-            ConsoleHelper.writeMessage("Файл не найден");
+            logger.error("Файл не найден");
         } catch (Exception e) {
-            ConsoleHelper.writeMessage("Файл содержит неверные данные");
+            logger.error("Файл содержит неверные данные");
         }
         return 0;
     }
@@ -231,10 +243,10 @@ public class GarageService implements IGarageService {
             if (garageToExport != null) {
                 return CsvUtil.exportCsvFile(garageToList(garageToExport), fileName);
             } else {
-                ConsoleHelper.writeMessage("Неверный № гаража");
+                logger.error("Неверный № гаража");
             }
         } catch (WrongFileFormatException e) {
-            ConsoleHelper.writeMessage("Неверный формат файла");
+            logger.error("Неверный формат файла");
         }
         return false;
     }
@@ -259,23 +271,23 @@ public class GarageService implements IGarageService {
             connection.commit();
             return 1;
         } catch (WrongFileFormatException e) {
-            ConsoleHelper.writeMessage("Неверный формат файла");
+            logger.error("Неверный формат файла");
         } catch (FileNotFoundException e) {
-            ConsoleHelper.writeMessage("Файл не найден");
+            logger.error("Файл не найден");
         } catch (SQLException ex) {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                logger.error("Ошибка отмены транзакции");
             }
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         } catch (Exception e) {
-            ConsoleHelper.writeMessage("Файл содержит неверные данные");
+            logger.error("Файл содержит неверные данные");
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         }
         return 0;
@@ -288,11 +300,11 @@ public class GarageService implements IGarageService {
             if (garagePlaceToExport != null) {
                 return CsvUtil.exportCsvFile(garagePlaceToList(garagePlaceToExport), fileName);
             } else {
-                ConsoleHelper.writeMessage("Неверный № гаража или места в гараже");
+                logger.error("Неверный № гаража или места в гараже");
                 return false;
             }
         } catch (WrongFileFormatException e) {
-            ConsoleHelper.writeMessage("Неверный формат файла");
+            logger.error("Неверный формат файла");
         }
         return false;
 }

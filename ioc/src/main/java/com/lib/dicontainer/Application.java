@@ -2,6 +2,8 @@ package com.lib.dicontainer;
 
 import com.lib.dicontainer.annotations.Singleton;
 import com.lib.dicontainer.interfaces.ObjectConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.List;
 public class Application {
 
     private static List<ObjectConfigurator> configurators = new ArrayList<>();
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
     public static void run(String packageToScan) {
         Config config = new Config(packageToScan);
@@ -21,7 +24,7 @@ public class Application {
             try {
                 configurators.add(aClass.getDeclaredConstructor().newInstance());
             } catch (Exception e) {
-                System.out.println("Ошибка загрузки конфигураторов");
+                logger.error("Ошибка загрузки конфигураторов");
             }
         }
 
