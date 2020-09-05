@@ -1,23 +1,38 @@
 package com.senla.courses.autoservice.model;
 
 import com.senla.courses.autoservice.model.enums.OrderStatus;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Setter
+@Getter
+@Entity
+@Table(name = "Orders")
 public class Order implements Serializable {
 
     private static final long serialVersionUID = -4862926644813433704L;
+    @Id
     private int id;
     private LocalDateTime submissionDate;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String kindOfWork;
     private int cost;
+    @OneToOne
+    @JoinColumn(name = "garagePlace_id")
     private GaragePlace garagePlace;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Master> masters;
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
+    public Order() {
+    }
 
     public Order(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate, String kindOfWork, int cost,
                  GaragePlace garagePlace, List<Master> masters, OrderStatus status) {
@@ -32,7 +47,7 @@ public class Order implements Serializable {
         this.status = status;
         this.garagePlace.setBusy(true);
         for (Master master : this.masters) {
-            master.setOrderId(this.getId());
+            master.setOrder(this);
             master.setBusy(true);
         }
     }
@@ -49,24 +64,16 @@ public class Order implements Serializable {
         this.kindOfWork = kindOfWork;
     }
 
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
-
     public int getId() {
         return id;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setSubmissionDate(LocalDateTime submissionDate) {
-        this.submissionDate = submissionDate;
-    }
-
     public LocalDateTime getSubmissionDate() {
         return submissionDate;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
     }
 
     public LocalDateTime getEndDate() {
@@ -81,28 +88,20 @@ public class Order implements Serializable {
         return cost;
     }
 
-    public GaragePlace getGaragePlace() {
-        return garagePlace;
-    }
-
-    public void setGaragePlace(GaragePlace garagePlace) {
-        this.garagePlace = garagePlace;
-    }
-
-    public List<Master> getMasters() {
-        return masters;
-    }
-
-    public void setMasters(List<Master> masters) {
-        this.masters = masters;
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
     public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(OrderStatus status) {
-        this.status = status;
+    public List<Master> getMasters() {
+        return masters;
+    }
+
+    public GaragePlace getGaragePlace() {
+        return garagePlace;
     }
 
     @Override

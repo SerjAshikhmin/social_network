@@ -4,8 +4,9 @@ import com.lib.dicontainer.annotations.InjectByType;
 import com.lib.dicontainer.annotations.InjectProperty;
 import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
+import com.senla.courses.autoservice.dao.interfaces.IGaragePlaceDao;
+import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
-import com.senla.courses.autoservice.dao.jdbcdao.DbJdbcConnector;
 import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
 import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
@@ -22,9 +23,8 @@ import com.senla.courses.autoservice.utils.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.PersistenceException;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,6 +34,10 @@ public class OrderService implements IOrderService {
 
     @InjectByType
     private IOrderDao orderDao;
+    @InjectByType
+    private IMasterDao masterDao;
+    @InjectByType
+    private IGaragePlaceDao garagePlaceDao;
     @InjectByType
     private IMasterService masterService;
     @InjectByType
@@ -49,29 +53,24 @@ public class OrderService implements IOrderService {
                             String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {
         List<Master> masters = new ArrayList<>();
         Master master = masterService.findMasterByName(masterName);
+        if (master == null) {
+            logger.error(String.format("Не найден мастер для заказа №%d", id));
+            return 0;
+        }
         master.setBusy(true);
         masters.add(master);
+        GaragePlace garagePlace = garageService.findGaragePlaceById(garageId, garagePlaceId);
+        garagePlace.setBusy(true);
         Order order = new Order(id, submissionDate, startDate, endDate, kindOfWork, cost,
-                garageService.findGaragePlaceById(garageId, garagePlaceId), masters, orderStatus);
-        Connection connection = DbJdbcConnector.getConnection();
+                garagePlace, masters, orderStatus);
+        master.setOrder(order);
         try {
-            connection.setAutoCommit(false);
             orderDao.addOrder(order);
-            connection.commit();
+            masterDao.updateMaster(master);
+            garagePlaceDao.updateGaragePlace(garagePlace);
             return 1;
-        } catch (SQLException ex) {
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                logger.error("Ошибка отмены транзакции");
-            }
-            logger.error("Ошибка соединения с базой данных");
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                logger.error("Ошибка соединения с базой данных");
-            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
         }
         return 0;
     }
@@ -84,25 +83,11 @@ public class OrderService implements IOrderService {
                 logger.error("Заказ с указанным номером не существует");
                 return 0;
             }
-            Connection connection = DbJdbcConnector.getConnection();
             try {
-                connection.setAutoCommit(false);
                 orderDao.removeOrder(order);
-                connection.commit();
                 return 1;
-            } catch (SQLException ex) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e) {
-                    logger.error("Ошибка отмены транзакции");
-                }
-                logger.error("Ошибка соединения с базой данных");
-            } finally {
-                try {
-                    connection.setAutoCommit(true);
-                } catch (SQLException e) {
-                    logger.error("Ошибка соединения с базой данных");
-                }
+            } catch (PersistenceException ex) {
+                logger.error(ex.getMessage());
             }
         } else {
             logger.warn("Возможность удаления заказов отключена");
@@ -114,28 +99,14 @@ public class OrderService implements IOrderService {
     public void cancelOrder(int id) {
         Order order = findOrderById(id);
         if (order != null) {
-            Connection connection = DbJdbcConnector.getConnection();
             try {
-                connection.setAutoCommit(false);
                 orderDao.cancelOrder(order);
-                connection.commit();
-            } catch (SQLException ex) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e) {
-                    logger.error("Ошибка отмены транзакции");
-                }
-                logger.error("Ошибка соединения с базой данных");
-            } finally {
-                try {
-                    connection.setAutoCommit(true);
-                } catch (SQLException e) {
-                    logger.error("Ошибка соединения с базой данных");
-                }
+                logger.info(String.format("Заказ №%d отменен", id));
+            } catch (Exception ex) {
+                logger.error(ex.getMessage());
             }
-            logger.info(String.format("Заказ №%d отменен", id));
         } else {
-            logger.error("При отмене заказа произошла ошибка");
+            logger.error("Заказ не найден");
         }
 
     }
@@ -144,26 +115,12 @@ public class OrderService implements IOrderService {
     public void closeOrder(int id) {
         Order order = findOrderById(id);
         if (order != null) {
-            Connection connection = DbJdbcConnector.getConnection();
             try {
-                connection.setAutoCommit(false);
                 orderDao.closeOrder(order);
-                connection.commit();
-            } catch (SQLException ex) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e) {
-                    logger.error("Ошибка отмены транзакции");
-                }
-                logger.error("Ошибка соединения с базой данных");
-            } finally {
-                try {
-                    connection.setAutoCommit(true);
-                } catch (SQLException e) {
-                    logger.error("Ошибка соединения с базой данных");
-                }
+                logger.info(String.format("Заказ №%d закрыт", id));
+            } catch (Exception ex) {
+                logger.error(ex.getMessage());
             }
-            logger.info(String.format("Заказ №%d закрыт", id));
         } else {
             logger.error("При закрытии заказа произошла ошибка");
         }
@@ -172,24 +129,10 @@ public class OrderService implements IOrderService {
     @Override
     public List<Order> getAllOrders() {
         List<Order> orders = null;
-        Connection connection = DbJdbcConnector.getConnection();
         try {
-            connection.setAutoCommit(false);
             orders = orderDao.getAllOrders();
-            connection.commit();
-        } catch (SQLException ex) {
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                logger.error("Ошибка отмены транзакции");
-            }
-            logger.error("Ошибка соединения с базой данных");
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                logger.error("Ошибка соединения с базой данных");
-            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
         }
         return orders;
     }
@@ -209,24 +152,10 @@ public class OrderService implements IOrderService {
     public List<Order> getAllOrdersInProgress(String sortBy) {
         Comparator orderComparator = getOrderComparator(sortBy);
         List<Order> orders = null;
-        Connection connection = DbJdbcConnector.getConnection();
         try {
-            connection.setAutoCommit(false);
             orders = orderDao.getAllOrdersInProgress(orderComparator);
-            connection.commit();
-        } catch (SQLException ex) {
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                logger.error("Ошибка отмены транзакции");
-            }
-            logger.error("Ошибка соединения с базой данных");
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                logger.error("Ошибка соединения с базой данных");
-            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
         }
         return orders;
     }
@@ -267,24 +196,10 @@ public class OrderService implements IOrderService {
 
     @Override
     public void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) {
-        Connection connection = DbJdbcConnector.getConnection();
         try {
-            connection.setAutoCommit(false);
             orderDao.updateOrderTime(order, newStartTime, newEndTime);
-            connection.commit();
-        } catch (SQLException ex) {
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                logger.error("Ошибка отмены транзакции");
-            }
-            logger.error("Ошибка соединения с базой данных");
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                logger.error("Ошибка соединения с базой данных");
-            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
         }
     }
 
@@ -341,7 +256,7 @@ public class OrderService implements IOrderService {
             logger.error("Файл не найден");
             return 0;
         } catch (Exception e) {
-            logger.error("Файл содержит неверные данные");
+            logger.error(e.getMessage());
             return 0;
         }
     }

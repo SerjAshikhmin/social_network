@@ -3,40 +3,42 @@ package com.senla.courses.autoservice.dao;
 import com.lib.dicontainer.annotations.InjectByType;
 import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
-import com.senla.courses.autoservice.dao.jdbcdao.MasterJdbcDao;
+import com.senla.courses.autoservice.dao.jpadao.AbstractJpaDao;
 import com.senla.courses.autoservice.exceptions.MasterNotFoundException;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 
-import java.sql.SQLException;
+import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MasterDao implements IMasterDao {
+public class MasterDao extends AbstractJpaDao<Master> implements IMasterDao {
 
-    @InjectByType
-    private MasterJdbcDao masterJdbcDao;
     @InjectByType
     IOrderDao orderDao;
 
-    @Override
-    public int addMaster(Master master) throws SQLException {
-        return masterJdbcDao.insert(master);
+    public MasterDao() {
+        super(Master.class);
     }
 
     @Override
-    public int removeMaster(Master master) throws SQLException {
-        return masterJdbcDao.delete(master);
+    public int addMaster(Master master) throws PersistenceException {
+        return insert(master);
     }
 
     @Override
-    public Master getMasterById(int id) throws SQLException {
-        return masterJdbcDao.findById(id);
+    public int removeMaster(Master master) throws PersistenceException {
+        return delete(master);
     }
 
     @Override
-    public List<Master> getAllMasters() throws SQLException {
-        return masterJdbcDao.findAll();
+    public Master getMasterById(int id) throws PersistenceException {
+        return findById(id);
+    }
+
+    @Override
+    public List<Master> getAllMasters() throws PersistenceException {
+        return findAll();
     }
 
     @Override
@@ -45,13 +47,13 @@ public class MasterDao implements IMasterDao {
     }
 
     @Override
-    public int updateMaster(Master master) throws SQLException {
-        return masterJdbcDao.update(master);
+    public int updateMaster(Master master) throws PersistenceException {
+        return update(master);
         /*Master daoMaster = getMasterById(master.getId());
         return updateMasterFields(master, daoMaster);*/
     }
 
-    public Order getCurrentOrder(Master master) throws MasterNotFoundException, SQLException {
+    public Order getCurrentOrder(Master master) throws MasterNotFoundException, PersistenceException {
         if (master != null) {
             return orderDao.getOrderById(master.getOrderId());
         } else {
@@ -60,7 +62,7 @@ public class MasterDao implements IMasterDao {
     }
 
     @Override
-    public List<Master> getAllFreeMasters() throws SQLException {
+    public List<Master> getAllFreeMasters() throws PersistenceException {
         return getAllMasters().stream()
                 .filter(master -> !master.isBusy())
                 .collect(Collectors.toList());

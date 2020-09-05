@@ -1,41 +1,49 @@
 package com.senla.courses.autoservice.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
+@Setter
+@Getter
+@Entity
+@Table(name = "GaragePlace")
 public class GaragePlace implements Serializable {
 
     private static final long serialVersionUID = -4862926644813433701L;
+    @Id
     private int id;
-    private int garageId;
+    @ManyToOne
+    @JoinColumn(name = "garage_id")
+    private Garage garage;
     private String type;
     private int area;
     private boolean busy;
+    @OneToOne(mappedBy = "garagePlace", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    private Order order;
 
-    public GaragePlace(int id, int garageId, String type, int area) {
+    public GaragePlace() {
+    }
+
+    public GaragePlace(int id, Garage garage, String type, int area) {
         this.id = id;
-        this.garageId = garageId;
+        this.garage = garage;
         this.type = type;
         this.area = area;
     }
 
-    public GaragePlace(int id, int garageId, String type, int area, boolean busy) {
+    public GaragePlace(int id, Garage garage, String type, int area, boolean busy) {
         this.id = id;
-        this.garageId = garageId;
+        this.garage = garage;
         this.type = type;
         this.area = area;
         this.busy = busy;
     }
 
     public int getGarageId() {
-        return garageId;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setArea(int area) {
-        this.area = area;
+        return this.garage.getId();
     }
 
     public int getId() {
@@ -56,6 +64,26 @@ public class GaragePlace implements Serializable {
 
     public void setBusy(boolean busy) {
         this.busy = busy;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Garage getGarage() {
+        return garage;
+    }
+
+    public void setGarage(Garage garage) {
+        this.garage = garage;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     @Override
