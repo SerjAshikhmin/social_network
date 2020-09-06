@@ -2,8 +2,13 @@ package com.senla.courses.view.action.masteraction;
 
 import com.lib.utils.ConsoleHelper;
 import com.senla.courses.autoservice.controller.MasterController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class RemoveMasterAction extends AbstractMasterAction {
+
+    private static final Logger logger = LoggerFactory.getLogger(RemoveMasterAction.class);
 
     public RemoveMasterAction(MasterController masterController) {
         super(masterController);
@@ -16,9 +21,9 @@ public class RemoveMasterAction extends AbstractMasterAction {
         name = ConsoleHelper.readString();
 
         if (masterController.removeMaster(name) != 0) {
-            ConsoleHelper.writeMessage(String.format("Мастер %s успешно удален", name));
+            logger.info(String.format("Мастер %s успешно удален", name));
         } else {
-            ConsoleHelper.writeMessage("При удалении мастера произошла ошибка");
+            logger.error("При удалении мастера произошла ошибка");
         }
     }
 }

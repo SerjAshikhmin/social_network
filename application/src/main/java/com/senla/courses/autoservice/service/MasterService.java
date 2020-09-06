@@ -1,7 +1,6 @@
 package com.senla.courses.autoservice.service;
 
 import com.lib.dicontainer.annotations.InjectByType;
-import com.lib.utils.ConsoleHelper;
 import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
@@ -13,6 +12,8 @@ import com.senla.courses.autoservice.service.comparators.master.MasterByBusyComp
 import com.senla.courses.autoservice.service.comparators.master.MasterByNameComparator;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -26,6 +27,7 @@ public class MasterService implements IMasterService {
     private IMasterDao masterDao;
     @InjectByType
     private IOrderDao orderDao;
+    private static final Logger logger = LoggerFactory.getLogger(MasterService.class);
 
     @Override
     public int addMaster(int id, String name, int category) {
@@ -33,7 +35,7 @@ public class MasterService implements IMasterService {
         try {
             return masterDao.addMaster(master);
         } catch (SQLException e) {
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
             return 0;
         }
     }
@@ -41,9 +43,14 @@ public class MasterService implements IMasterService {
     @Override
     public int removeMaster(String name) {
         try {
-            return masterDao.removeMaster(findMasterByName(name));
+            Master master = findMasterByName(name);
+            if (master == null) {
+                logger.error("Мастера с указанным именем не существует");
+                return 0;
+            }
+            return masterDao.removeMaster(master);
         } catch (SQLException e) {
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
             return 0;
         }
     }
@@ -53,7 +60,7 @@ public class MasterService implements IMasterService {
         try {
             return masterDao.getAllMasters();
         } catch (SQLException e) {
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         } return null;
     }
 
@@ -63,7 +70,7 @@ public class MasterService implements IMasterService {
         try {
             allMastersSorted.addAll(masterDao.getAllMasters());
         } catch (SQLException e) {
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         }
         Comparator masterComparator = getMasterComparator(sortBy);
         if (masterComparator != null) {
@@ -77,7 +84,7 @@ public class MasterService implements IMasterService {
         try {
             return masterDao.getAllFreeMasters();
         } catch (SQLException e) {
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
             return null;
         }
     }
@@ -87,9 +94,9 @@ public class MasterService implements IMasterService {
         try {
             return masterDao.getCurrentOrder(findMasterByName(name));
         } catch (MasterNotFoundException e) {
-            ConsoleHelper.writeMessage("Мастер не найден");
+            logger.error("Мастер не найден");
         } catch (SQLException e) {
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         }
         return null;
     }
@@ -109,7 +116,7 @@ public class MasterService implements IMasterService {
         try {
             return masterDao.getMasterById(id);
         } catch (SQLException e) {
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
             return null;
         }
     }
@@ -131,11 +138,11 @@ public class MasterService implements IMasterService {
                 return masterDao.addMaster(importMaster);
             }
         } catch (WrongFileFormatException e) {
-            ConsoleHelper.writeMessage("Неверный формат файла");
+            logger.error("Неверный формат файла");
         } catch (FileNotFoundException e) {
-            ConsoleHelper.writeMessage("Файл не найден");
+            logger.error("Файл не найден");
         } catch (Exception e) {
-            ConsoleHelper.writeMessage("Файл содержит неверные данные");
+            logger.error("Файл содержит неверные данные");
         }
         return 0;
     }
@@ -147,12 +154,12 @@ public class MasterService implements IMasterService {
             if (masterToExport != null) {
                 return CsvUtil.exportCsvFile(toList(masterToExport), fileName);
             } else {
-                ConsoleHelper.writeMessage("Неверный № мастера");
+                logger.error("Неверный № мастера");
             }
         } catch (WrongFileFormatException e) {
-            ConsoleHelper.writeMessage("Неверный формат файла");
+            logger.error("Неверный формат файла");
         } catch (SQLException e) {
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         }
         return false;
     }

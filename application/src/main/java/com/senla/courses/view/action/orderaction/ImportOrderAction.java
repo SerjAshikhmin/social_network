@@ -3,8 +3,12 @@ package com.senla.courses.view.action.orderaction;
 
 import com.lib.utils.ConsoleHelper;
 import com.senla.courses.autoservice.controller.OrderController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImportOrderAction extends AbstractOrderAction {
+
+    private static final Logger logger = LoggerFactory.getLogger(ImportOrderAction.class);
 
     public ImportOrderAction(OrderController orderController) {
         super(orderController);
@@ -18,9 +22,9 @@ public class ImportOrderAction extends AbstractOrderAction {
         fileName = ConsoleHelper.readString();
 
         if (orderController.importOrder(fileName) == 1) {
-            ConsoleHelper.writeMessage(String.format("Заказ успешно импортирован из файла %s", fileName));
+            logger.info(String.format("Заказ успешно импортирован из файла %s", fileName));
         } else {
-            ConsoleHelper.writeMessage("При импорте заказа произошла ошибка");
+            logger.error("При импорте заказа произошла ошибка");
         }
     }
 }

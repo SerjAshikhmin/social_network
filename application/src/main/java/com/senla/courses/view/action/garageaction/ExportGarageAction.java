@@ -2,8 +2,12 @@ package com.senla.courses.view.action.garageaction;
 
 import com.lib.utils.ConsoleHelper;
 import com.senla.courses.autoservice.controller.GarageController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExportGarageAction extends AbstractGarageAction {
+
+    private static final Logger logger = LoggerFactory.getLogger(ExportGarageAction.class);
 
     public ExportGarageAction(GarageController garageController) {
         super(garageController);
@@ -20,9 +24,9 @@ public class ExportGarageAction extends AbstractGarageAction {
         fileName = ConsoleHelper.readString();
 
         if (garageController.exportGarage(id, fileName)) {
-            ConsoleHelper.writeMessage(String.format("Гараж №%d успешно экспортирован в файл %s", id, fileName));
+            logger.info(String.format("Гараж №%d успешно экспортирован в файл %s", id, fileName));
         } else {
-            ConsoleHelper.writeMessage("При экпорте гаража произошла ошибка");
+            logger.error("При экпорте гаража произошла ошибка");
         }
     }
 }

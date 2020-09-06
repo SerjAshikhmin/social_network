@@ -2,7 +2,6 @@ package com.senla.courses.autoservice.service;
 
 import com.lib.dicontainer.annotations.InjectByType;
 import com.lib.dicontainer.annotations.InjectProperty;
-import com.lib.utils.ConsoleHelper;
 import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
@@ -20,6 +19,8 @@ import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.sql.Connection;
@@ -41,6 +42,7 @@ public class OrderService implements IOrderService {
     private boolean shiftEndTimeOrdersOption;
     @InjectProperty
     private boolean removeOrderOption;
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @Override
     public int addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
@@ -61,14 +63,14 @@ public class OrderService implements IOrderService {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                logger.error("Ошибка отмены транзакции");
             }
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         }
         return 0;
@@ -78,6 +80,10 @@ public class OrderService implements IOrderService {
     public int removeOrder(int id) {
         if (removeOrderOption) {
             Order order = findOrderById(id);
+            if (order == null) {
+                logger.error("Заказ с указанным номером не существует");
+                return 0;
+            }
             Connection connection = DbJdbcConnector.getConnection();
             try {
                 connection.setAutoCommit(false);
@@ -88,18 +94,18 @@ public class OrderService implements IOrderService {
                 try {
                     connection.rollback();
                 } catch (SQLException e) {
-                    ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                    logger.error("Ошибка отмены транзакции");
                 }
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             } finally {
                 try {
                     connection.setAutoCommit(true);
                 } catch (SQLException e) {
-                    ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                    logger.error("Ошибка соединения с базой данных");
                 }
             }
         } else {
-            ConsoleHelper.writeMessage("Возможность удаления заказов отключена");
+            logger.warn("Возможность удаления заказов отключена");
         }
         return 0;
     }
@@ -117,19 +123,19 @@ public class OrderService implements IOrderService {
                 try {
                     connection.rollback();
                 } catch (SQLException e) {
-                    ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                    logger.error("Ошибка отмены транзакции");
                 }
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             } finally {
                 try {
                     connection.setAutoCommit(true);
                 } catch (SQLException e) {
-                    ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                    logger.error("Ошибка соединения с базой данных");
                 }
             }
-            ConsoleHelper.writeMessage(String.format("Заказ №%d отменен", id));
+            logger.info(String.format("Заказ №%d отменен", id));
         } else {
-            ConsoleHelper.writeMessage("При отмене заказа произошла ошибка");
+            logger.error("При отмене заказа произошла ошибка");
         }
 
     }
@@ -147,19 +153,19 @@ public class OrderService implements IOrderService {
                 try {
                     connection.rollback();
                 } catch (SQLException e) {
-                    ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                    logger.error("Ошибка отмены транзакции");
                 }
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             } finally {
                 try {
                     connection.setAutoCommit(true);
                 } catch (SQLException e) {
-                    ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                    logger.error("Ошибка соединения с базой данных");
                 }
             }
-            ConsoleHelper.writeMessage(String.format("Заказ №%d закрыт", id));
+            logger.info(String.format("Заказ №%d закрыт", id));
         } else {
-            ConsoleHelper.writeMessage("При закрытии заказа произошла ошибка");
+            logger.error("При закрытии заказа произошла ошибка");
         }
     }
 
@@ -175,14 +181,14 @@ public class OrderService implements IOrderService {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                logger.error("Ошибка отмены транзакции");
             }
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         }
         return orders;
@@ -212,14 +218,14 @@ public class OrderService implements IOrderService {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                logger.error("Ошибка отмены транзакции");
             }
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         }
         return orders;
@@ -240,7 +246,7 @@ public class OrderService implements IOrderService {
         try {
             return orderDao.getMastersByOrder(order);
         } catch (OrderNotFoundException e) {
-            ConsoleHelper.writeMessage("Неправильный номер заказа");
+            logger.error("Неправильный номер заказа");
             return null;
         }
     }
@@ -270,14 +276,14 @@ public class OrderService implements IOrderService {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка отмены транзакции");
+                logger.error("Ошибка отмены транзакции");
             }
-            ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+            logger.error("Ошибка соединения с базой данных");
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                ConsoleHelper.writeMessage("Ошибка соединения с базой данных");
+                logger.error("Ошибка соединения с базой данных");
             }
         }
     }
@@ -290,7 +296,7 @@ public class OrderService implements IOrderService {
                 updateOrderTime(order, order.getStartDate(), order.getEndDate().plusHours(hours).plusMinutes(minutes));
             });
         } else {
-            ConsoleHelper.writeMessage("Возможность смещать время выполнения заказов отключена");
+            logger.warn("Возможность смещать время выполнения заказов отключена");
         }
     }
 
@@ -329,13 +335,13 @@ public class OrderService implements IOrderService {
                 return orderDao.addOrder(importOrder);
             }
         } catch (WrongFileFormatException e) {
-            ConsoleHelper.writeMessage("Неверный формат файла");
+            logger.error("Неверный формат файла");
             return 0;
         } catch (FileNotFoundException e) {
-            ConsoleHelper.writeMessage("Файл не найден");
+            logger.error("Файл не найден");
             return 0;
         } catch (Exception e) {
-            ConsoleHelper.writeMessage("Файл содержит неверные данные");
+            logger.error("Файл содержит неверные данные");
             return 0;
         }
     }
@@ -347,11 +353,11 @@ public class OrderService implements IOrderService {
             if (orderToExport != null) {
                 return CsvUtil.exportCsvFile(toList(orderToExport), fileName);
             } else {
-                ConsoleHelper.writeMessage("Неверный № заказа");
+                logger.error("Неверный № заказа");
                 return false;
             }
         } catch (WrongFileFormatException e) {
-            ConsoleHelper.writeMessage("Неверный формат файла");
+            logger.error("Неверный формат файла");
             return false;
         }
     }

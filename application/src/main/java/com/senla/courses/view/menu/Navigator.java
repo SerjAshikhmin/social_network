@@ -2,8 +2,13 @@ package com.senla.courses.view.menu;
 
 
 import com.lib.utils.ConsoleHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class Navigator {
+
+    private static final Logger logger = LoggerFactory.getLogger(Navigator.class);
 
     private Menu currentMenu;
 
@@ -26,7 +31,7 @@ public class Navigator {
         }
 
         if (selectedMenuItem == null) {
-            ConsoleHelper.writeMessage("Ошибка: выбран неверный пункт меню");
+            logger.error("Ошибка: выбран неверный пункт меню");
         } else {
             if (selectedMenuItem.getNextMenu() != null) {
                 this.currentMenu = selectedMenuItem.getNextMenu();

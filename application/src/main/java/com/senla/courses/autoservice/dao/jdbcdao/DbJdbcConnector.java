@@ -14,7 +14,7 @@ public class DbJdbcConnector {
 
     private static Connection connection;
 
-    private final String CONNECTION_PROPERTIES = "application/src/main/resources/db.properties";
+    private final String CONNECTION_PROPERTIES = "C:\\Users\\slone_000\\IdeaProjects\\sergey_ashikhmin\\application\\src\\main\\resources\\db.properties";
     private static String url;
     private static String username;
     private static String password;
