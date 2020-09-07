@@ -61,9 +61,7 @@ public class Main {
     }
 
     private static void createServices() {
-        /*PropertyUtil.loadConfig("application/src/main/resources/config.properties");
-        Application.run("com");*/
-        PropertyUtil.loadConfig("C:\\Users\\slone_000\\IdeaProjects\\sergey_ashikhmin\\application\\src\\main\\resources\\config.properties");
+        PropertyUtil.loadConfig("./src/main/resources/config.properties");
         Application.run("com");
     }
 
@@ -93,7 +91,5 @@ public class Main {
                                      LocalDateTime.of(2020, Month.MAY, 31, 12, 0),
                 "Diagnostics", 500, 1, 3, "Ivan", OrderStatus.ACCEPTED);
     }
-
-
 
 }
