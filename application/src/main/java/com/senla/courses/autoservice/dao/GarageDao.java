@@ -2,16 +2,23 @@ package com.senla.courses.autoservice.dao;
 
 import com.senla.courses.autoservice.dao.interfaces.IGarageDao;
 import com.senla.courses.autoservice.dao.jpadao.AbstractJpaDao;
+import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.model.Garage;
+import org.hibernate.Hibernate;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class GarageDao extends AbstractJpaDao<Garage> implements IGarageDao {
 
-    public GarageDao() {
-        super(Garage.class);
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public int addGarage(Garage garage) throws PersistenceException {
@@ -25,12 +32,56 @@ public class GarageDao extends AbstractJpaDao<Garage> implements IGarageDao {
 
     @Override
     public Garage getGarageById(int id) throws PersistenceException {
-        return findById(id);
+        Garage garage;
+        entityManager = DbJpaConnector.getEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Garage> objCriteria = criteriaBuilder.createQuery(Garage.class);
+            Root<Garage> objRoot = objCriteria.from(Garage.class);
+            objCriteria.select(objRoot);
+            objCriteria.where(criteriaBuilder.equal(objRoot.get("id"), id));
+            garage = entityManager.createQuery(objCriteria).getSingleResult();
+            Hibernate.initialize(garage.getGaragePlaces());
+            transaction.commit();
+            entityManager.close();
+
+            return garage;
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        }
     }
 
     @Override
     public List<Garage> getAllGarages() throws PersistenceException {
         return findAll();
+    }
+
+    @Override
+    public List<Garage> findAll() throws PersistenceException {
+        List<Garage> allGarages;
+        entityManager = DbJpaConnector.getEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Garage> objCriteria = criteriaBuilder.createQuery(Garage.class);
+            Root<Garage> objRoot = objCriteria.from(Garage.class);
+            objCriteria.select(objRoot);
+            allGarages = entityManager.createQuery(objCriteria).getResultList();
+            for (Garage garage : allGarages) {
+                Hibernate.initialize(garage.getGaragePlaces());
+            }
+            transaction.commit();
+            entityManager.close();
+
+            return allGarages;
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        }
     }
 
     @Override

@@ -17,10 +17,6 @@ public class MasterDao extends AbstractJpaDao<Master> implements IMasterDao {
     @InjectByType
     IOrderDao orderDao;
 
-    public MasterDao() {
-        super(Master.class);
-    }
-
     @Override
     public int addMaster(Master master) throws PersistenceException {
         return insert(master);
@@ -49,8 +45,6 @@ public class MasterDao extends AbstractJpaDao<Master> implements IMasterDao {
     @Override
     public int updateMaster(Master master) throws PersistenceException {
         return update(master);
-        /*Master daoMaster = getMasterById(master.getId());
-        return updateMasterFields(master, daoMaster);*/
     }
 
     public Order getCurrentOrder(Master master) throws MasterNotFoundException, PersistenceException {

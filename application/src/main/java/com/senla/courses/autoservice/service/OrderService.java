@@ -23,6 +23,8 @@ import com.senla.courses.autoservice.utils.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import java.io.*;
 import java.time.LocalDateTime;
@@ -83,7 +85,19 @@ public class OrderService implements IOrderService {
                 logger.error("Заказ с указанным номером не существует");
                 return 0;
             }
+            GaragePlace garagePlace = order.getGaragePlace();
+            garagePlace.setBusy(false);
+            garagePlace.setOrder(null);
+            order.getMasters().stream()
+                    .forEach(master -> {
+                        master.setBusy(false);
+                        master.setOrder(null);
+                    });
             try {
+                for (Master master : order.getMasters()) {
+                    masterDao.updateMaster(master);
+                }
+                garagePlaceDao.updateGaragePlace(order.getGaragePlace());
                 orderDao.removeOrder(order);
                 return 1;
             } catch (PersistenceException ex) {

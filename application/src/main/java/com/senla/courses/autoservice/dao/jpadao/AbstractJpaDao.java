@@ -9,6 +9,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 public class AbstractJpaDao<T> implements IJdbcDao<T> {
@@ -17,8 +18,8 @@ public class AbstractJpaDao<T> implements IJdbcDao<T> {
     private EntityManager entityManager;
     private Class<T> clazz;
 
-    public AbstractJpaDao(Class<T> clazz) {
-        this.clazz = clazz;
+    public AbstractJpaDao() {
+        this.clazz = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     @Override
@@ -84,11 +85,12 @@ public class AbstractJpaDao<T> implements IJdbcDao<T> {
             obj = entityManager.createQuery(objCriteria).getSingleResult();
             transaction.commit();
             entityManager.close();
+
+            return obj;
         } catch (Exception e) {
             transaction.rollback();
             throw e;
         }
-        return obj;
     }
 
     @Override

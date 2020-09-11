@@ -10,13 +10,17 @@ import javax.persistence.Persistence;
 public class DbJpaConnector {
 
     private static EntityManagerFactory emFactory;
+    private static EntityManager entityManager;
 
     public DbJpaConnector() {
         emFactory = Persistence.createEntityManagerFactory("com.senla.courses");
     }
 
     public static EntityManager getEntityManager() {
-        return emFactory.createEntityManager();
+        if (entityManager == null || !entityManager.isOpen()) {
+            entityManager = emFactory.createEntityManager();
+        }
+        return entityManager;
     }
 
 }

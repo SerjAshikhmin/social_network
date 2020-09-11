@@ -2,12 +2,20 @@ package com.senla.courses.autoservice.dao;
 
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
 import com.senla.courses.autoservice.dao.jpadao.AbstractJpaDao;
+import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
+import org.hibernate.Hibernate;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -16,9 +24,8 @@ import java.util.stream.Collectors;
 
 public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
 
-    public OrderDao() {
-        super(Order.class);
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public int addOrder(Order order) throws PersistenceException {
@@ -27,12 +34,6 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
 
     @Override
     public int removeOrder(Order order) throws PersistenceException {
-        if (order == null) {
-            return 0;
-        }
-        order.getGaragePlace().setBusy(false);
-        order.getMasters().stream()
-                .forEach(master -> master.setBusy(false));
         return delete(order);
     }
 
@@ -47,6 +48,31 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
     }
 
     @Override
+    public List<Order> findAll() throws PersistenceException {
+        List<Order> allOrders;
+        entityManager = DbJpaConnector.getEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Order> objCriteria = criteriaBuilder.createQuery(Order.class);
+            Root<Order> objRoot = objCriteria.from(Order.class);
+            objCriteria.select(objRoot);
+            allOrders = entityManager.createQuery(objCriteria).getResultList();
+            for (Order order : allOrders) {
+                Hibernate.initialize(order.getMasters());
+            }
+            transaction.commit();
+            entityManager.close();
+
+            return allOrders;
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        }
+    }
+
+    @Override
     public void setAllOrders(List<Order> allOrders) {
         //this.orders = allOrders;
     }
@@ -54,8 +80,6 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
     @Override
     public int updateOrder(Order order) throws PersistenceException {
         return update(order);
-        /*Order daoOrder = getOrderById(order.getId());
-        return updateOrderFields(order, daoOrder);*/
     }
 
     @Override

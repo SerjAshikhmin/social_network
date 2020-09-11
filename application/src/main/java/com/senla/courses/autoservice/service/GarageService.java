@@ -51,6 +51,10 @@ public class GarageService implements IGarageService {
                 logger.error("Гараж с указанным номером не существует");
                 return 0;
             }
+            List<GaragePlace> garagePlaces = garage.getGaragePlaces();
+            for (GaragePlace garagePlace : garagePlaces) {
+                garagePlaceDao.removeGaragePlace(garagePlace);
+            }
             return garageDao.removeGarage(garage);
         } catch (Exception e) {
             logger.error(e.getMessage());

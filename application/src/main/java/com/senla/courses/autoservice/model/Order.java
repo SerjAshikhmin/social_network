@@ -2,6 +2,7 @@ package com.senla.courses.autoservice.model;
 
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@NoArgsConstructor
 @Setter
 @Getter
 @Entity
@@ -26,13 +28,10 @@ public class Order implements Serializable {
     @OneToOne
     @JoinColumn(name = "garagePlace_id")
     private GaragePlace garagePlace;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order")
     private List<Master> masters;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-
-    public Order() {
-    }
 
     public Order(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate, String kindOfWork, int cost,
                  GaragePlace garagePlace, List<Master> masters, OrderStatus status) {
@@ -50,58 +49,6 @@ public class Order implements Serializable {
             master.setOrder(this);
             master.setBusy(true);
         }
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    public void setKindOfWork(String kindOfWork) {
-        this.kindOfWork = kindOfWork;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public LocalDateTime getSubmissionDate() {
-        return submissionDate;
-    }
-
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public String getKindOfWork() {
-        return kindOfWork;
-    }
-
-    public int getCost() {
-        return cost;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public List<Master> getMasters() {
-        return masters;
-    }
-
-    public GaragePlace getGaragePlace() {
-        return garagePlace;
     }
 
     @Override

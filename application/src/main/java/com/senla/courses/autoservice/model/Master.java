@@ -1,11 +1,13 @@
 package com.senla.courses.autoservice.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
+@NoArgsConstructor
 @Setter
 @Getter
 @Entity
@@ -22,9 +24,6 @@ public class Master implements Serializable {
     @JoinColumn(name = "orders_id")
     private Order order;
 
-    public Master() {
-    }
-
     public Master(int id, String name, int category) {
         this.id = id;
         this.name = name;
@@ -38,30 +37,6 @@ public class Master implements Serializable {
         this.category = category;
         this.busy = busy;
         this.order = order;
-    }
-
-    public void setBusy(boolean busy) {
-        this.busy = busy;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getCategory() {
-        return category;
-    }
-
-    public boolean isBusy() {
-        return busy;
     }
 
     public int getOrderId() {

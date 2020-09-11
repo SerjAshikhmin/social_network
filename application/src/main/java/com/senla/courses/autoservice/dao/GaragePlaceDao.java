@@ -10,13 +10,8 @@ import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.sql.SQLException;
 
 public class GaragePlaceDao extends AbstractJpaDao<GaragePlace> implements IGaragePlaceDao {
-
-    public GaragePlaceDao() {
-        super(GaragePlace.class);
-    }
 
     @Override
     public int addGaragePlace(GaragePlace garagePlace) throws PersistenceException {
@@ -25,6 +20,7 @@ public class GaragePlaceDao extends AbstractJpaDao<GaragePlace> implements IGara
 
     @Override
     public int removeGaragePlace(GaragePlace garagePlace) throws PersistenceException {
+        garagePlace.getOrder().setGaragePlace(null);
         return delete(garagePlace);
     }
 
@@ -35,9 +31,8 @@ public class GaragePlaceDao extends AbstractJpaDao<GaragePlace> implements IGara
 
     @Override
     public GaragePlace getGaragePlaceById(int garageId, int garagePlaceId) throws PersistenceException {
-        GaragePlace garagePlace;
+        GaragePlace garagePlace = null;
         EntityManager entityManager = DbJpaConnector.getEntityManager();
-        entityManager.getTransaction().begin();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GaragePlace> garagePlaceCriteria = criteriaBuilder.createQuery(GaragePlace.class);
         Root<GaragePlace> garagePlaceRoot = garagePlaceCriteria.from(GaragePlace.class);
@@ -45,8 +40,6 @@ public class GaragePlaceDao extends AbstractJpaDao<GaragePlace> implements IGara
         garagePlaceCriteria.where(criteriaBuilder.equal(garagePlaceRoot.get("id"), garagePlaceId),
                                   criteriaBuilder.equal(garagePlaceRoot.get("garage").get("id"), garageId));
         garagePlace = entityManager.createQuery(garagePlaceCriteria).getSingleResult();
-        entityManager.getTransaction().commit();
-        entityManager.close();
 
         return garagePlace;
     }

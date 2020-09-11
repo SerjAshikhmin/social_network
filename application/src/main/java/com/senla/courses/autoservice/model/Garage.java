@@ -1,12 +1,14 @@
 package com.senla.courses.autoservice.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
+@NoArgsConstructor
 @Setter
 @Getter
 @Entity
@@ -17,28 +19,13 @@ public class Garage implements Serializable {
     @Id
     private int id;
     private String address;
-    @OneToMany(mappedBy = "garage", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "garage", cascade = CascadeType.REMOVE)
     private List<GaragePlace> garagePlaces;
-
-    public Garage() {
-    }
 
     public Garage(int id, String address, List<GaragePlace> garagePlaces) {
         this.id = id;
         this.address = address;
         this.garagePlaces = garagePlaces;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public List<GaragePlace> getGaragePlaces() {
-        return garagePlaces;
     }
 
     @Override

@@ -1,11 +1,13 @@
 package com.senla.courses.autoservice.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
+@NoArgsConstructor
 @Setter
 @Getter
 @Entity
@@ -21,11 +23,8 @@ public class GaragePlace implements Serializable {
     private String type;
     private int area;
     private boolean busy;
-    @OneToOne(mappedBy = "garagePlace", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "garagePlace")
     private Order order;
-
-    public GaragePlace() {
-    }
 
     public GaragePlace(int id, Garage garage, String type, int area) {
         this.id = id;
@@ -44,46 +43,6 @@ public class GaragePlace implements Serializable {
 
     public int getGarageId() {
         return this.garage.getId();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public int getArea() {
-        return area;
-    }
-
-    public boolean isBusy() {
-        return busy;
-    }
-
-    public void setBusy(boolean busy) {
-        this.busy = busy;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Garage getGarage() {
-        return garage;
-    }
-
-    public void setGarage(Garage garage) {
-        this.garage = garage;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
     }
 
     @Override
