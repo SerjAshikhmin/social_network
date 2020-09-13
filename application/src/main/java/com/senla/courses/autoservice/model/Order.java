@@ -26,9 +26,9 @@ public class Order implements Serializable {
     private String kindOfWork;
     private int cost;
     @OneToOne
-    @JoinColumn(name = "garagePlace_id")
+    @PrimaryKeyJoinColumn
     private GaragePlace garagePlace;
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     private List<Master> masters;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;

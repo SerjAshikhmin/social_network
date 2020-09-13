@@ -6,6 +6,7 @@ import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IGarageDao;
 import com.senla.courses.autoservice.dao.interfaces.IGaragePlaceDao;
+import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.model.Garage;
 import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
@@ -14,6 +15,7 @@ import com.senla.courses.autoservice.utils.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityTransaction;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,30 +37,45 @@ public class GarageService implements IGarageService {
     @Override
     public int addGarage(int id, String address) {
         Garage garage = new Garage(id, address, new ArrayList<>());
+        EntityTransaction transaction = DbJpaConnector.getTransaction();
         try {
-            return garageDao.addGarage(garage);
+            transaction.begin();
+            garageDao.addGarage(garage);
+            transaction.commit();
+            return 1;
         } catch (Exception e) {
+            transaction.rollback();
             logger.error(e.getMessage());
             return 0;
+        } finally {
+            DbJpaConnector.closeSession();
         }
     }
 
     @Override
     public int removeGarage(int garageId) {
+        EntityTransaction transaction = null;
         try {
             Garage garage = findGarageById(garageId);
             if (garage == null) {
                 logger.error("Гараж с указанным номером не существует");
                 return 0;
             }
+            transaction = DbJpaConnector.getTransaction();
+            transaction.begin();
             List<GaragePlace> garagePlaces = garage.getGaragePlaces();
             for (GaragePlace garagePlace : garagePlaces) {
                 garagePlaceDao.removeGaragePlace(garagePlace);
             }
-            return garageDao.removeGarage(garage);
+            garageDao.removeGarage(garage);
+            transaction.commit();
+            return 1;
         } catch (Exception e) {
+            transaction.rollback();
             logger.error(e.getMessage());
             return 0;
+        } finally {
+            DbJpaConnector.closeSession();
         }
     }
 
@@ -77,10 +94,17 @@ public class GarageService implements IGarageService {
     public int addGaragePlace(int garageId, int garagePlaceId, String type, int area) {
         if (addGaragePlaceOption) {
             GaragePlace garagePlace = new GaragePlace(garagePlaceId, findGarageById(garageId), type, area);
+            EntityTransaction transaction = DbJpaConnector.getTransaction();
             try {
-                return garagePlaceDao.addGaragePlace(garagePlace);
+                transaction.begin();
+                garagePlaceDao.addGaragePlace(garagePlace);
+                transaction.commit();
+                return 1;
             } catch (Exception e) {
+                transaction.rollback();
                 logger.error(e.getMessage());
+            } finally {
+                DbJpaConnector.closeSession();
             }
         } else {
             logger.warn("Возможность добавления места в гараже отключена");
@@ -91,15 +115,23 @@ public class GarageService implements IGarageService {
     @Override
     public int removeGaragePlace(int garageId, int garagePlaceId) {
         if (removeGaragePlaceOption) {
+            EntityTransaction transaction = null;
             try {
                 GaragePlace garagePlace = findGaragePlaceById(garageId, garagePlaceId);
                 if (garagePlace == null) {
                     logger.error("Место в гараже с указанным номером не существует");
                     return 0;
                 }
-                return garagePlaceDao.removeGaragePlace(garagePlace);
+                transaction = DbJpaConnector.getTransaction();
+                transaction.begin();
+                garagePlaceDao.removeGaragePlace(garagePlace);
+                transaction.commit();
+                return 1;
             } catch (Exception e) {
+                transaction.rollback();
                 logger.error(e.getMessage());
+            } finally {
+                DbJpaConnector.closeSession();
             }
         } else {
             logger.warn("Возможность удаления места в гараже отключена");

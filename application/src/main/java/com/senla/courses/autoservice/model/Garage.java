@@ -19,7 +19,7 @@ public class Garage implements Serializable {
     @Id
     private int id;
     private String address;
-    @OneToMany(mappedBy = "garage", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "garage", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<GaragePlace> garagePlaces;
 
     public Garage(int id, String address, List<GaragePlace> garagePlaces) {

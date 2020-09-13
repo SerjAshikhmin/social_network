@@ -20,7 +20,9 @@ public class GaragePlaceDao extends AbstractJpaDao<GaragePlace> implements IGara
 
     @Override
     public int removeGaragePlace(GaragePlace garagePlace) throws PersistenceException {
-        garagePlace.getOrder().setGaragePlace(null);
+        if (garagePlace.getOrder() != null) {
+            garagePlace.getOrder().setGaragePlace(null);
+        }
         return delete(garagePlace);
     }
 
@@ -31,8 +33,8 @@ public class GaragePlaceDao extends AbstractJpaDao<GaragePlace> implements IGara
 
     @Override
     public GaragePlace getGaragePlaceById(int garageId, int garagePlaceId) throws PersistenceException {
-        GaragePlace garagePlace = null;
-        EntityManager entityManager = DbJpaConnector.getEntityManager();
+        GaragePlace garagePlace;
+        EntityManager entityManager = DbJpaConnector.openSession();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GaragePlace> garagePlaceCriteria = criteriaBuilder.createQuery(GaragePlace.class);
         Root<GaragePlace> garagePlaceRoot = garagePlaceCriteria.from(GaragePlace.class);

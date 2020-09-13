@@ -5,6 +5,7 @@ import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.exceptions.MasterNotFoundException;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
@@ -15,6 +16,7 @@ import com.senla.courses.autoservice.utils.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityTransaction;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,36 +33,58 @@ public class MasterService implements IMasterService {
     @Override
     public int addMaster(int id, String name, int category) {
         Master master = new Master (id, name, category);
+        EntityTransaction transaction = DbJpaConnector.getTransaction();
         try {
-            return masterDao.addMaster(master);
+            transaction.begin();
+            masterDao.addMaster(master);
+            transaction.commit();
+            return 1;
         } catch (Exception e) {
+            transaction.rollback();
             logger.error(e.getMessage());
             return 0;
+        } finally {
+            DbJpaConnector.closeSession();
         }
     }
 
     @Override
     public int removeMaster(String name) {
+        EntityTransaction transaction = null;
         try {
             Master master = findMasterByName(name);
             if (master == null) {
                 logger.error("Мастера с указанным именем не существует");
                 return 0;
             }
-            return masterDao.removeMaster(master);
+            transaction = DbJpaConnector.getTransaction();
+            transaction.begin();
+            masterDao.removeMaster(master);
+            transaction.commit();
+            return 1;
         } catch (Exception e) {
+            transaction.rollback();
             logger.error(e.getMessage());
             return 0;
+        } finally {
+            DbJpaConnector.closeSession();
         }
     }
 
     @Override
     public int updateMaster(Master master) {
+        EntityTransaction transaction = DbJpaConnector.getTransaction();
         try {
-            return masterDao.updateMaster(master);
+            transaction.begin();
+            masterDao.updateMaster(master);
+            transaction.commit();
+            return 1;
         } catch (Exception e) {
+            transaction.rollback();
             logger.error(e.getMessage());
             return 0;
+        } finally {
+            DbJpaConnector.closeSession();
         }
     }
 

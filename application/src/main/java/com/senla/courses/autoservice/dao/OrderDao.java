@@ -10,7 +10,6 @@ import com.senla.courses.autoservice.model.enums.OrderStatus;
 import org.hibernate.Hibernate;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -39,7 +38,20 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
 
     @Override
     public Order getOrderById(int id) throws PersistenceException {
-        return findById(id);
+        Order order;
+        entityManager = DbJpaConnector.openSession();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Order> objCriteria = criteriaBuilder.createQuery(Order.class);
+        Root<Order> objRoot = objCriteria.from(Order.class);
+        objCriteria.select(objRoot);
+        objCriteria.where(criteriaBuilder.equal(objRoot.get("id"), id));
+        order = entityManager.createQuery(objCriteria).getSingleResult();
+        Hibernate.initialize(order.getMasters());
+        if (!entityManager.getTransaction().isActive()) {
+            DbJpaConnector.closeSession();
+        }
+
+        return order;
     }
 
     @Override
@@ -50,26 +62,20 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
     @Override
     public List<Order> findAll() throws PersistenceException {
         List<Order> allOrders;
-        entityManager = DbJpaConnector.getEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
-        try {
-            transaction.begin();
-            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-            CriteriaQuery<Order> objCriteria = criteriaBuilder.createQuery(Order.class);
-            Root<Order> objRoot = objCriteria.from(Order.class);
-            objCriteria.select(objRoot);
-            allOrders = entityManager.createQuery(objCriteria).getResultList();
-            for (Order order : allOrders) {
-                Hibernate.initialize(order.getMasters());
-            }
-            transaction.commit();
-            entityManager.close();
-
-            return allOrders;
-        } catch (Exception e) {
-            transaction.rollback();
-            throw e;
+        entityManager = DbJpaConnector.openSession();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Order> objCriteria = criteriaBuilder.createQuery(Order.class);
+        Root<Order> objRoot = objCriteria.from(Order.class);
+        objCriteria.select(objRoot);
+        allOrders = entityManager.createQuery(objCriteria).getResultList();
+        for (Order order : allOrders) {
+            Hibernate.initialize(order.getMasters());
         }
+        if (!entityManager.getTransaction().isActive()) {
+            DbJpaConnector.closeSession();
+        }
+
+        return allOrders;
     }
 
     @Override

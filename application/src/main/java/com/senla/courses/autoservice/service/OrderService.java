@@ -7,6 +7,7 @@ import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IGaragePlaceDao;
 import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
 import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
@@ -23,7 +24,6 @@ import com.senla.courses.autoservice.utils.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import java.io.*;
@@ -66,13 +66,19 @@ public class OrderService implements IOrderService {
         Order order = new Order(id, submissionDate, startDate, endDate, kindOfWork, cost,
                 garagePlace, masters, orderStatus);
         master.setOrder(order);
+        EntityTransaction transaction = DbJpaConnector.getTransaction();
         try {
+            transaction.begin();
             orderDao.addOrder(order);
             masterDao.updateMaster(master);
             garagePlaceDao.updateGaragePlace(garagePlace);
+            transaction.commit();
             return 1;
         } catch (Exception ex) {
+            transaction.rollback();
             logger.error(ex.getMessage());
+        } finally {
+            DbJpaConnector.closeSession();
         }
         return 0;
     }
@@ -93,15 +99,21 @@ public class OrderService implements IOrderService {
                         master.setBusy(false);
                         master.setOrder(null);
                     });
+            EntityTransaction transaction = DbJpaConnector.getTransaction();
             try {
+                transaction.begin();
                 for (Master master : order.getMasters()) {
                     masterDao.updateMaster(master);
                 }
                 garagePlaceDao.updateGaragePlace(order.getGaragePlace());
                 orderDao.removeOrder(order);
+                transaction.commit();
                 return 1;
             } catch (PersistenceException ex) {
+                transaction.rollback();
                 logger.error(ex.getMessage());
+            } finally {
+                DbJpaConnector.closeSession();
             }
         } else {
             logger.warn("Возможность удаления заказов отключена");
@@ -113,11 +125,17 @@ public class OrderService implements IOrderService {
     public void cancelOrder(int id) {
         Order order = findOrderById(id);
         if (order != null) {
+            EntityTransaction transaction = DbJpaConnector.getTransaction();
             try {
+                transaction.begin();
                 orderDao.cancelOrder(order);
+                transaction.commit();
                 logger.info(String.format("Заказ №%d отменен", id));
             } catch (Exception ex) {
+                transaction.rollback();
                 logger.error(ex.getMessage());
+            } finally {
+                DbJpaConnector.closeSession();
             }
         } else {
             logger.error("Заказ не найден");
@@ -129,11 +147,17 @@ public class OrderService implements IOrderService {
     public void closeOrder(int id) {
         Order order = findOrderById(id);
         if (order != null) {
+            EntityTransaction transaction = DbJpaConnector.getTransaction();
             try {
+                transaction.begin();
                 orderDao.closeOrder(order);
+                transaction.commit();
                 logger.info(String.format("Заказ №%d закрыт", id));
             } catch (Exception ex) {
+                transaction.rollback();
                 logger.error(ex.getMessage());
+            } finally {
+                DbJpaConnector.closeSession();
             }
         } else {
             logger.error("При закрытии заказа произошла ошибка");
@@ -210,10 +234,16 @@ public class OrderService implements IOrderService {
 
     @Override
     public void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) {
+        EntityTransaction transaction = DbJpaConnector.getTransaction();
         try {
+            transaction.begin();
             orderDao.updateOrderTime(order, newStartTime, newEndTime);
+            transaction.commit();
         } catch (Exception ex) {
+            transaction.rollback();
             logger.error(ex.getMessage());
+        } finally {
+            DbJpaConnector.closeSession();
         }
     }
 
