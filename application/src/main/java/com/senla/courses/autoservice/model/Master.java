@@ -1,66 +1,46 @@
 package com.senla.courses.autoservice.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
+@NoArgsConstructor
+@Setter
+@Getter
+@Entity
+@Table(name = "Master")
 public class Master implements Serializable {
 
     private static final long serialVersionUID = -4862926644813433703L;
+    @Id
     private int id;
     private String name;
     private int category;
     private boolean busy;
-    private int orderId;
+    @ManyToOne
+    @JoinColumn(name = "orders_id")
+    private Order order;
 
     public Master(int id, String name, int category) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.busy = false;
-        this.orderId = 0;
     }
 
-    public Master(int id, String name, int category, boolean busy, int orderId) {
+    public Master(int id, String name, int category, boolean busy, Order order) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.busy = busy;
-        this.orderId = orderId;
-    }
-
-    public void setCategory(int category) {
-        this.category = category;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getCategory() {
-        return category;
-    }
-
-    public boolean isBusy() {
-        return busy;
-    }
-
-    public void setBusy(boolean busy) {
-        this.busy = busy;
+        this.order = order;
     }
 
     public int getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return order.getId();
     }
 
     @Override

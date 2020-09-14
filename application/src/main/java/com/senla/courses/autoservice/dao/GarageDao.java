@@ -1,45 +1,70 @@
 package com.senla.courses.autoservice.dao;
 
-import com.lib.dicontainer.annotations.InjectByType;
 import com.senla.courses.autoservice.dao.interfaces.IGarageDao;
-import com.senla.courses.autoservice.dao.jdbcdao.GarageJdbcDao;
-import com.senla.courses.autoservice.dao.jdbcdao.GaragePlaceJdbcDao;
+import com.senla.courses.autoservice.dao.jpadao.AbstractJpaDao;
+import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.model.Garage;
-import com.senla.courses.autoservice.model.GaragePlace;
+import org.hibernate.Hibernate;
 
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
-public class GarageDao implements IGarageDao {
+public class GarageDao extends AbstractJpaDao<Garage> implements IGarageDao {
 
-    @InjectByType
-    GarageJdbcDao garageJdbcDao;
-    @InjectByType
-    GaragePlaceJdbcDao garagePlaceJdbcDao;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
-    public int addGarage(Garage garage) throws SQLException {
-        return garageJdbcDao.insert(garage);
+    public int addGarage(Garage garage) throws PersistenceException {
+        return insert(garage);
     }
 
     @Override
-    public int removeGarage(Garage garage) throws SQLException {
-        return garageJdbcDao.delete(garage);
+    public int removeGarage(Garage garage) throws PersistenceException {
+        return delete(garage);
     }
 
     @Override
-    public Garage getGarageById(int id) throws SQLException {
-        return garageJdbcDao.findById(id);
+    public Garage getGarageById(int id) throws PersistenceException {
+        Garage garage;
+        entityManager = DbJpaConnector.openSession();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Garage> objCriteria = criteriaBuilder.createQuery(Garage.class);
+        Root<Garage> objRoot = objCriteria.from(Garage.class);
+        objCriteria.select(objRoot);
+        objCriteria.where(criteriaBuilder.equal(objRoot.get("id"), id));
+        garage = entityManager.createQuery(objCriteria).getSingleResult();
+        Hibernate.initialize(garage.getGaragePlaces());
+        DbJpaConnector.closeSession();
+
+        return garage;
     }
 
     @Override
-    public GaragePlace getGaragePlaceById(int garageId, int garagePlaceId) throws SQLException {
-        return garagePlaceJdbcDao.findGaragePlaceById(garageId, garagePlaceId);
+    public List<Garage> getAllGarages() throws PersistenceException {
+        return findAll();
     }
 
     @Override
-    public List<Garage> getAllGarages() throws SQLException {
-        return garageJdbcDao.findAll();
+    public List<Garage> findAll() throws PersistenceException {
+        List<Garage> allGarages;
+        entityManager = DbJpaConnector.openSession();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Garage> objCriteria = criteriaBuilder.createQuery(Garage.class);
+        Root<Garage> objRoot = objCriteria.from(Garage.class);
+        objCriteria.select(objRoot);
+        allGarages = entityManager.createQuery(objCriteria).getResultList();
+        for (Garage garage : allGarages) {
+            Hibernate.initialize(garage.getGaragePlaces());
+        }
+        DbJpaConnector.closeSession();
+
+        return allGarages;
     }
 
     @Override
@@ -48,23 +73,8 @@ public class GarageDao implements IGarageDao {
     }
 
     @Override
-    public int updateGarage(Garage garage) throws SQLException {
-        return garageJdbcDao.update(garage);
-    }
-
-    @Override
-    public int updateGaragePlace(GaragePlace garagePlace) throws SQLException {
-        return garagePlaceJdbcDao.update(garagePlace);
-    }
-
-    @Override
-    public int addGaragePlace(GaragePlace garagePlace) throws SQLException {
-        return garagePlaceJdbcDao.insert(garagePlace);
-    }
-
-    @Override
-    public int removeGaragePlace(GaragePlace garagePlace) throws SQLException {
-        return garagePlaceJdbcDao.delete(garagePlace);
+    public int updateGarage(Garage garage) throws PersistenceException {
+        return update(garage);
     }
 
 }

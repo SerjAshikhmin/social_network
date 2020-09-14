@@ -4,12 +4,8 @@ package com.senla.courses.view.menu;
 import com.lib.dicontainer.annotations.InjectByType;
 import com.lib.dicontainer.annotations.Singleton;
 import com.lib.utils.ConsoleHelper;
-import com.senla.courses.view.action.garageaction.RemoveGarageAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 @Singleton
 public class MenuController {

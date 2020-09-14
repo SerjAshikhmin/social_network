@@ -1,61 +1,48 @@
 package com.senla.courses.autoservice.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
+@NoArgsConstructor
+@Setter
+@Getter
+@Entity
+@Table(name = "GaragePlace")
 public class GaragePlace implements Serializable {
 
     private static final long serialVersionUID = -4862926644813433701L;
+    @Id
     private int id;
-    private int garageId;
+    @ManyToOne
+    @JoinColumn(name = "garage_id")
+    private Garage garage;
     private String type;
     private int area;
     private boolean busy;
+    @OneToOne(mappedBy = "garagePlace")
+    private Order order;
 
-    public GaragePlace(int id, int garageId, String type, int area) {
+    public GaragePlace(int id, Garage garage, String type, int area) {
         this.id = id;
-        this.garageId = garageId;
+        this.garage = garage;
         this.type = type;
         this.area = area;
     }
 
-    public GaragePlace(int id, int garageId, String type, int area, boolean busy) {
+    public GaragePlace(int id, Garage garage, String type, int area, boolean busy) {
         this.id = id;
-        this.garageId = garageId;
+        this.garage = garage;
         this.type = type;
         this.area = area;
         this.busy = busy;
     }
 
     public int getGarageId() {
-        return garageId;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setArea(int area) {
-        this.area = area;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public int getArea() {
-        return area;
-    }
-
-    public boolean isBusy() {
-        return busy;
-    }
-
-    public void setBusy(boolean busy) {
-        this.busy = busy;
+        return this.garage.getId();
     }
 
     @Override

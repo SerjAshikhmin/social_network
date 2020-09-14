@@ -1,22 +1,36 @@
 package com.senla.courses.autoservice.model;
 
 import com.senla.courses.autoservice.model.enums.OrderStatus;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@NoArgsConstructor
+@Setter
+@Getter
+@Entity
+@Table(name = "Orders")
 public class Order implements Serializable {
 
     private static final long serialVersionUID = -4862926644813433704L;
+    @Id
     private int id;
     private LocalDateTime submissionDate;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String kindOfWork;
     private int cost;
+    @OneToOne
+    @PrimaryKeyJoinColumn
     private GaragePlace garagePlace;
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     private List<Master> masters;
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     public Order(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate, String kindOfWork, int cost,
@@ -32,77 +46,9 @@ public class Order implements Serializable {
         this.status = status;
         this.garagePlace.setBusy(true);
         for (Master master : this.masters) {
-            master.setOrderId(this.getId());
+            master.setOrder(this);
             master.setBusy(true);
         }
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    public void setKindOfWork(String kindOfWork) {
-        this.kindOfWork = kindOfWork;
-    }
-
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setSubmissionDate(LocalDateTime submissionDate) {
-        this.submissionDate = submissionDate;
-    }
-
-    public LocalDateTime getSubmissionDate() {
-        return submissionDate;
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public String getKindOfWork() {
-        return kindOfWork;
-    }
-
-    public int getCost() {
-        return cost;
-    }
-
-    public GaragePlace getGaragePlace() {
-        return garagePlace;
-    }
-
-    public void setGaragePlace(GaragePlace garagePlace) {
-        this.garagePlace = garagePlace;
-    }
-
-    public List<Master> getMasters() {
-        return masters;
-    }
-
-    public void setMasters(List<Master> masters) {
-        this.masters = masters;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
     }
 
     @Override

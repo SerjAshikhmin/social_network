@@ -1,49 +1,81 @@
 package com.senla.courses.autoservice.dao;
 
-import com.lib.dicontainer.annotations.InjectByType;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
-import com.senla.courses.autoservice.dao.jdbcdao.OrderJdbcDao;
+import com.senla.courses.autoservice.dao.jpadao.AbstractJpaDao;
+import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
+import org.hibernate.Hibernate;
 
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class OrderDao implements IOrderDao {
+public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
 
-    @InjectByType
-    private OrderJdbcDao orderJdbcDao;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
-    public int addOrder(Order order) throws SQLException {
-        return orderJdbcDao.insert(order);
+    public int addOrder(Order order) throws PersistenceException {
+        return insert(order);
     }
 
     @Override
-    public int removeOrder(Order order) throws SQLException {
-        if (order == null) {
-            return 0;
+    public int removeOrder(Order order) throws PersistenceException {
+        return delete(order);
+    }
+
+    @Override
+    public Order getOrderById(int id) throws PersistenceException {
+        Order order;
+        entityManager = DbJpaConnector.openSession();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Order> objCriteria = criteriaBuilder.createQuery(Order.class);
+        Root<Order> objRoot = objCriteria.from(Order.class);
+        objCriteria.select(objRoot);
+        objCriteria.where(criteriaBuilder.equal(objRoot.get("id"), id));
+        order = entityManager.createQuery(objCriteria).getSingleResult();
+        Hibernate.initialize(order.getMasters());
+        if (!entityManager.getTransaction().isActive()) {
+            DbJpaConnector.closeSession();
         }
-        order.getGaragePlace().setBusy(false);
-        order.getMasters().stream()
-                .forEach(master -> master.setBusy(false));
-        return orderJdbcDao.delete(order);
+
+        return order;
     }
 
     @Override
-    public Order getOrderById(int id) throws SQLException {
-        return orderJdbcDao.findById(id);
+    public List<Order> getAllOrders() throws PersistenceException {
+        return findAll();
     }
 
     @Override
-    public List<Order> getAllOrders() throws SQLException {
-        return orderJdbcDao.findAll();
+    public List<Order> findAll() throws PersistenceException {
+        List<Order> allOrders;
+        entityManager = DbJpaConnector.openSession();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Order> objCriteria = criteriaBuilder.createQuery(Order.class);
+        Root<Order> objRoot = objCriteria.from(Order.class);
+        objCriteria.select(objRoot);
+        allOrders = entityManager.createQuery(objCriteria).getResultList();
+        for (Order order : allOrders) {
+            Hibernate.initialize(order.getMasters());
+        }
+        if (!entityManager.getTransaction().isActive()) {
+            DbJpaConnector.closeSession();
+        }
+
+        return allOrders;
     }
 
     @Override
@@ -52,15 +84,13 @@ public class OrderDao implements IOrderDao {
     }
 
     @Override
-    public int updateOrder(Order order) throws SQLException {
-        return orderJdbcDao.update(order);
-        /*Order daoOrder = getOrderById(order.getId());
-        return updateOrderFields(order, daoOrder);*/
+    public int updateOrder(Order order) throws PersistenceException {
+        return update(order);
     }
 
     @Override
-    public void cancelOrder(Order order) throws SQLException {
-        Order daoOrder = orderJdbcDao.findById(order.getId());
+    public void cancelOrder(Order order) throws PersistenceException {
+        Order daoOrder = findById(order.getId());
         daoOrder.getGaragePlace().setBusy(false);
         order.getMasters().stream()
                 .forEach(master -> master.setBusy(false));
@@ -69,8 +99,8 @@ public class OrderDao implements IOrderDao {
     }
 
     @Override
-    public void closeOrder(Order order) throws SQLException {
-        Order daoOrder = orderJdbcDao.findById(order.getId());
+    public void closeOrder(Order order) throws PersistenceException {
+        Order daoOrder = findById(order.getId());
         daoOrder.getGaragePlace().setBusy(false);
         order.getMasters().stream()
                 .forEach(master -> master.setBusy(false));
@@ -79,8 +109,8 @@ public class OrderDao implements IOrderDao {
         updateOrder(daoOrder);
     }
 
-    public void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) throws SQLException {
-        Order daoOrder = orderJdbcDao.findById(order.getId());
+    public void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) throws PersistenceException {
+        Order daoOrder = findById(order.getId());
         daoOrder.setStartDate(newStartTime);
         daoOrder.setEndDate(newEndTime);
         updateOrder(daoOrder);
@@ -100,7 +130,7 @@ public class OrderDao implements IOrderDao {
     }
 
     @Override
-    public List<Order> getAllOrdersInProgress(Comparator orderComparator) throws SQLException {
+    public List<Order> getAllOrdersInProgress(Comparator orderComparator) throws PersistenceException {
         List<Order> completedOrders = getAllOrders().stream()
                 .filter(order -> order.getStatus() == OrderStatus.IN_WORK)
                 .collect(Collectors.toList());

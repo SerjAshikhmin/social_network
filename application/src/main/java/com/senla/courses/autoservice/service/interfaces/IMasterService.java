@@ -11,6 +11,7 @@ public interface IMasterService {
 
     int addMaster(int id, String name, int category);
     int removeMaster(String name);
+    int updateMaster(Master master);
     List<Master> getAllMasters();
     List<Master> getAllMastersSorted(String sortBy);
     List<Master> getAllFreeMasters();

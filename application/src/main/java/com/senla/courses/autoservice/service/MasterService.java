@@ -5,6 +5,7 @@ import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
 import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.exceptions.MasterNotFoundException;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
@@ -15,8 +16,8 @@ import com.senla.courses.autoservice.utils.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityTransaction;
 import java.io.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -32,26 +33,58 @@ public class MasterService implements IMasterService {
     @Override
     public int addMaster(int id, String name, int category) {
         Master master = new Master (id, name, category);
+        EntityTransaction transaction = DbJpaConnector.getTransaction();
         try {
-            return masterDao.addMaster(master);
-        } catch (SQLException e) {
-            logger.error("Ошибка соединения с базой данных");
+            transaction.begin();
+            masterDao.addMaster(master);
+            transaction.commit();
+            return 1;
+        } catch (Exception e) {
+            transaction.rollback();
+            logger.error(e.getMessage());
             return 0;
+        } finally {
+            DbJpaConnector.closeSession();
         }
     }
 
     @Override
     public int removeMaster(String name) {
+        EntityTransaction transaction = null;
         try {
             Master master = findMasterByName(name);
             if (master == null) {
                 logger.error("Мастера с указанным именем не существует");
                 return 0;
             }
-            return masterDao.removeMaster(master);
-        } catch (SQLException e) {
-            logger.error("Ошибка соединения с базой данных");
+            transaction = DbJpaConnector.getTransaction();
+            transaction.begin();
+            masterDao.removeMaster(master);
+            transaction.commit();
+            return 1;
+        } catch (Exception e) {
+            transaction.rollback();
+            logger.error(e.getMessage());
             return 0;
+        } finally {
+            DbJpaConnector.closeSession();
+        }
+    }
+
+    @Override
+    public int updateMaster(Master master) {
+        EntityTransaction transaction = DbJpaConnector.getTransaction();
+        try {
+            transaction.begin();
+            masterDao.updateMaster(master);
+            transaction.commit();
+            return 1;
+        } catch (Exception e) {
+            transaction.rollback();
+            logger.error(e.getMessage());
+            return 0;
+        } finally {
+            DbJpaConnector.closeSession();
         }
     }
 
@@ -59,8 +92,8 @@ public class MasterService implements IMasterService {
     public List<Master> getAllMasters() {
         try {
             return masterDao.getAllMasters();
-        } catch (SQLException e) {
-            logger.error("Ошибка соединения с базой данных");
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         } return null;
     }
 
@@ -69,8 +102,8 @@ public class MasterService implements IMasterService {
         List<Master> allMastersSorted = new ArrayList<>();
         try {
             allMastersSorted.addAll(masterDao.getAllMasters());
-        } catch (SQLException e) {
-            logger.error("Ошибка соединения с базой данных");
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
         Comparator masterComparator = getMasterComparator(sortBy);
         if (masterComparator != null) {
@@ -83,8 +116,8 @@ public class MasterService implements IMasterService {
     public List<Master> getAllFreeMasters() {
         try {
             return masterDao.getAllFreeMasters();
-        } catch (SQLException e) {
-            logger.error("Ошибка соединения с базой данных");
+        } catch (Exception e) {
+            logger.error(e.getMessage());
             return null;
         }
     }
@@ -95,8 +128,8 @@ public class MasterService implements IMasterService {
             return masterDao.getCurrentOrder(findMasterByName(name));
         } catch (MasterNotFoundException e) {
             logger.error("Мастер не найден");
-        } catch (SQLException e) {
-            logger.error("Ошибка соединения с базой данных");
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
         return null;
     }
@@ -115,8 +148,8 @@ public class MasterService implements IMasterService {
     public Master findMasterById(int id) {
         try {
             return masterDao.getMasterById(id);
-        } catch (SQLException e) {
-            logger.error("Ошибка соединения с базой данных");
+        } catch (Exception e) {
+            logger.error(e.getMessage());
             return null;
         }
     }
@@ -129,7 +162,7 @@ public class MasterService implements IMasterService {
                 throw new FileNotFoundException();
             }
             Master importMaster = new Master(Integer.parseInt(masterDataList.get(0)), masterDataList.get(1), Integer.parseInt(masterDataList.get(2)),
-                    Boolean.parseBoolean(masterDataList.get(3)), Integer.parseInt(masterDataList.get(4)));
+                    Boolean.parseBoolean(masterDataList.get(3)), orderDao.getOrderById(Integer.parseInt(masterDataList.get(4))));
 
             if (masterDao.getMasterById(importMaster.getId()) != null) {
                 masterDao.updateMaster(importMaster);
@@ -142,7 +175,7 @@ public class MasterService implements IMasterService {
         } catch (FileNotFoundException e) {
             logger.error("Файл не найден");
         } catch (Exception e) {
-            logger.error("Файл содержит неверные данные");
+            logger.error(e.getMessage());
         }
         return 0;
     }
@@ -158,8 +191,8 @@ public class MasterService implements IMasterService {
             }
         } catch (WrongFileFormatException e) {
             logger.error("Неверный формат файла");
-        } catch (SQLException e) {
-            logger.error("Ошибка соединения с базой данных");
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
         return false;
     }

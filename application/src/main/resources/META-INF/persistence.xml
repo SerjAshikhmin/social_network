@@ -1,0 +1,23 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
+    <persistence-unit name="com.senla.courses">
+        <description>Hibernate EntityManager Demo</description>
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <class>com.senla.courses.autoservice.model.Master</class>
+        <class>com.senla.courses.autoservice.model.Garage</class>
+        <class>com.senla.courses.autoservice.model.GaragePlace</class>
+        <class>com.senla.courses.autoservice.model.Order</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value="pass"/>
+        </properties>
+    </persistence-unit>
+</persistence>
