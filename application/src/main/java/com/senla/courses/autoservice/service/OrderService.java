@@ -19,8 +19,7 @@ import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+
 @Service
+@Slf4j
 public class OrderService implements IOrderService {
 
     @Autowired
@@ -50,7 +51,6 @@ public class OrderService implements IOrderService {
     private boolean shiftEndTimeOrdersOption;
     @Value("${removeOrderOption}")
     private boolean removeOrderOption;
-    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @Override
     public int addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
@@ -58,7 +58,7 @@ public class OrderService implements IOrderService {
         List<Master> masters = new ArrayList<>();
         Master master = masterService.findMasterByName(masterName);
         if (master == null) {
-            logger.error(String.format("Не найден мастер для заказа №%d", id));
+            log.error(String.format("Не найден мастер для заказа №%d", id));
             return 0;
         }
         master.setBusy(true);
@@ -78,7 +78,7 @@ public class OrderService implements IOrderService {
             return 1;
         } catch (Exception ex) {
             transaction.rollback();
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         } finally {
             DbJpaConnector.closeSession();
         }
@@ -90,7 +90,7 @@ public class OrderService implements IOrderService {
         if (removeOrderOption) {
             Order order = findOrderById(id);
             if (order == null) {
-                logger.error("Заказ с указанным номером не существует");
+                log.error("Заказ с указанным номером не существует");
                 return 0;
             }
             GaragePlace garagePlace = order.getGaragePlace();
@@ -113,12 +113,12 @@ public class OrderService implements IOrderService {
                 return 1;
             } catch (PersistenceException ex) {
                 transaction.rollback();
-                logger.error(ex.getMessage());
+                log.error(ex.getMessage());
             } finally {
                 DbJpaConnector.closeSession();
             }
         } else {
-            logger.warn("Возможность удаления заказов отключена");
+            log.warn("Возможность удаления заказов отключена");
         }
         return 0;
     }
@@ -132,15 +132,15 @@ public class OrderService implements IOrderService {
                 transaction.begin();
                 orderDao.cancelOrder(order);
                 transaction.commit();
-                logger.info(String.format("Заказ №%d отменен", id));
+                log.info(String.format("Заказ №%d отменен", id));
             } catch (Exception ex) {
                 transaction.rollback();
-                logger.error(ex.getMessage());
+                log.error(ex.getMessage());
             } finally {
                 DbJpaConnector.closeSession();
             }
         } else {
-            logger.error("Заказ не найден");
+            log.error("Заказ не найден");
         }
 
     }
@@ -154,15 +154,15 @@ public class OrderService implements IOrderService {
                 transaction.begin();
                 orderDao.closeOrder(order);
                 transaction.commit();
-                logger.info(String.format("Заказ №%d закрыт", id));
+                log.info(String.format("Заказ №%d закрыт", id));
             } catch (Exception ex) {
                 transaction.rollback();
-                logger.error(ex.getMessage());
+                log.error(ex.getMessage());
             } finally {
                 DbJpaConnector.closeSession();
             }
         } else {
-            logger.error("При закрытии заказа произошла ошибка");
+            log.error("При закрытии заказа произошла ошибка");
         }
     }
 
@@ -172,7 +172,7 @@ public class OrderService implements IOrderService {
         try {
             orders = orderDao.getAllOrders();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return orders;
     }
@@ -195,7 +195,7 @@ public class OrderService implements IOrderService {
         try {
             orders = orderDao.getAllOrdersInProgress(orderComparator);
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return orders;
     }
@@ -215,7 +215,7 @@ public class OrderService implements IOrderService {
         try {
             return orderDao.getMastersByOrder(order);
         } catch (OrderNotFoundException e) {
-            logger.error("Неправильный номер заказа");
+            log.error("Неправильный номер заказа");
             return null;
         }
     }
@@ -243,7 +243,7 @@ public class OrderService implements IOrderService {
             transaction.commit();
         } catch (Exception ex) {
             transaction.rollback();
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         } finally {
             DbJpaConnector.closeSession();
         }
@@ -257,7 +257,7 @@ public class OrderService implements IOrderService {
                 updateOrderTime(order, order.getStartDate(), order.getEndDate().plusHours(hours).plusMinutes(minutes));
             });
         } else {
-            logger.warn("Возможность смещать время выполнения заказов отключена");
+            log.warn("Возможность смещать время выполнения заказов отключена");
         }
     }
 
@@ -296,13 +296,13 @@ public class OrderService implements IOrderService {
                 return orderDao.addOrder(importOrder);
             }
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
             return 0;
         } catch (FileNotFoundException e) {
-            logger.error("Файл не найден");
+            log.error("Файл не найден");
             return 0;
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return 0;
         }
     }
@@ -314,11 +314,11 @@ public class OrderService implements IOrderService {
             if (orderToExport != null) {
                 return CsvUtil.exportCsvFile(toList(orderToExport), fileName);
             } else {
-                logger.error("Неверный № заказа");
+                log.error("Неверный № заказа");
                 return false;
             }
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
             return false;
         }
     }

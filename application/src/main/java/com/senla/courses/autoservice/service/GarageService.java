@@ -10,8 +10,7 @@ import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import java.util.List;
 
 
 @Service
+@Slf4j
 public class GarageService implements IGarageService {
 
     @Autowired
@@ -35,7 +35,6 @@ public class GarageService implements IGarageService {
     private boolean addGaragePlaceOption;
     @Value("${removeGaragePlaceOption}")
     private boolean removeGaragePlaceOption;
-    private static final Logger logger = LoggerFactory.getLogger(GarageService.class);
 
     @Override
     public int addGarage(int id, String address) {
@@ -48,7 +47,7 @@ public class GarageService implements IGarageService {
             return 1;
         } catch (Exception e) {
             transaction.rollback();
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return 0;
         } finally {
             DbJpaConnector.closeSession();
@@ -61,7 +60,7 @@ public class GarageService implements IGarageService {
         try {
             Garage garage = findGarageById(garageId);
             if (garage == null) {
-                logger.error("Гараж с указанным номером не существует");
+                log.error("Гараж с указанным номером не существует");
                 return 0;
             }
             transaction = DbJpaConnector.getTransaction();
@@ -75,7 +74,7 @@ public class GarageService implements IGarageService {
             return 1;
         } catch (Exception e) {
             transaction.rollback();
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return 0;
         } finally {
             DbJpaConnector.closeSession();
@@ -88,7 +87,7 @@ public class GarageService implements IGarageService {
         try {
             garages = garageDao.getAllGarages();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return garages;
     }
@@ -105,12 +104,12 @@ public class GarageService implements IGarageService {
                 return 1;
             } catch (Exception e) {
                 transaction.rollback();
-                logger.error(e.getMessage());
+                log.error(e.getMessage());
             } finally {
                 DbJpaConnector.closeSession();
             }
         } else {
-            logger.warn("Возможность добавления места в гараже отключена");
+            log.warn("Возможность добавления места в гараже отключена");
         }
         return 0;
     }
@@ -122,7 +121,7 @@ public class GarageService implements IGarageService {
             try {
                 GaragePlace garagePlace = findGaragePlaceById(garageId, garagePlaceId);
                 if (garagePlace == null) {
-                    logger.error("Место в гараже с указанным номером не существует");
+                    log.error("Место в гараже с указанным номером не существует");
                     return 0;
                 }
                 transaction = DbJpaConnector.getTransaction();
@@ -132,12 +131,12 @@ public class GarageService implements IGarageService {
                 return 1;
             } catch (Exception e) {
                 transaction.rollback();
-                logger.error(e.getMessage());
+                log.error(e.getMessage());
             } finally {
                 DbJpaConnector.closeSession();
             }
         } else {
-            logger.warn("Возможность удаления места в гараже отключена");
+            log.warn("Возможность удаления места в гараже отключена");
         }
         return 0;
     }
@@ -151,7 +150,7 @@ public class GarageService implements IGarageService {
                             .filter(garagePlace -> !garagePlace.isBusy())
                             .forEach(garagePlace -> freePlaces.add(garagePlace)));
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return freePlaces;
     }
@@ -167,7 +166,7 @@ public class GarageService implements IGarageService {
         try {
             garagePlace = garagePlaceDao.getGaragePlaceById(garageId, garagePlaceId);
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return garagePlace;
     }
@@ -178,7 +177,7 @@ public class GarageService implements IGarageService {
         try {
             garage = garageDao.getGarageById(garageId);
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return garage;
     }
@@ -210,11 +209,11 @@ public class GarageService implements IGarageService {
                 return garageDao.addGarage(importGarage);
             }
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
         } catch (FileNotFoundException e) {
-            logger.error("Файл не найден");
+            log.error("Файл не найден");
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
         return 0;
     }
@@ -226,10 +225,10 @@ public class GarageService implements IGarageService {
             if (garageToExport != null) {
                 return CsvUtil.exportCsvFile(garageToList(garageToExport), fileName);
             } else {
-                logger.error("Неверный № гаража");
+                log.error("Неверный № гаража");
             }
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
         }
         return false;
     }
@@ -251,11 +250,11 @@ public class GarageService implements IGarageService {
             }
             return 1;
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
         } catch (FileNotFoundException e) {
-            logger.error("Файл не найден");
+            log.error("Файл не найден");
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return 0;
     }
@@ -267,11 +266,11 @@ public class GarageService implements IGarageService {
             if (garagePlaceToExport != null) {
                 return CsvUtil.exportCsvFile(garagePlaceToList(garagePlaceToExport), fileName);
             } else {
-                logger.error("Неверный № гаража или места в гараже");
+                log.error("Неверный № гаража или места в гараже");
                 return false;
             }
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
         }
         return false;
 }
