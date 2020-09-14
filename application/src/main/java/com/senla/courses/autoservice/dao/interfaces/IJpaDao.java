@@ -4,7 +4,7 @@ import javax.persistence.PersistenceException;
 import java.util.List;
 
 
-public interface IJdbcDao<T> {
+public interface IJpaDao<T> {
 
     int insert(T obj) throws PersistenceException;
     int delete(T obj) throws PersistenceException;

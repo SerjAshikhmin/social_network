@@ -1,7 +1,5 @@
 package com.senla.courses.autoservice.service;
 
-import com.lib.dicontainer.annotations.InjectByType;
-import com.lib.dicontainer.annotations.InjectProperty;
 import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IGarageDao;
@@ -14,23 +12,28 @@ import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityTransaction;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Service
 public class GarageService implements IGarageService {
 
-    @InjectByType
+    @Autowired
     private IGarageDao garageDao;
-    @InjectByType
+    @Autowired
     private IGaragePlaceDao garagePlaceDao;
-    @InjectByType
+    @Autowired
     private IMasterService masterService;
-    @InjectProperty
+    @Value("${addGaragePlaceOption}")
     private boolean addGaragePlaceOption;
-    @InjectProperty
+    @Value("${removeGaragePlaceOption}")
     private boolean removeGaragePlaceOption;
     private static final Logger logger = LoggerFactory.getLogger(GarageService.class);
 

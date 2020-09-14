@@ -1,6 +1,5 @@
 package com.senla.courses.autoservice.service;
 
-import com.lib.dicontainer.annotations.InjectByType;
 import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
@@ -15,6 +14,8 @@ import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityTransaction;
 import java.io.*;
@@ -22,11 +23,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Service
 public class MasterService implements IMasterService {
 
-    @InjectByType
+    @Autowired
     private IMasterDao masterDao;
-    @InjectByType
+    @Autowired
     private IOrderDao orderDao;
     private static final Logger logger = LoggerFactory.getLogger(MasterService.class);
 

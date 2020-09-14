@@ -4,11 +4,13 @@ import com.lib.dicontainer.annotations.Singleton;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Singleton
+
+@Service
 public interface IOrderService {
 
     int addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,

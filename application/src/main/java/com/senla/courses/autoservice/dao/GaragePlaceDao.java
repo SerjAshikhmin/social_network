@@ -4,6 +4,7 @@ import com.senla.courses.autoservice.dao.interfaces.IGaragePlaceDao;
 import com.senla.courses.autoservice.dao.jpadao.AbstractJpaDao;
 import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.model.GaragePlace;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
@@ -11,6 +12,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+
+@Repository
 public class GaragePlaceDao extends AbstractJpaDao<GaragePlace> implements IGaragePlaceDao {
 
     @Override

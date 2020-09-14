@@ -1,13 +1,15 @@
 package com.senla.courses.autoservice.dao.jpadao;
 
 import com.lib.dicontainer.annotations.Singleton;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-@Singleton
+//@Singleton
+@Repository
 public class DbJpaConnector {
 
     private static EntityManagerFactory emFactory;

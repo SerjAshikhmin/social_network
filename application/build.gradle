@@ -4,7 +4,7 @@ plugins {
 }
 
 ext {
-    javaMainClass = "com.senla.courses.view.Main"
+    javaMainClass = "com.senla.courses.Main"
 }
 
 application {
@@ -52,6 +52,10 @@ dependencies {
     compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.21.Final'
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.4.21.Final'
     compile group: 'com.h2database', name: 'h2', version: '1.4.200'
+
+    compile group: 'org.springframework', name: 'spring-core', version: '5.2.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '5.2.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-beans', version: '5.2.8.RELEASE'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

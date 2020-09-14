@@ -1,19 +1,19 @@
 package com.senla.courses.autoservice.controller;
 
-import com.lib.dicontainer.annotations.InjectByType;
-import com.lib.dicontainer.annotations.Singleton;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Singleton
+@Controller
 public class OrderController {
 
-    @InjectByType
+    @Autowired
     private IOrderService orderService;
 
     public int addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,

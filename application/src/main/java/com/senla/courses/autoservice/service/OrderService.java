@@ -1,7 +1,5 @@
 package com.senla.courses.autoservice.service;
 
-import com.lib.dicontainer.annotations.InjectByType;
-import com.lib.dicontainer.annotations.InjectProperty;
 import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IGaragePlaceDao;
@@ -23,6 +21,9 @@ import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
@@ -32,21 +33,22 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Service
 public class OrderService implements IOrderService {
 
-    @InjectByType
+    @Autowired
     private IOrderDao orderDao;
-    @InjectByType
+    @Autowired
     private IMasterDao masterDao;
-    @InjectByType
+    @Autowired
     private IGaragePlaceDao garagePlaceDao;
-    @InjectByType
+    @Autowired
     private IMasterService masterService;
-    @InjectByType
+    @Autowired
     private IGarageService garageService;
-    @InjectProperty
+    @Value("${shiftEndTimeOrdersOption}")
     private boolean shiftEndTimeOrdersOption;
-    @InjectProperty
+    @Value("${removeOrderOption}")
     private boolean removeOrderOption;
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 

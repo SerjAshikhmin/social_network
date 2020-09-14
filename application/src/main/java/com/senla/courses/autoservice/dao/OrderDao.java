@@ -8,6 +8,7 @@ import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 import org.hibernate.Hibernate;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Repository
 public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
 
     @PersistenceContext

@@ -7,11 +7,14 @@ import com.senla.courses.autoservice.dao.jpadao.AbstractJpaDao;
 import com.senla.courses.autoservice.exceptions.MasterNotFoundException;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+@Repository
 public class MasterDao extends AbstractJpaDao<Master> implements IMasterDao {
 
     @InjectByType

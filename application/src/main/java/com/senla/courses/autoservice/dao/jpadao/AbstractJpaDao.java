@@ -1,6 +1,6 @@
 package com.senla.courses.autoservice.dao.jpadao;
 
-import com.senla.courses.autoservice.dao.interfaces.IJdbcDao;
+import com.senla.courses.autoservice.dao.interfaces.IJpaDao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11,7 +11,7 @@ import javax.persistence.criteria.Root;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-public class AbstractJpaDao<T> implements IJdbcDao<T> {
+public class AbstractJpaDao<T> implements IJpaDao<T> {
 
     @PersistenceContext
     private EntityManager entityManager;

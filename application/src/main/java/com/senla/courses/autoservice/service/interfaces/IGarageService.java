@@ -1,12 +1,13 @@
 package com.senla.courses.autoservice.service.interfaces;
 
-import com.lib.dicontainer.annotations.Singleton;
 import com.senla.courses.autoservice.model.Garage;
 import com.senla.courses.autoservice.model.GaragePlace;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Singleton
+
+@Service
 public interface IGarageService {
 
     int addGarage(int id, String address);
