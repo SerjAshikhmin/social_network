@@ -7,7 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 
 
 @Configuration
-@ComponentScan(basePackages = {"com"})
+@ComponentScan(basePackages = {"com.senla.courses"})
 @PropertySource("classpath:config.properties")
 public class Main {
 

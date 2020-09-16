@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Service
 @Slf4j
+@Service
 public class GarageService implements IGarageService {
 
     @Autowired

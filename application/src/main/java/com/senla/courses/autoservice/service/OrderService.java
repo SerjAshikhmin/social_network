@@ -33,8 +33,8 @@ import java.util.Comparator;
 import java.util.List;
 
 
-@Service
 @Slf4j
+@Service
 public class OrderService implements IOrderService {
 
     @Autowired
