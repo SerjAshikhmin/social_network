@@ -1,9 +1,9 @@
 package com.senla.courses.autoservice.dao.jpadao;
 
 import com.senla.courses.autoservice.dao.interfaces.IJpaDao;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,7 +13,8 @@ import java.util.List;
 
 public class AbstractJpaDao<T> implements IJpaDao<T> {
 
-    @PersistenceContext
+    @Autowired
+    DbJpaConnector dbJpaConnector;
     private EntityManager entityManager;
     private Class<T> clazz;
 
@@ -23,30 +24,30 @@ public class AbstractJpaDao<T> implements IJpaDao<T> {
 
     @Override
     public int insert(T obj) throws PersistenceException {
-        entityManager = DbJpaConnector.openSession();
+        entityManager = dbJpaConnector.openSession();
         entityManager.persist(obj);
-        if (!entityManager.getTransaction().isActive()) {
-            DbJpaConnector.closeSession();
-        }
+        /*if (!entityManager.getTransaction().isActive()) {
+            dbJpaConnector.closeSession();
+        }*/
         return 1;
     }
 
     @Override
     public int delete(T obj) throws PersistenceException {
-        entityManager = DbJpaConnector.openSession();
+        entityManager = dbJpaConnector.openSession();
         entityManager.remove(entityManager.merge(obj));
         if (!entityManager.getTransaction().isActive()) {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
         return 1;
     }
 
     @Override
     public int update(T obj) throws PersistenceException {
-        entityManager = DbJpaConnector.openSession();
+        entityManager = dbJpaConnector.openSession();
         entityManager.merge(obj);
         if (!entityManager.getTransaction().isActive()) {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
         return 1;
     }
@@ -54,7 +55,7 @@ public class AbstractJpaDao<T> implements IJpaDao<T> {
     @Override
     public T findById(int id) throws PersistenceException {
         T obj;
-        entityManager = DbJpaConnector.openSession();
+        entityManager = dbJpaConnector.openSession();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> objCriteria = criteriaBuilder.createQuery(clazz);
         Root<T> objRoot = objCriteria.from(clazz);
@@ -62,7 +63,7 @@ public class AbstractJpaDao<T> implements IJpaDao<T> {
         objCriteria.where(criteriaBuilder.equal(objRoot.get("id"), id));
         obj = entityManager.createQuery(objCriteria).getSingleResult();
         if (!entityManager.getTransaction().isActive()) {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
 
         return obj;
@@ -71,14 +72,14 @@ public class AbstractJpaDao<T> implements IJpaDao<T> {
     @Override
     public List<T> findAll() throws PersistenceException {
         List<T> allObjects;
-        entityManager = DbJpaConnector.openSession();
+        entityManager = dbJpaConnector.openSession();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> objCriteria = criteriaBuilder.createQuery(clazz);
         Root<T> objRoot = objCriteria.from(clazz);
         objCriteria.select(objRoot);
         allObjects = entityManager.createQuery(objCriteria).getResultList();
         if (!entityManager.getTransaction().isActive()) {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
 
         return allObjects;

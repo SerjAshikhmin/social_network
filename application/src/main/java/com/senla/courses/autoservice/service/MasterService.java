@@ -12,9 +12,11 @@ import com.senla.courses.autoservice.service.comparators.master.MasterByBusyComp
 import com.senla.courses.autoservice.service.comparators.master.MasterByNameComparator;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityTransaction;
 import java.io.*;
@@ -24,6 +26,7 @@ import java.util.List;
 
 
 @Slf4j
+@Getter
 @Service
 public class MasterService implements IMasterService {
 
@@ -31,22 +34,25 @@ public class MasterService implements IMasterService {
     private IMasterDao masterDao;
     @Autowired
     private IOrderDao orderDao;
+    @Autowired
+    DbJpaConnector dbJpaConnector;
 
     @Override
+    @Transactional
     public int addMaster(int id, String name, int category) {
-        Master master = new Master (id, name, category);
-        EntityTransaction transaction = DbJpaConnector.getTransaction();
+        //EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
-            transaction.begin();
+            Master master = new Master (id, name, category);
+            //transaction.begin();
             masterDao.addMaster(master);
-            transaction.commit();
+            //transaction.commit();
             return 1;
         } catch (Exception e) {
-            transaction.rollback();
+            //transaction.rollback();
             log.error(e.getMessage());
             return 0;
         } finally {
-            DbJpaConnector.closeSession();
+            //dbJpaConnector.closeSession();
         }
     }
 
@@ -59,7 +65,7 @@ public class MasterService implements IMasterService {
                 log.error("Мастера с указанным именем не существует");
                 return 0;
             }
-            transaction = DbJpaConnector.getTransaction();
+            transaction = dbJpaConnector.getTransaction();
             transaction.begin();
             masterDao.removeMaster(master);
             transaction.commit();
@@ -69,13 +75,13 @@ public class MasterService implements IMasterService {
             log.error(e.getMessage());
             return 0;
         } finally {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
     }
 
     @Override
     public int updateMaster(Master master) {
-        EntityTransaction transaction = DbJpaConnector.getTransaction();
+        EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
             transaction.begin();
             masterDao.updateMaster(master);
@@ -86,7 +92,7 @@ public class MasterService implements IMasterService {
             log.error(e.getMessage());
             return 0;
         } finally {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
     }
 

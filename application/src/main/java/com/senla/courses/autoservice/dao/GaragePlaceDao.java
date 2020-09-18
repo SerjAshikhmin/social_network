@@ -4,6 +4,7 @@ import com.senla.courses.autoservice.dao.interfaces.IGaragePlaceDao;
 import com.senla.courses.autoservice.dao.jpadao.AbstractJpaDao;
 import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.model.GaragePlace;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -15,6 +16,9 @@ import javax.persistence.criteria.Root;
 
 @Repository
 public class GaragePlaceDao extends AbstractJpaDao<GaragePlace> implements IGaragePlaceDao {
+
+    @Autowired
+    DbJpaConnector dbJpaConnector;
 
     @Override
     public int addGaragePlace(GaragePlace garagePlace) throws PersistenceException {
@@ -37,7 +41,7 @@ public class GaragePlaceDao extends AbstractJpaDao<GaragePlace> implements IGara
     @Override
     public GaragePlace getGaragePlaceById(int garageId, int garagePlaceId) throws PersistenceException {
         GaragePlace garagePlace;
-        EntityManager entityManager = DbJpaConnector.openSession();
+        EntityManager entityManager = dbJpaConnector.openSession();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GaragePlace> garagePlaceCriteria = criteriaBuilder.createQuery(GaragePlace.class);
         Root<GaragePlace> garagePlaceRoot = garagePlaceCriteria.from(GaragePlace.class);

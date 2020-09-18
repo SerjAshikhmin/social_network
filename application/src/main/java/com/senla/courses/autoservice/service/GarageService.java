@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityTransaction;
 import java.io.*;
@@ -31,26 +32,29 @@ public class GarageService implements IGarageService {
     private IGaragePlaceDao garagePlaceDao;
     @Autowired
     private IMasterService masterService;
+    @Autowired
+    DbJpaConnector dbJpaConnector;
     @Value("${addGaragePlaceOption}")
     private boolean addGaragePlaceOption;
     @Value("${removeGaragePlaceOption}")
     private boolean removeGaragePlaceOption;
 
     @Override
+    @Transactional(transactionManager = "transactionManager")
     public int addGarage(int id, String address) {
         Garage garage = new Garage(id, address, new ArrayList<>());
-        EntityTransaction transaction = DbJpaConnector.getTransaction();
+        //EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
-            transaction.begin();
+            //transaction.begin();
             garageDao.addGarage(garage);
-            transaction.commit();
+            //transaction.commit();
             return 1;
         } catch (Exception e) {
-            transaction.rollback();
+            //transaction.rollback();
             log.error(e.getMessage());
             return 0;
         } finally {
-            DbJpaConnector.closeSession();
+            //dbJpaConnector.closeSession();
         }
     }
 
@@ -63,7 +67,7 @@ public class GarageService implements IGarageService {
                 log.error("Гараж с указанным номером не существует");
                 return 0;
             }
-            transaction = DbJpaConnector.getTransaction();
+            transaction = dbJpaConnector.getTransaction();
             transaction.begin();
             List<GaragePlace> garagePlaces = garage.getGaragePlaces();
             for (GaragePlace garagePlace : garagePlaces) {
@@ -77,7 +81,7 @@ public class GarageService implements IGarageService {
             log.error(e.getMessage());
             return 0;
         } finally {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
     }
 
@@ -93,20 +97,21 @@ public class GarageService implements IGarageService {
     }
 
     @Override
+    @Transactional(transactionManager = "transactionManager")
     public int addGaragePlace(int garageId, int garagePlaceId, String type, int area) {
         if (addGaragePlaceOption) {
             GaragePlace garagePlace = new GaragePlace(garagePlaceId, findGarageById(garageId), type, area);
-            EntityTransaction transaction = DbJpaConnector.getTransaction();
+            //EntityTransaction transaction = dbJpaConnector.getTransaction();
             try {
-                transaction.begin();
+                //transaction.begin();
                 garagePlaceDao.addGaragePlace(garagePlace);
-                transaction.commit();
+                //transaction.commit();
                 return 1;
             } catch (Exception e) {
-                transaction.rollback();
+                //transaction.rollback();
                 log.error(e.getMessage());
             } finally {
-                DbJpaConnector.closeSession();
+                //dbJpaConnector.closeSession();
             }
         } else {
             log.warn("Возможность добавления места в гараже отключена");
@@ -124,7 +129,7 @@ public class GarageService implements IGarageService {
                     log.error("Место в гараже с указанным номером не существует");
                     return 0;
                 }
-                transaction = DbJpaConnector.getTransaction();
+                transaction = dbJpaConnector.getTransaction();
                 transaction.begin();
                 garagePlaceDao.removeGaragePlace(garagePlace);
                 transaction.commit();
@@ -133,7 +138,7 @@ public class GarageService implements IGarageService {
                 transaction.rollback();
                 log.error(e.getMessage());
             } finally {
-                DbJpaConnector.closeSession();
+                dbJpaConnector.closeSession();
             }
         } else {
             log.warn("Возможность удаления места в гараже отключена");

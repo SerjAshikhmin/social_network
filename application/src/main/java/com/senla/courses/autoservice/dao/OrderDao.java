@@ -8,6 +8,7 @@ import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -27,6 +28,8 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
 
     @PersistenceContext
     private EntityManager entityManager;
+    @Autowired
+    DbJpaConnector dbJpaConnector;
 
     @Override
     public int addOrder(Order order) throws PersistenceException {
@@ -41,7 +44,7 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
     @Override
     public Order getOrderById(int id) throws PersistenceException {
         Order order;
-        entityManager = DbJpaConnector.openSession();
+        entityManager = dbJpaConnector.openSession();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> objCriteria = criteriaBuilder.createQuery(Order.class);
         Root<Order> objRoot = objCriteria.from(Order.class);
@@ -50,7 +53,7 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
         order = entityManager.createQuery(objCriteria).getSingleResult();
         Hibernate.initialize(order.getMasters());
         if (!entityManager.getTransaction().isActive()) {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
 
         return order;
@@ -64,7 +67,7 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
     @Override
     public List<Order> findAll() throws PersistenceException {
         List<Order> allOrders;
-        entityManager = DbJpaConnector.openSession();
+        entityManager = dbJpaConnector.openSession();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> objCriteria = criteriaBuilder.createQuery(Order.class);
         Root<Order> objRoot = objCriteria.from(Order.class);
@@ -74,7 +77,7 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
             Hibernate.initialize(order.getMasters());
         }
         if (!entityManager.getTransaction().isActive()) {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
 
         return allOrders;
