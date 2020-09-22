@@ -16,15 +16,15 @@ public interface IOrderService {
     int addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
                      String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus);
     int removeOrder(int id);
-    void cancelOrder(int id);
-    void closeOrder(int id);
+    int cancelOrder(int id);
+    int closeOrder(int id);
     List<Order> getAllOrders();
     List<Order> getAllOrdersSorted(String sortBy);
     List<Order> getAllOrdersInProgress(String sortBy);
     LocalDateTime getNearestFreeDate();
     List<Master> getMastersByOrder(int id);
     List<Order> getOrdersByPeriod(LocalDateTime startPeriod, LocalDateTime endPeriod, String sortBy);
-    void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime);
+    int updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime);
     void shiftEndTimeOrders(int hours, int minutes);
     Order findOrderById(int id);
     int importOrder(String fileName);

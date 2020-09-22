@@ -26,9 +26,9 @@ public class AbstractJpaDao<T> implements IJpaDao<T> {
     public int insert(T obj) throws PersistenceException {
         entityManager = dbJpaConnector.openSession();
         entityManager.persist(obj);
-        /*if (!entityManager.getTransaction().isActive()) {
+        if (!entityManager.getTransaction().isActive()) {
             dbJpaConnector.closeSession();
-        }*/
+        }
         return 1;
     }
 

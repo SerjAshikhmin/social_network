@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -56,7 +57,7 @@ public class OrderService implements IOrderService {
     private boolean removeOrderOption;
 
     @Override
-    @Transactional
+    //@Transactional
     public int addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
                             String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {
         List<Master> masters = new ArrayList<>();
@@ -72,19 +73,19 @@ public class OrderService implements IOrderService {
         Order order = new Order(id, submissionDate, startDate, endDate, kindOfWork, cost,
                 garagePlace, masters, orderStatus);
         master.setOrder(order);
-        //EntityTransaction transaction = dbJpaConnector.getTransaction();
+        EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
-            //transaction.begin();
+            transaction.begin();
             orderDao.addOrder(order);
             masterDao.updateMaster(master);
             garagePlaceDao.updateGaragePlace(garagePlace);
-            //transaction.commit();
+            transaction.commit();
             return 1;
         } catch (Exception ex) {
-            //transaction.rollback();
+            transaction.rollback();
             log.error(ex.getMessage());
         } finally {
-            //dbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
         return 0;
     }
@@ -128,15 +129,20 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void cancelOrder(int id) {
+    public int cancelOrder(int id) {
         Order order = findOrderById(id);
         if (order != null) {
+            order.getGaragePlace().setBusy(false);
+            order.getMasters().stream()
+                    .forEach(master -> master.setBusy(false));
+            order.setStatus(OrderStatus.CANCELED);
             EntityTransaction transaction = dbJpaConnector.getTransaction();
             try {
                 transaction.begin();
-                orderDao.cancelOrder(order);
+                orderDao.updateOrder(order);
                 transaction.commit();
                 log.info(String.format("Заказ №%d отменен", id));
+                return 1;
             } catch (Exception ex) {
                 transaction.rollback();
                 log.error(ex.getMessage());
@@ -146,19 +152,26 @@ public class OrderService implements IOrderService {
         } else {
             log.error("Заказ не найден");
         }
-
+        return 0;
     }
 
     @Override
-    public void closeOrder(int id) {
+    public int closeOrder(int id) {
         Order order = findOrderById(id);
         if (order != null) {
+            order.getGaragePlace().setBusy(false);
+            order.getMasters().stream()
+                    .forEach(master -> master.setBusy(false));
+            order.setEndDate(LocalDateTime.now());
+            order.setStatus(OrderStatus.COMPLETED);
+            orderDao.updateOrder(order);
             EntityTransaction transaction = dbJpaConnector.getTransaction();
             try {
                 transaction.begin();
-                orderDao.closeOrder(order);
+                orderDao.updateOrder(order);
                 transaction.commit();
                 log.info(String.format("Заказ №%d закрыт", id));
+                return 1;
             } catch (Exception ex) {
                 transaction.rollback();
                 log.error(ex.getMessage());
@@ -168,6 +181,7 @@ public class OrderService implements IOrderService {
         } else {
             log.error("При закрытии заказа произошла ошибка");
         }
+        return 0;
     }
 
     @Override
@@ -197,7 +211,13 @@ public class OrderService implements IOrderService {
         Comparator orderComparator = getOrderComparator(sortBy);
         List<Order> orders = null;
         try {
-            orders = orderDao.getAllOrdersInProgress(orderComparator);
+            orders = getAllOrders().stream()
+                    .filter(order -> order.getStatus() == OrderStatus.IN_WORK)
+                    .collect(Collectors.toList());
+
+            if (orderComparator != null) {
+                orders.sort(orderComparator);
+            }
         } catch (Exception ex) {
             log.error(ex.getMessage());
         }
@@ -228,7 +248,7 @@ public class OrderService implements IOrderService {
     public List<Order> getOrdersByPeriod (LocalDateTime startPeriod, LocalDateTime endPeriod, String sortBy) {
         List<Order> ordersByPeriod = new ArrayList<>();
         getAllOrders().stream()
-                .filter(order -> startPeriod.compareTo(order.getEndDate()) == -1 && endPeriod.compareTo(order.getEndDate()) == 1)
+                .filter(order -> startPeriod.compareTo(order.getEndDate()) <= -1 && endPeriod.compareTo(order.getEndDate()) >= 1)
                 .forEach(order -> ordersByPeriod.add(order));
 
         Comparator orderComparator = getOrderComparator(sortBy);
@@ -239,18 +259,22 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) {
+    public int updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) {
         EntityTransaction transaction = dbJpaConnector.getTransaction();
+        order.setStartDate(newStartTime);
+        order.setEndDate(newEndTime);
         try {
             transaction.begin();
-            orderDao.updateOrderTime(order, newStartTime, newEndTime);
+            orderDao.updateOrder(order);
             transaction.commit();
+            return 1;
         } catch (Exception ex) {
             transaction.rollback();
             log.error(ex.getMessage());
         } finally {
             dbJpaConnector.closeSession();
         }
+        return 0;
     }
 
     @Override
@@ -356,19 +380,21 @@ public class OrderService implements IOrderService {
 
     private Comparator getOrderComparator(String sortBy) {
         Comparator orderComparator = null;
-        switch (sortBy) {
-            case "byCost":
-                orderComparator = OrderByCostComparator.getInstance();
-                break;
-            case "byEndDate":
-                orderComparator = OrderByEndDateComparator.getInstance();
-                break;
-            case "bySubmissionDate":
-                orderComparator = OrderBySubmissionDateComparator.getInstance();
-                break;
-            case "byStartDate":
-                orderComparator = OrderByStartDateComparator.getInstance();
-                break;
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "byCost":
+                    orderComparator = OrderByCostComparator.getInstance();
+                    break;
+                case "byEndDate":
+                    orderComparator = OrderByEndDateComparator.getInstance();
+                    break;
+                case "bySubmissionDate":
+                    orderComparator = OrderBySubmissionDateComparator.getInstance();
+                    break;
+                case "byStartDate":
+                    orderComparator = OrderByStartDateComparator.getInstance();
+                    break;
+            }
         }
         return orderComparator;
     }

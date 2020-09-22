@@ -93,34 +93,6 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
         return update(order);
     }
 
-    @Override
-    public void cancelOrder(Order order) throws PersistenceException {
-        Order daoOrder = findById(order.getId());
-        daoOrder.getGaragePlace().setBusy(false);
-        order.getMasters().stream()
-                .forEach(master -> master.setBusy(false));
-        daoOrder.setStatus(OrderStatus.CANCELED);
-        updateOrder(daoOrder);
-    }
-
-    @Override
-    public void closeOrder(Order order) throws PersistenceException {
-        Order daoOrder = findById(order.getId());
-        daoOrder.getGaragePlace().setBusy(false);
-        order.getMasters().stream()
-                .forEach(master -> master.setBusy(false));
-        daoOrder.setEndDate(LocalDateTime.now());
-        daoOrder.setStatus(OrderStatus.COMPLETED);
-        updateOrder(daoOrder);
-    }
-
-    public void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) throws PersistenceException {
-        Order daoOrder = findById(order.getId());
-        daoOrder.setStartDate(newStartTime);
-        daoOrder.setEndDate(newEndTime);
-        updateOrder(daoOrder);
-    }
-
     public List<Master> getMastersByOrder (Order order) throws OrderNotFoundException {
         if (order != null) {
             return order.getMasters();
@@ -132,18 +104,6 @@ public class OrderDao extends AbstractJpaDao<Order> implements IOrderDao {
     @Override
     public void updateAllOrders(List<Order> orders) {
         //this.orders = orders;
-    }
-
-    @Override
-    public List<Order> getAllOrdersInProgress(Comparator orderComparator) throws PersistenceException {
-        List<Order> completedOrders = getAllOrders().stream()
-                .filter(order -> order.getStatus() == OrderStatus.IN_WORK)
-                .collect(Collectors.toList());
-
-        if (orderComparator != null) {
-            completedOrders.sort(orderComparator);
-        }
-        return completedOrders;
     }
 
 }
