@@ -7,10 +7,6 @@ import com.senla.courses.autoservice.dao.OrderDao;
 import com.senla.courses.autoservice.dao.jpadao.DbJpaConnector;
 import com.senla.courses.autoservice.exceptions.MasterNotFoundException;
 import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
-import com.senla.courses.autoservice.model.Garage;
-import com.senla.courses.autoservice.model.GaragePlace;
-import com.senla.courses.autoservice.model.Master;
-import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.service.GarageService;
 import com.senla.courses.autoservice.service.MasterService;
 import com.senla.courses.autoservice.service.OrderService;
@@ -55,49 +51,22 @@ public class TestConfig {
 
     @Bean
     public MasterDao masterDao() throws MasterNotFoundException {
-        MasterDao masterDaoMock = mock(MasterDao.class);
-        when(masterDaoMock.addMaster(any(Master.class))).thenReturn(1);
-        when(masterDaoMock.removeMaster(any(Master.class))).thenReturn(1);
-        when(masterDaoMock.updateMaster(any(Master.class))).thenReturn(1);
-        when(masterDaoMock.getMasterById(1)).thenReturn(testData.getMastersList().get(0));
-        when(masterDaoMock.getAllMasters()).thenReturn(testData.getMastersList());
-        when(masterDaoMock.getCurrentOrder(testData.getMastersList().get(0))).thenReturn(testData.getMastersList().get(0).getOrder());
-        return masterDaoMock;
+        return mock(MasterDao.class);
     }
 
     @Bean
     public GarageDao garageDao() {
-        GarageDao garageDaoMock = mock(GarageDao.class);
-        when(garageDaoMock.addGarage(any(Garage.class))).thenReturn(1);
-        when(garageDaoMock.removeGarage(any(Garage.class))).thenReturn(1);
-        when(garageDaoMock.updateGarage(any(Garage.class))).thenReturn(1);
-        when(garageDaoMock.getGarageById(1)).thenReturn(testData.getGarageList().get(0));
-        when(garageDaoMock.findAll()).thenReturn(testData.getGarageList());
-        when(garageDaoMock.getAllGarages()).thenReturn(testData.getGarageList());
-        return garageDaoMock;
+        return mock(GarageDao.class);
     }
 
     @Bean
     public GaragePlaceDao garagePlaceDao() {
-        GaragePlaceDao garagePlaceDaoMock = mock(GaragePlaceDao.class);
-        when(garagePlaceDaoMock.addGaragePlace(any(GaragePlace.class))).thenReturn(1);
-        when(garagePlaceDaoMock.removeGaragePlace(any(GaragePlace.class))).thenReturn(1);
-        when(garagePlaceDaoMock.updateGaragePlace(any(GaragePlace.class))).thenReturn(1);
-        when(garagePlaceDaoMock.getGaragePlaceById(1, 1)).thenReturn(testData.getGarageList().get(0).getGaragePlaces().get(0));
-        return garagePlaceDaoMock;
+        return mock(GaragePlaceDao.class);
     }
 
     @Bean
     public OrderDao orderDao() throws OrderNotFoundException {
-        OrderDao orderDaoMock = mock(OrderDao.class);
-        when(orderDaoMock.addOrder(any(Order.class))).thenReturn(1);
-        when(orderDaoMock.removeOrder(any(Order.class))).thenReturn(1);
-        when(orderDaoMock.updateOrder(any(Order.class))).thenReturn(1);
-        when(orderDaoMock.getOrderById(1)).thenReturn(testData.getOrdersList().get(0));
-        when(orderDaoMock.getAllOrders()).thenReturn(testData.getOrdersList());
-        when(orderDaoMock.findAll()).thenReturn(testData.getOrdersList());
-        when(orderDaoMock.getMastersByOrder(testData.getOrdersList().get(0))).thenReturn(testData.getOrdersList().get(0).getMasters());
-        return orderDaoMock;
+        return mock(OrderDao.class);
     }
 
     @Bean

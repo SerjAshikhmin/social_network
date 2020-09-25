@@ -62,6 +62,7 @@ dependencies {
 
     testCompile group: 'org.springframework', name: 'spring-test', version: '5.2.9.RELEASE'
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.7.0'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
     testCompile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'

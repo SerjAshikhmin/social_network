@@ -59,6 +59,9 @@ public class TestData {
         Master master1 = mastersList.get(0);
         master1.setOrder(ordersList.get(0));
         master1.setBusy(true);
+        Master master3 = mastersList.get(2);
+        master3.setOrder(ordersList.get(2));
+        master3.setBusy(true);
     }
 
     public List<Master> getAllFreeMasters() {

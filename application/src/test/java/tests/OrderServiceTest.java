@@ -1,5 +1,11 @@
 package tests;
 
+import com.senla.courses.autoservice.dao.interfaces.IGaragePlaceDao;
+import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
+import com.senla.courses.autoservice.dao.interfaces.IOrderDao;
+import com.senla.courses.autoservice.exceptions.OrderNotFoundException;
+import com.senla.courses.autoservice.model.GaragePlace;
+import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
@@ -9,6 +15,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 
 @Slf4j
@@ -32,6 +41,12 @@ public class OrderServiceTest {
     private IOrderService orderService;
     @Autowired
     private TestData testData;
+    @Autowired
+    private IOrderDao orderDao;
+    @Autowired
+    private IMasterDao masterDao;
+    @Autowired
+    private IGaragePlaceDao garagePlaceDao;
 
     @BeforeAll
     public static void startOrderServiceTests() {
@@ -41,34 +56,59 @@ public class OrderServiceTest {
     @Test
     public void validateNewOrderAdding() {
         log.info("Validating new order adding");
-        assertEquals(orderService.addOrder(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
+        when(orderDao.addOrder(any(Order.class))).thenReturn(1);
+        when(masterDao.getAllMasters()).thenReturn(testData.getMastersList());
+        when(garagePlaceDao.getGaragePlaceById(1, 1)).thenReturn(testData.getGarageList().get(0).getGaragePlaces().get(0));
+
+        int result1 = orderService.addOrder(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
                 LocalDateTime.of(2020, Month.JUNE, 1, 12, 0),
                 LocalDateTime.of(2020, Month.JUNE, 1, 13, 0),
-                "Oil change", 1000, 1, 1, "Evgeniy", OrderStatus.ACCEPTED), 1);
-        assertEquals(orderService.addOrder(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
+                "Oil change", 1000, 1, 1, "Evgeniy", OrderStatus.ACCEPTED);
+        int result2 = orderService.addOrder(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
                 LocalDateTime.of(2020, Month.JUNE, 1, 12, 0),
                 LocalDateTime.of(2020, Month.JUNE, 1, 13, 0),
-                "Oil change", 1000, 1, 1, "UnknownMaster", OrderStatus.ACCEPTED), 0);
+                "Oil change", 1000, 1, 1, "UnknownMaster", OrderStatus.ACCEPTED);
+
+        assertEquals(result1, 1);
+        assertEquals(result2, 0);
+        verify(orderDao).addOrder(any(Order.class));
     }
 
-    @Test
-    public void validateOrderRemoving() {
+    @ParameterizedTest
+    @CsvSource({
+            "1, 1",
+            "5, 0"
+    })
+    public void validateRemovingOrder(int orderId, int expectedResult) {
         log.info("Validating order removing");
-        assertEquals(orderService.removeOrder(1), 1);
-        assertEquals(orderService.removeOrder(5), 0);
+        when(orderDao.removeOrder(any(Order.class))).thenReturn(1);
+        when(orderDao.getAllOrders()).thenReturn(testData.getOrdersList());
+
+        int result = orderService.removeOrder(orderId);
+
+        assertEquals(result, expectedResult);
+        verify(orderDao, atLeastOnce()).removeOrder(any(Order.class));
+        verify(masterDao, atLeastOnce()).updateMaster(any(Master.class));
+        verify(garagePlaceDao, atLeastOnce()).updateGaragePlace(any(GaragePlace.class));
     }
 
     @Test
     public void validateGettingAllOrders() {
         log.info("Validating getting all orders");
-        assertEquals(orderService.getAllOrders(), testData.getOrdersList());
+        when(orderDao.getAllOrders()).thenReturn(testData.getOrdersList());
+        List<Order> expectedResult = testData.getOrdersList();
+
+        List<Order> result = orderService.getAllOrders();
+
+        assertEquals(result, expectedResult);
+        verify(orderDao, atLeastOnce()).getAllOrders();
     }
 
     @Test
     public void validateGettingAllOrdersSorted() {
         log.info("Validating getting all orders sorted");
-        List<Order> allOrdersSorted = new ArrayList<>(testData.getOrdersList());
-        Collections.sort(allOrdersSorted, (order, t1) -> {
+        List<Order> allOrdersSortedByCostExpected = new ArrayList<>(testData.getOrdersList());
+        Collections.sort(allOrdersSortedByCostExpected, (order, t1) -> {
             if(order.getCost() > t1.getCost())
                 return 1;
             else if(order.getCost()< t1.getCost())
@@ -76,76 +116,134 @@ public class OrderServiceTest {
             else
                 return 0;
         });
-        assertEquals(orderService.getAllOrdersSorted("byCost"), allOrdersSorted);
+        List<Order> allOrdersSortedByEndDateExpected = new ArrayList<>(testData.getOrdersList());
+        Collections.sort(allOrdersSortedByEndDateExpected, Comparator.comparing(Order::getEndDate));
+        List<Order> allOrdersSortedByStartDateExpected = new ArrayList<>(testData.getOrdersList());
+        Collections.sort(allOrdersSortedByStartDateExpected, Comparator.comparing(Order::getStartDate));
+        List<Order> allOrdersSortedBySubmissionDateExpected = new ArrayList<>(testData.getOrdersList());
+        Collections.sort(allOrdersSortedBySubmissionDateExpected, Comparator.comparing(Order::getSubmissionDate));
+        List<Order> noSortedExpected = testData.getOrdersList();
 
-        allOrdersSorted = new ArrayList<>(testData.getOrdersList());
-        Collections.sort(allOrdersSorted, Comparator.comparing(Order::getEndDate));
-        assertEquals(orderService.getAllOrdersSorted("byEndDate"), allOrdersSorted);
+        List<Order> allOrdersSortedByCost = orderService.getAllOrdersSorted("byCost");
+        List<Order> allOrdersSortedByEndDate = orderService.getAllOrdersSorted("byEndDate");
+        List<Order> allOrdersSortedByStartDate = orderService.getAllOrdersSorted("byStartDate");
+        List<Order> allOrdersSortedBySubmissionDate = orderService.getAllOrdersSorted("bySubmissionDate");
+        List<Order> noSorted = orderService.getAllOrdersSorted("wrongSortMethod");
 
-        allOrdersSorted = new ArrayList<>(testData.getOrdersList());
-        Collections.sort(allOrdersSorted, Comparator.comparing(Order::getStartDate));
-        assertEquals(orderService.getAllOrdersSorted("byStartDate"), allOrdersSorted);
-
-        allOrdersSorted = new ArrayList<>(testData.getOrdersList());
-        Collections.sort(allOrdersSorted, Comparator.comparing(Order::getSubmissionDate));
-        assertEquals(orderService.getAllOrdersSorted("bySubmissionDate"), allOrdersSorted);
-
-        assertEquals(orderService.getAllOrdersSorted("wrongSortMethod"), testData.getOrdersList());
+        assertEquals(allOrdersSortedByCost, allOrdersSortedByCostExpected);
+        assertEquals(allOrdersSortedByEndDate, allOrdersSortedByEndDateExpected);
+        assertEquals(allOrdersSortedByStartDate, allOrdersSortedByStartDateExpected);
+        assertEquals(allOrdersSortedBySubmissionDate, allOrdersSortedBySubmissionDateExpected);
+        assertEquals(noSorted, noSortedExpected);
+        verify(orderDao, atLeastOnce()).getAllOrders();
     }
 
     @Test
     public void validateGettingAllOrdersInProgress() {
         log.info("Validating getting all orders in progress");
-        assertEquals(orderService.getAllOrdersInProgress(null), testData.getAllOrdersInProgress());
+        List<Order> expectedResult = testData.getAllOrdersInProgress();
+
+        List<Order> result = orderService.getAllOrdersInProgress(null);
+
+        assertEquals(result, expectedResult);
+        verify(orderDao, atLeastOnce()).getAllOrders();
     }
 
     @Test
     public void validateGettingNearestFreeDate() {
         log.info("Validating getting nearest free date");
-        assertEquals(orderService.getNearestFreeDate(), testData.getNearestFreeDate());
+        LocalDateTime expectedResult = testData.getNearestFreeDate();
+
+        LocalDateTime result = orderService.getNearestFreeDate();
+
+        assertEquals(result, expectedResult);
+        verify(orderDao, atLeastOnce()).getAllOrders();
     }
 
     @Test
-    public void validateGettingMastersByOrder() {
+    public void validateGettingMastersByOrder() throws OrderNotFoundException {
         log.info("Validating getting masters by order");
-        assertEquals(orderService.getMastersByOrder(1), testData.getOrdersList().get(0).getMasters());
+        when(orderDao.getMastersByOrder(testData.getOrdersList().get(0))).thenReturn(testData.getOrdersList().get(0).getMasters());
+        List<Master> expectedResult = testData.getOrdersList().get(0).getMasters();
+
+        List<Master> result = orderService.getMastersByOrder(1);
+
+        assertEquals(result, expectedResult);
+        verify(orderDao).getMastersByOrder(any(Order.class));
     }
 
     @Test
     public void validateGettingOrdersByPeriod() {
         log.info("Validating getting orders by period");
-        assertEquals(orderService.getOrdersByPeriod(LocalDateTime.of(2020, Month.JUNE, 1, 9, 0),
-                                                    LocalDateTime.of(2020, Month.JUNE, 30, 18, 0),
-                                             null).get(0), testData.getOrdersList().get(0));
+        Order expectedResult = testData.getOrdersList().get(0);
+
+        Order result = orderService.getOrdersByPeriod(LocalDateTime.of(2020, Month.JUNE, 1, 9, 0),
+                        LocalDateTime.of(2020, Month.JUNE, 30, 18, 0), null).get(0);
+
+        assertEquals(result, expectedResult);
+        verify(orderDao, atLeastOnce()).getAllOrders();
     }
 
     @Test
     public void validateFindingOrderById() {
         log.info("Validating finding order by id");
-        assertEquals(orderService.findOrderById(1), testData.getOrdersList().get(0));
-        assertEquals(orderService.findOrderById(10), null);
+        Order expectedResult = testData.getOrdersList().get(0);
+
+        Order result = orderService.findOrderById(1);
+
+        assertEquals(result, expectedResult);
+        verify(orderDao, atLeastOnce()).getAllOrders();
     }
 
     @Test
-    public void validateCancellingOrder() {
+    public void validateFindingUnknownOrderById() {
+        log.info("Validating finding unknown order by id");
+
+        Order result = orderService.findOrderById(10);
+
+        assertEquals(result, null);
+        verify(orderDao, atLeastOnce()).getAllOrders();
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, 1",
+            "5, 0"
+    })
+    public void validateCancellingOrder(int orderId, int expectedResult) {
         log.info("Validating order cancelling");
-        assertEquals(orderService.cancelOrder(2), 1);
-        assertEquals(orderService.cancelOrder(5), 0);
+        when(orderDao.updateOrder(any(Order.class))).thenReturn(1);
+
+        int result = orderService.cancelOrder(orderId);
+
+        assertEquals(result, expectedResult);
+        verify(orderDao, atLeastOnce()).updateOrder(any(Order.class));
     }
 
-    @Test
-    public void validateClosingOrder() {
+    @ParameterizedTest
+    @CsvSource({
+            "3, 1",
+            "5, 0"
+    })
+    public void validateClosingOrder(int orderId, int expectedResult) {
         log.info("Validating order closing");
-        assertEquals(orderService.closeOrder(3), 1);
-        assertEquals(orderService.closeOrder(5), 0);
+
+        int result = orderService.closeOrder(orderId);
+
+        assertEquals(result, expectedResult);
+        verify(orderDao, atLeastOnce()).updateOrder(any(Order.class));
     }
 
     @Test
     public void validateOrderTimeUpdating() {
         log.info("Validating order time updating");
         Order order = testData.getOrdersList().get(0);
-        assertEquals(orderService.updateOrderTime(order, LocalDateTime.of(2020, Month.JUNE, 1, 12, 0),
-                LocalDateTime.of(2020, Month.JUNE, 1, 15, 0)), 1);
+
+        int result = orderService.updateOrderTime(order, LocalDateTime.of(2020, Month.JUNE, 1, 12, 0),
+                LocalDateTime.of(2020, Month.JUNE, 1, 15, 0));
+
+        assertEquals(result, 1);
+        verify(orderDao, atLeastOnce()).updateOrder(any(Order.class));
     }
 
     @AfterAll
