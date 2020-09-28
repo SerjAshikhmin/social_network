@@ -5,6 +5,8 @@ import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import com.senla.courses.view.menu.MenuController;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.transaction.annotation.EnableTransactionManagement;

@@ -19,6 +19,5 @@ public interface IMasterDao {
     void setAllMasters(List<Master> allMasters);
     int updateMaster(Master master) throws PersistenceException;
     Order getCurrentOrder(Master master) throws MasterNotFoundException, PersistenceException;
-    List<Master> getAllFreeMasters() throws PersistenceException;
 
 }

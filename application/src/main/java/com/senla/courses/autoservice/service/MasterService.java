@@ -23,6 +23,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -38,21 +39,21 @@ public class MasterService implements IMasterService {
     DbJpaConnector dbJpaConnector;
 
     @Override
-    @Transactional
+    //@Transactional
     public int addMaster(int id, String name, int category) {
-        //EntityTransaction transaction = dbJpaConnector.getTransaction();
+        EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
             Master master = new Master (id, name, category);
-            //transaction.begin();
+            transaction.begin();
             masterDao.addMaster(master);
-            //transaction.commit();
+            transaction.commit();
             return 1;
         } catch (Exception e) {
-            //transaction.rollback();
+            transaction.rollback();
             log.error(e.getMessage());
             return 0;
         } finally {
-            //dbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
     }
 
@@ -123,7 +124,9 @@ public class MasterService implements IMasterService {
     @Override
     public List<Master> getAllFreeMasters() {
         try {
-            return masterDao.getAllFreeMasters();
+            return getAllMasters().stream()
+                    .filter(master -> !master.isBusy())
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             log.error(e.getMessage());
             return null;

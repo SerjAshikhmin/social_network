@@ -40,21 +40,21 @@ public class GarageService implements IGarageService {
     private boolean removeGaragePlaceOption;
 
     @Override
-    @Transactional(transactionManager = "transactionManager")
+    //@Transactional(transactionManager = "transactionManager")
     public int addGarage(int id, String address) {
         Garage garage = new Garage(id, address, new ArrayList<>());
-        //EntityTransaction transaction = dbJpaConnector.getTransaction();
+        EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
-            //transaction.begin();
+            transaction.begin();
             garageDao.addGarage(garage);
-            //transaction.commit();
+            transaction.commit();
             return 1;
         } catch (Exception e) {
-            //transaction.rollback();
+            transaction.rollback();
             log.error(e.getMessage());
             return 0;
         } finally {
-            //dbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
     }
 
@@ -97,21 +97,21 @@ public class GarageService implements IGarageService {
     }
 
     @Override
-    @Transactional(transactionManager = "transactionManager")
+    //@Transactional(transactionManager = "transactionManager")
     public int addGaragePlace(int garageId, int garagePlaceId, String type, int area) {
         if (addGaragePlaceOption) {
             GaragePlace garagePlace = new GaragePlace(garagePlaceId, findGarageById(garageId), type, area);
-            //EntityTransaction transaction = dbJpaConnector.getTransaction();
+            EntityTransaction transaction = dbJpaConnector.getTransaction();
             try {
-                //transaction.begin();
+                transaction.begin();
                 garagePlaceDao.addGaragePlace(garagePlace);
-                //transaction.commit();
+                transaction.commit();
                 return 1;
             } catch (Exception e) {
-                //transaction.rollback();
+                transaction.rollback();
                 log.error(e.getMessage());
             } finally {
-                //dbJpaConnector.closeSession();
+                dbJpaConnector.closeSession();
             }
         } else {
             log.warn("Возможность добавления места в гараже отключена");

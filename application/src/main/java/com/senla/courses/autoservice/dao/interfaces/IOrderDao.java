@@ -20,11 +20,7 @@ public interface IOrderDao {
     List<Order> getAllOrders() throws PersistenceException;
     void setAllOrders(List<Order> allOrders);
     int updateOrder(Order order) throws PersistenceException;
-    void cancelOrder(Order order) throws PersistenceException;
-    void closeOrder(Order order) throws PersistenceException;
-    void updateOrderTime(Order order, LocalDateTime newStartTime, LocalDateTime newEndTime) throws PersistenceException;
     List<Master> getMastersByOrder(Order order) throws OrderNotFoundException;
     void updateAllOrders(List<Order> orders);
-    List<Order> getAllOrdersInProgress(Comparator orderComparator) throws PersistenceException;
 
 }

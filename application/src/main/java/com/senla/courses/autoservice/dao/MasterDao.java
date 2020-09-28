@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.PersistenceException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Repository
@@ -56,13 +55,6 @@ public class MasterDao extends AbstractJpaDao<Master> implements IMasterDao {
         } else {
             throw new MasterNotFoundException();
         }
-    }
-
-    @Override
-    public List<Master> getAllFreeMasters() throws PersistenceException {
-        return getAllMasters().stream()
-                .filter(master -> !master.isBusy())
-                .collect(Collectors.toList());
     }
 
 }
