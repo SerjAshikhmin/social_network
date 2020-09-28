@@ -1,16 +1,16 @@
 package com.senla.courses.autoservice.controller;
 
-import com.lib.dicontainer.annotations.InjectByType;
-import com.lib.dicontainer.annotations.Singleton;
 import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@Singleton
+@Controller
 public class GarageController {
 
-    @InjectByType
+    @Autowired
     private IGarageService garageService;
 
     public int addGarage(int id, String address) {

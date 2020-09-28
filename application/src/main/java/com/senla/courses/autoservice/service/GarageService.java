@@ -1,7 +1,5 @@
 package com.senla.courses.autoservice.service;
 
-import com.lib.dicontainer.annotations.InjectByType;
-import com.lib.dicontainer.annotations.InjectProperty;
 import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IGarageDao;
@@ -12,43 +10,51 @@ import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.service.interfaces.IGarageService;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityTransaction;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Slf4j
+@Service
 public class GarageService implements IGarageService {
 
-    @InjectByType
+    @Autowired
     private IGarageDao garageDao;
-    @InjectByType
+    @Autowired
     private IGaragePlaceDao garagePlaceDao;
-    @InjectByType
+    @Autowired
     private IMasterService masterService;
-    @InjectProperty
+    @Autowired
+    DbJpaConnector dbJpaConnector;
+    @Value("${addGaragePlaceOption}")
     private boolean addGaragePlaceOption;
-    @InjectProperty
+    @Value("${removeGaragePlaceOption}")
     private boolean removeGaragePlaceOption;
-    private static final Logger logger = LoggerFactory.getLogger(GarageService.class);
 
     @Override
+    @Transactional(transactionManager = "transactionManager")
     public int addGarage(int id, String address) {
         Garage garage = new Garage(id, address, new ArrayList<>());
-        EntityTransaction transaction = DbJpaConnector.getTransaction();
+        //EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
-            transaction.begin();
+            //transaction.begin();
             garageDao.addGarage(garage);
-            transaction.commit();
+            //transaction.commit();
             return 1;
         } catch (Exception e) {
-            transaction.rollback();
-            logger.error(e.getMessage());
+            //transaction.rollback();
+            log.error(e.getMessage());
             return 0;
         } finally {
-            DbJpaConnector.closeSession();
+            //dbJpaConnector.closeSession();
         }
     }
 
@@ -58,10 +64,10 @@ public class GarageService implements IGarageService {
         try {
             Garage garage = findGarageById(garageId);
             if (garage == null) {
-                logger.error("Гараж с указанным номером не существует");
+                log.error("Гараж с указанным номером не существует");
                 return 0;
             }
-            transaction = DbJpaConnector.getTransaction();
+            transaction = dbJpaConnector.getTransaction();
             transaction.begin();
             List<GaragePlace> garagePlaces = garage.getGaragePlaces();
             for (GaragePlace garagePlace : garagePlaces) {
@@ -72,10 +78,10 @@ public class GarageService implements IGarageService {
             return 1;
         } catch (Exception e) {
             transaction.rollback();
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return 0;
         } finally {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
     }
 
@@ -85,29 +91,30 @@ public class GarageService implements IGarageService {
         try {
             garages = garageDao.getAllGarages();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return garages;
     }
 
     @Override
+    @Transactional(transactionManager = "transactionManager")
     public int addGaragePlace(int garageId, int garagePlaceId, String type, int area) {
         if (addGaragePlaceOption) {
             GaragePlace garagePlace = new GaragePlace(garagePlaceId, findGarageById(garageId), type, area);
-            EntityTransaction transaction = DbJpaConnector.getTransaction();
+            //EntityTransaction transaction = dbJpaConnector.getTransaction();
             try {
-                transaction.begin();
+                //transaction.begin();
                 garagePlaceDao.addGaragePlace(garagePlace);
-                transaction.commit();
+                //transaction.commit();
                 return 1;
             } catch (Exception e) {
-                transaction.rollback();
-                logger.error(e.getMessage());
+                //transaction.rollback();
+                log.error(e.getMessage());
             } finally {
-                DbJpaConnector.closeSession();
+                //dbJpaConnector.closeSession();
             }
         } else {
-            logger.warn("Возможность добавления места в гараже отключена");
+            log.warn("Возможность добавления места в гараже отключена");
         }
         return 0;
     }
@@ -119,22 +126,22 @@ public class GarageService implements IGarageService {
             try {
                 GaragePlace garagePlace = findGaragePlaceById(garageId, garagePlaceId);
                 if (garagePlace == null) {
-                    logger.error("Место в гараже с указанным номером не существует");
+                    log.error("Место в гараже с указанным номером не существует");
                     return 0;
                 }
-                transaction = DbJpaConnector.getTransaction();
+                transaction = dbJpaConnector.getTransaction();
                 transaction.begin();
                 garagePlaceDao.removeGaragePlace(garagePlace);
                 transaction.commit();
                 return 1;
             } catch (Exception e) {
                 transaction.rollback();
-                logger.error(e.getMessage());
+                log.error(e.getMessage());
             } finally {
-                DbJpaConnector.closeSession();
+                dbJpaConnector.closeSession();
             }
         } else {
-            logger.warn("Возможность удаления места в гараже отключена");
+            log.warn("Возможность удаления места в гараже отключена");
         }
         return 0;
     }
@@ -148,7 +155,7 @@ public class GarageService implements IGarageService {
                             .filter(garagePlace -> !garagePlace.isBusy())
                             .forEach(garagePlace -> freePlaces.add(garagePlace)));
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return freePlaces;
     }
@@ -164,7 +171,7 @@ public class GarageService implements IGarageService {
         try {
             garagePlace = garagePlaceDao.getGaragePlaceById(garageId, garagePlaceId);
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return garagePlace;
     }
@@ -175,7 +182,7 @@ public class GarageService implements IGarageService {
         try {
             garage = garageDao.getGarageById(garageId);
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return garage;
     }
@@ -207,11 +214,11 @@ public class GarageService implements IGarageService {
                 return garageDao.addGarage(importGarage);
             }
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
         } catch (FileNotFoundException e) {
-            logger.error("Файл не найден");
+            log.error("Файл не найден");
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
         return 0;
     }
@@ -223,10 +230,10 @@ public class GarageService implements IGarageService {
             if (garageToExport != null) {
                 return CsvUtil.exportCsvFile(garageToList(garageToExport), fileName);
             } else {
-                logger.error("Неверный № гаража");
+                log.error("Неверный № гаража");
             }
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
         }
         return false;
     }
@@ -248,11 +255,11 @@ public class GarageService implements IGarageService {
             }
             return 1;
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
         } catch (FileNotFoundException e) {
-            logger.error("Файл не найден");
+            log.error("Файл не найден");
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
         return 0;
     }
@@ -264,11 +271,11 @@ public class GarageService implements IGarageService {
             if (garagePlaceToExport != null) {
                 return CsvUtil.exportCsvFile(garagePlaceToList(garagePlaceToExport), fileName);
             } else {
-                logger.error("Неверный № гаража или места в гараже");
+                log.error("Неверный № гаража или места в гараже");
                 return false;
             }
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
         }
         return false;
 }

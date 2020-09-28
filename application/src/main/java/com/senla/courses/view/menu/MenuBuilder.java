@@ -1,7 +1,5 @@
 package com.senla.courses.view.menu;
 
-import com.lib.dicontainer.annotations.InjectByType;
-import com.lib.dicontainer.annotations.Singleton;
 import com.senla.courses.autoservice.controller.GarageController;
 import com.senla.courses.autoservice.controller.MasterController;
 import com.senla.courses.autoservice.controller.OrderController;
@@ -9,18 +7,20 @@ import com.senla.courses.view.action.garageaction.*;
 import com.senla.courses.view.action.masteraction.*;
 import com.senla.courses.view.action.orderaction.*;
 import com.senla.courses.view.action.savestateaction.SaveStateAction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-@Singleton
+@Component
 public class MenuBuilder {
 
     private Menu rootMenu;
-    @InjectByType
+    @Autowired
     private MasterController masterController;
-    @InjectByType
+    @Autowired
     private OrderController orderController;
-    @InjectByType
+    @Autowired
     private GarageController garageController;
 
     public Menu getRootMenu() {

@@ -1,17 +1,17 @@
 package com.senla.courses.autoservice.controller;
 
-import com.lib.dicontainer.annotations.InjectByType;
-import com.lib.dicontainer.annotations.Singleton;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@Singleton
+@Controller
 public class MasterController {
 
-    @InjectByType
+    @Autowired
     private IMasterService masterService;
 
     public int addMaster(int id, String name, int category) {

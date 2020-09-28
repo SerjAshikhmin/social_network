@@ -1,6 +1,5 @@
 package com.senla.courses.autoservice.service;
 
-import com.lib.dicontainer.annotations.InjectByType;
 import com.lib.utils.CsvUtil;
 import com.lib.utils.exceptions.WrongFileFormatException;
 import com.senla.courses.autoservice.dao.interfaces.IMasterDao;
@@ -13,8 +12,11 @@ import com.senla.courses.autoservice.service.comparators.master.MasterByBusyComp
 import com.senla.courses.autoservice.service.comparators.master.MasterByNameComparator;
 import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.utils.SerializeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityTransaction;
 import java.io.*;
@@ -22,29 +24,35 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+
+@Slf4j
+@Getter
+@Service
 public class MasterService implements IMasterService {
 
-    @InjectByType
+    @Autowired
     private IMasterDao masterDao;
-    @InjectByType
+    @Autowired
     private IOrderDao orderDao;
-    private static final Logger logger = LoggerFactory.getLogger(MasterService.class);
+    @Autowired
+    DbJpaConnector dbJpaConnector;
 
     @Override
+    @Transactional
     public int addMaster(int id, String name, int category) {
-        Master master = new Master (id, name, category);
-        EntityTransaction transaction = DbJpaConnector.getTransaction();
+        //EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
-            transaction.begin();
+            Master master = new Master (id, name, category);
+            //transaction.begin();
             masterDao.addMaster(master);
-            transaction.commit();
+            //transaction.commit();
             return 1;
         } catch (Exception e) {
-            transaction.rollback();
-            logger.error(e.getMessage());
+            //transaction.rollback();
+            log.error(e.getMessage());
             return 0;
         } finally {
-            DbJpaConnector.closeSession();
+            //dbJpaConnector.closeSession();
         }
     }
 
@@ -54,26 +62,26 @@ public class MasterService implements IMasterService {
         try {
             Master master = findMasterByName(name);
             if (master == null) {
-                logger.error("Мастера с указанным именем не существует");
+                log.error("Мастера с указанным именем не существует");
                 return 0;
             }
-            transaction = DbJpaConnector.getTransaction();
+            transaction = dbJpaConnector.getTransaction();
             transaction.begin();
             masterDao.removeMaster(master);
             transaction.commit();
             return 1;
         } catch (Exception e) {
             transaction.rollback();
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return 0;
         } finally {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
     }
 
     @Override
     public int updateMaster(Master master) {
-        EntityTransaction transaction = DbJpaConnector.getTransaction();
+        EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
             transaction.begin();
             masterDao.updateMaster(master);
@@ -81,10 +89,10 @@ public class MasterService implements IMasterService {
             return 1;
         } catch (Exception e) {
             transaction.rollback();
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return 0;
         } finally {
-            DbJpaConnector.closeSession();
+            dbJpaConnector.closeSession();
         }
     }
 
@@ -93,7 +101,7 @@ public class MasterService implements IMasterService {
         try {
             return masterDao.getAllMasters();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         } return null;
     }
 
@@ -103,7 +111,7 @@ public class MasterService implements IMasterService {
         try {
             allMastersSorted.addAll(masterDao.getAllMasters());
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
         Comparator masterComparator = getMasterComparator(sortBy);
         if (masterComparator != null) {
@@ -117,7 +125,7 @@ public class MasterService implements IMasterService {
         try {
             return masterDao.getAllFreeMasters();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return null;
         }
     }
@@ -127,9 +135,9 @@ public class MasterService implements IMasterService {
         try {
             return masterDao.getCurrentOrder(findMasterByName(name));
         } catch (MasterNotFoundException e) {
-            logger.error("Мастер не найден");
+            log.error("Мастер не найден");
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -149,7 +157,7 @@ public class MasterService implements IMasterService {
         try {
             return masterDao.getMasterById(id);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return null;
         }
     }
@@ -171,11 +179,11 @@ public class MasterService implements IMasterService {
                 return masterDao.addMaster(importMaster);
             }
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
         } catch (FileNotFoundException e) {
-            logger.error("Файл не найден");
+            log.error("Файл не найден");
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
         return 0;
     }
@@ -187,12 +195,12 @@ public class MasterService implements IMasterService {
             if (masterToExport != null) {
                 return CsvUtil.exportCsvFile(toList(masterToExport), fileName);
             } else {
-                logger.error("Неверный № мастера");
+                log.error("Неверный № мастера");
             }
         } catch (WrongFileFormatException e) {
-            logger.error("Неверный формат файла");
+            log.error("Неверный формат файла");
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
         return false;
     }

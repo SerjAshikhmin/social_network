@@ -1,34 +1,30 @@
 package com.senla.courses.autoservice.dao.jpadao;
 
-import com.lib.dicontainer.annotations.Singleton;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 
-@Singleton
+
+@Repository
 public class DbJpaConnector {
 
-    private static EntityManagerFactory emFactory;
-    private static EntityManager entityManager;
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
 
-    public DbJpaConnector() {
-        emFactory = Persistence.createEntityManagerFactory("com.senla.courses");
-    }
-
-    public static EntityManager openSession() {
+    public EntityManager openSession() {
         if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = emFactory.createEntityManager();
+            entityManager = entityManagerFactory.createEntityManager();
         }
         return entityManager;
     }
 
-    public static void closeSession() {
+    public void closeSession() {
         entityManager.close();
     }
 
-    public static EntityTransaction getTransaction() {
+    public EntityTransaction getTransaction() {
         return openSession().getTransaction();
     }
 

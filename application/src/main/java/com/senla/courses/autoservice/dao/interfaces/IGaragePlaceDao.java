@@ -1,9 +1,12 @@
 package com.senla.courses.autoservice.dao.interfaces;
 
 import com.senla.courses.autoservice.model.GaragePlace;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.PersistenceException;
 
+
+@Repository
 public interface IGaragePlaceDao {
 
     int addGaragePlace(GaragePlace garagePlace) throws PersistenceException;

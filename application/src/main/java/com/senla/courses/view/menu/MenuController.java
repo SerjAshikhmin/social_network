@@ -1,18 +1,18 @@
 package com.senla.courses.view.menu;
 
 
-import com.lib.dicontainer.annotations.InjectByType;
-import com.lib.dicontainer.annotations.Singleton;
 import com.lib.utils.ConsoleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class MenuController {
 
     private static final Logger logger = LoggerFactory.getLogger(MenuController.class);
 
-    @InjectByType
+    @Autowired
     private MenuBuilder menuBuilder;
     private Navigator navigator;
 

@@ -1,12 +1,13 @@
 package com.senla.courses.autoservice.service.interfaces;
 
-import com.lib.dicontainer.annotations.Singleton;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Singleton
+
+@Service
 public interface IMasterService {
 
     int addMaster(int id, String name, int category);
