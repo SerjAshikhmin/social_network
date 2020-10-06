@@ -40,10 +40,9 @@ public class MasterService implements IMasterService {
 
     @Override
     //@Transactional
-    public int addMaster(int id, String name, int category) {
+    public int addMaster(Master master) {
         EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
-            Master master = new Master (id, name, category);
             transaction.begin();
             masterDao.addMaster(master);
             transaction.commit();

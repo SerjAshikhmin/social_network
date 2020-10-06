@@ -8,6 +8,8 @@ import com.senla.courses.autoservice.model.GaragePlace;
 import com.senla.courses.autoservice.model.Master;
 import com.senla.courses.autoservice.model.Order;
 import com.senla.courses.autoservice.model.enums.OrderStatus;
+import com.senla.courses.autoservice.service.interfaces.IGarageService;
+import com.senla.courses.autoservice.service.interfaces.IMasterService;
 import com.senla.courses.autoservice.service.interfaces.IOrderService;
 import config.TestConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,10 @@ public class OrderServiceTest {
     @Autowired
     private IOrderService orderService;
     @Autowired
+    private IMasterService masterService;
+    @Autowired
+    private IGarageService garageService;
+    @Autowired
     private TestData testData;
     @Autowired
     private IOrderDao orderDao;
@@ -59,15 +65,19 @@ public class OrderServiceTest {
         when(orderDao.addOrder(any(Order.class))).thenReturn(1);
         when(masterDao.getAllMasters()).thenReturn(testData.getMastersList());
         when(garagePlaceDao.getGaragePlaceById(1, 1)).thenReturn(testData.getGarageList().get(0).getGaragePlaces().get(0));
+        List<Master> masters1 = new ArrayList<>();
+        masters1.add(masterService.findMasterByName("Evgeniy"));
+        List<Master> masters2 = new ArrayList<>();
+        masters2.add(masterService.findMasterByName("UnknownMaster"));
 
-        int result1 = orderService.addOrder(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
+        int result1 = orderService.addOrder(new Order(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
                 LocalDateTime.of(2020, Month.JUNE, 1, 12, 0),
                 LocalDateTime.of(2020, Month.JUNE, 1, 13, 0),
-                "Oil change", 1000, 1, 1, "Evgeniy", OrderStatus.ACCEPTED);
-        int result2 = orderService.addOrder(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
+                "Oil change", 1000, garageService.findGaragePlaceById(1, 1), masters1, OrderStatus.ACCEPTED));
+        int result2 = orderService.addOrder(new Order(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
                 LocalDateTime.of(2020, Month.JUNE, 1, 12, 0),
                 LocalDateTime.of(2020, Month.JUNE, 1, 13, 0),
-                "Oil change", 1000, 1, 1, "UnknownMaster", OrderStatus.ACCEPTED);
+                "Oil change", 1000, garageService.findGaragePlaceById(1, 1), masters1, OrderStatus.ACCEPTED));
 
         assertEquals(result1, 1);
         assertEquals(result2, 0);

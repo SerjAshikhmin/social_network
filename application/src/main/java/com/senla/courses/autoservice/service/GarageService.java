@@ -41,8 +41,7 @@ public class GarageService implements IGarageService {
 
     @Override
     //@Transactional(transactionManager = "transactionManager")
-    public int addGarage(int id, String address) {
-        Garage garage = new Garage(id, address, new ArrayList<>());
+    public int addGarage(Garage garage) {
         EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
             transaction.begin();
@@ -98,9 +97,8 @@ public class GarageService implements IGarageService {
 
     @Override
     //@Transactional(transactionManager = "transactionManager")
-    public int addGaragePlace(int garageId, int garagePlaceId, String type, int area) {
+    public int addGaragePlace(GaragePlace garagePlace) {
         if (addGaragePlaceOption) {
-            GaragePlace garagePlace = new GaragePlace(garagePlaceId, findGarageById(garageId), type, area);
             EntityTransaction transaction = dbJpaConnector.getTransaction();
             try {
                 transaction.begin();

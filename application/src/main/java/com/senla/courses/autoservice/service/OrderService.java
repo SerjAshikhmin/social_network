@@ -58,27 +58,22 @@ public class OrderService implements IOrderService {
 
     @Override
     //@Transactional
-    public int addOrder(int id, LocalDateTime submissionDate, LocalDateTime startDate, LocalDateTime endDate,
-                            String kindOfWork, int cost, int garageId, int garagePlaceId, String masterName, OrderStatus orderStatus) {
+    public int addOrder(Order order) {
         List<Master> masters = new ArrayList<>();
-        Master master = masterService.findMasterByName(masterName);
+        Master master = order.getMasters().get(0);
         if (master == null) {
-            log.error(String.format("Не найден мастер для заказа №%d", id));
+            log.error(String.format("Не найден мастер для заказа №%d", order.getId()));
             return 0;
         }
         master.setBusy(true);
-        masters.add(master);
-        GaragePlace garagePlace = garageService.findGaragePlaceById(garageId, garagePlaceId);
-        garagePlace.setBusy(true);
-        Order order = new Order(id, submissionDate, startDate, endDate, kindOfWork, cost,
-                garagePlace, masters, orderStatus);
+        order.getGaragePlace().setBusy(true);
         master.setOrder(order);
         EntityTransaction transaction = dbJpaConnector.getTransaction();
         try {
             transaction.begin();
             orderDao.addOrder(order);
             masterDao.updateMaster(master);
-            garagePlaceDao.updateGaragePlace(garagePlace);
+            garagePlaceDao.updateGaragePlace(order.getGaragePlace());
             transaction.commit();
             return 1;
         } catch (Exception ex) {

@@ -10,10 +10,10 @@ import java.util.List;
 @Service
 public interface IGarageService {
 
-    int addGarage(int id, String address);
+    int addGarage(Garage garage);
     int removeGarage(int garageId);
     List<Garage> getAllGarages();
-    int addGaragePlace(int garageId, int garagePlaceId, String type, int area);
+    int addGaragePlace(GaragePlace garagePlace);
     int removeGaragePlace(int garageId, int garagePlaceId);
     List<GaragePlace> getAllFreePlaces();
     int getFreePlacesCountInFuture();

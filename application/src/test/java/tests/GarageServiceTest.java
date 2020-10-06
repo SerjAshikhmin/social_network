@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,7 +54,7 @@ public class GarageServiceTest {
         log.info("Validating new garage adding");
         when(garageDao.addGarage(any(Garage.class))).thenReturn(1);
 
-        int result = garageService.addGarage(1, "Orel-Moskovskaya-22");
+        int result = garageService.addGarage(new Garage(1, "Orel-Moskovskaya-22", new ArrayList<>()));
 
         assertEquals(result, 1);
         verify(garageDao).addGarage(any(Garage.class));
@@ -92,7 +93,7 @@ public class GarageServiceTest {
         log.info("Validating new garage place adding");
         when(garagePlaceDao.addGaragePlace(any(GaragePlace.class))).thenReturn(1);
 
-        int result = garageService.addGaragePlace(1, 1, "Car lift", 8);
+        int result = garageService.addGaragePlace(new GaragePlace(1, garageService.findGarageById(1), "Car lift", 8));
 
         assertEquals(result, 1);
         verify(garagePlaceDao).addGaragePlace(any(GaragePlace.class));

@@ -48,7 +48,7 @@ public class MasterServiceTest {
         log.info("Validating new master adding");
         when(masterDao.addMaster(any(Master.class))).thenReturn(1);
 
-        int result = masterService.addMaster(1, "Ivan", 1);
+        int result = masterService.addMaster(new Master(1, "Ivan", 1));
 
         assertEquals(result, 1);
         verify(masterDao).addMaster(any(Master.class));
