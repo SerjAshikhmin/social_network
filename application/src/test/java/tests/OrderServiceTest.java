@@ -77,7 +77,7 @@ public class OrderServiceTest {
         int result2 = orderService.addOrder(new Order(1, LocalDateTime.of(2020, Month.JUNE, 1, 11, 0),
                 LocalDateTime.of(2020, Month.JUNE, 1, 12, 0),
                 LocalDateTime.of(2020, Month.JUNE, 1, 13, 0),
-                "Oil change", 1000, garageService.findGaragePlaceById(1, 1), masters1, OrderStatus.ACCEPTED));
+                "Oil change", 1000, garageService.findGaragePlaceById(1, 1), masters2, OrderStatus.ACCEPTED));
 
         assertEquals(result1, 1);
         assertEquals(result2, 0);
