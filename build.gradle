@@ -8,26 +8,11 @@
 group 'com.senla.courses'
 version '1.0-SNAPSHOT'
 apply plugin: 'java'
-apply plugin: 'checkstyle'
 sourceCompatibility = 11
 
 repositories {
     jcenter()
 }
-
-/*checkstyle {
-    toolVersion = '8.30'
-    config = rootProject.resources.text.fromFile("config/checkstyle/checkstyle.xml")
-}
-
-checkstyleMain {
-    source ='application/src/main/java'
-}
-
-build {
-    tasks.checkstyleMain.run()
-}*/
-
 
 
 
