@@ -11,13 +11,15 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
-@Table(name = "wall")
-public class Wall {
+@Table(name = "user_wall")
+public class UserWall {
 
     @Id
     private int id;
-    @OneToOne(mappedBy = "wall")
+
+    @OneToOne(mappedBy = "userWall")
     private User user;
-    @OneToMany(mappedBy = "wall", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<PublicMessage> messages;
+
+    @OneToMany(mappedBy = "userWall", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<UserWallMessage> messages;
 }

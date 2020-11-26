@@ -1,9 +1,7 @@
 package com.senla.courses.model;
 
-//import org.springframework.security.core.GrantedAuthority;
-
-
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -14,18 +12,19 @@ import java.util.Set;
 @Getter
 @Entity
 @Table(name = "roles")
-public class Role { //implements GrantedAuthority {
+public class Role implements GrantedAuthority {
 
     @Id
     private int id;
     @NonNull
     private String name;
+
     @Transient
     @ManyToMany(mappedBy = "roles")
-    private Set<User> users;
+    private Set<UserPrincipal> usersPrincipals;
 
-    /*@Override
+    @Override
     public String getAuthority() {
         return name;
-    }*/
+    }
 }

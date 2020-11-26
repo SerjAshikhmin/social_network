@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name = "public_message")
-public class PublicMessage {
+@Table(name = "group_wall_message")
+public class GroupWallMessage {
 
     @Id
     private int id;
@@ -21,8 +21,8 @@ public class PublicMessage {
     private String content;
     @NonNull
     private LocalDateTime sendDate;
-    @ManyToOne
-    @JoinColumn(name = "wall_id")
-    private Wall wall;
 
+    @ManyToOne
+    @JoinColumn(name = "group_wall_id")
+    private GroupWall groupWall;
 }
