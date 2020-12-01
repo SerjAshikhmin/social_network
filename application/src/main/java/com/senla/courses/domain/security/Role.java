@@ -1,4 +1,4 @@
-package com.senla.courses.model;
+package com.senla.courses.domain.security;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +21,7 @@ public class Role implements GrantedAuthority {
 
     @Transient
     @ManyToMany(mappedBy = "roles")
-    private Set<UserPrincipal> usersPrincipals;
+    private Set<MyUserPrincipal> usersPrincipals;
 
     @Override
     public String getAuthority() {

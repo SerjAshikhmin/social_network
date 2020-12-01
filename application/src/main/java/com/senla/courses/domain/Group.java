@@ -1,4 +1,4 @@
-package com.senla.courses.model;
+package com.senla.courses.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
-@Table(name = "groups")
+@Table(name = "groupes")
 public class Group {
 
     @Id
@@ -22,6 +22,6 @@ public class Group {
     private Set<User> users;
 
     @OneToOne
-    @PrimaryKeyJoinColumn
+    @JoinColumn(name = "groupWall_id", referencedColumnName = "id")
     private GroupWall groupWall;
 }

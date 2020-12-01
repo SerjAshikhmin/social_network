@@ -1,5 +1,7 @@
-package com.senla.courses.model;
+package com.senla.courses.domain;
 
+import com.senla.courses.domain.enums.Gender;
+import com.senla.courses.domain.security.MyUserPrincipal;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,7 +24,12 @@ public class User {
     private String firstName;
     @NonNull
     private String lastName;
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private LocalDate birthDate;
+    private String country;
+    private String city;
     private String personalInfo;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -34,8 +41,8 @@ public class User {
     @ManyToMany(mappedBy = "friends", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<User> inFriends;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "userWall_id", referencedColumnName = "id")
     private UserWall userWall;
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
@@ -47,7 +54,7 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Group> groups;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
-    private UserPrincipal userPrincipal;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "userPrincipal_id", referencedColumnName = "id")
+    private MyUserPrincipal userPrincipal;
 }

@@ -1,26 +1,17 @@
-package com.senla.courses.model;
+package com.senla.courses.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Setter
 @Getter
 @Entity
 @Table(name = "group_wall_message")
-public class GroupWallMessage {
-
-    @Id
-    private int id;
-    @NonNull
-    private String content;
-    @NonNull
-    private LocalDateTime sendDate;
+public class GroupWallMessage extends Message {
 
     @ManyToOne
     @JoinColumn(name = "group_wall_id")

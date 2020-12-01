@@ -1,5 +1,6 @@
-package com.senla.courses.model;
+package com.senla.courses.domain.security;
 
+import com.senla.courses.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -16,7 +17,7 @@ import java.util.Set;
 @Getter
 @Entity
 @Table(name = "user_principal")
-public class UserPrincipal implements UserDetails {
+public class MyUserPrincipal implements UserDetails {
 
     @Id
     private int id;
@@ -38,31 +39,31 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return userName;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

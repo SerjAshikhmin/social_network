@@ -1,4 +1,4 @@
-package com.senla.courses.model;
+package com.senla.courses.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +12,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "group_wall")
-public class GroupWall {
-
-    @Id
-    private int id;
+public class GroupWall extends Wall {
 
     @OneToOne(mappedBy = "groupWall")
     private Group group;
