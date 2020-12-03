@@ -1,13 +1,15 @@
 package com.senla.courses.domain;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
+
+@NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
 @MappedSuperclass

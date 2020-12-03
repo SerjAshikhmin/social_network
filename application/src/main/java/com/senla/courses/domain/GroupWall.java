@@ -17,6 +17,6 @@ public class GroupWall extends Wall {
     @OneToOne(mappedBy = "groupWall")
     private Group group;
 
-    @OneToMany(mappedBy = "groupWall", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "groupWall", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<GroupWallMessage> messages;
 }

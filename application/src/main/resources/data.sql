@@ -1,5 +1,5 @@
 insert into user_principal (id, user_name, password)
-     values (1, 'ast_mich', 'pass1'),
+     values (1, 'anonymousUser', 'pass1'),
             (2, 'ali_daria', 'pass2'),
             (3, 'lap_ser', 'pass3'),
             (4, 'el_dor', 'pass4'),
@@ -68,9 +68,9 @@ insert into group_wall_message (id, content, send_date, group_wall_id)
             (4, 'group 2, wall message 1', '2020-11-26 13:21:42', 2),
             (5, 'group 3, wall message 1', '2020-11-24 07:56:14', 3);
 
-insert into private_message (id, content, send_date, sender_id, receiver_id)
-     values (1, 'user 1 to user 2, message 1', '2020-10-17 10:37:45', 1, 2),
-            (2, 'user 1 to user 2, message 2', '2020-10-18 18:39:02', 1, 2),
-            (3, 'user 2 to user 1, message 1', '2020-11-27 15:12:35', 2, 1),
-            (4, 'user 1 to user 2, message 4', '2020-11-26 13:21:42', 1, 2),
-            (5, 'user 1 to user 2, message 3', '2020-11-24 07:56:14', 1, 2);
+insert into private_message (id, content, send_date, sender_id, receiver_id, is_read)
+     values (1, 'user 1 to user 2, message 1', '2020-10-17 10:37:45', 1, 2, 1),
+            (2, 'user 1 to user 2, message 2', '2020-10-18 18:39:02', 1, 2, 1),
+            (3, 'user 2 to user 1, message 1', '2020-11-27 15:12:35', 2, 1, 0),
+            (4, 'user 1 to user 2, message 4', '2020-11-26 13:21:42', 1, 2, 0),
+            (5, 'user 1 to user 2, message 3', '2020-11-24 07:56:14', 1, 2, 1);

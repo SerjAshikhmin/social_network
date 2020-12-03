@@ -1,12 +1,12 @@
 --create schema if not exists socialnetwork;
 --drop schema socialnetwork;
 
-create table group_wall (
+create table if not exists group_wall (
    id integer not null,
     primary key (id)
 ) engine=MyISAM;
 
-create table group_wall_message (
+create table if not exists group_wall_message (
    id integer not null,
     content varchar(1000),
     send_date datetime,
@@ -14,47 +14,48 @@ create table group_wall_message (
     primary key (id)
 ) engine=MyISAM;
 
-create table groupes (
+create table if not exists groupes (
    id integer not null,
     title varchar(45),
 group_wall_id integer,
     primary key (id)
 ) engine=MyISAM;
 
-create table private_message (
+create table if not exists private_message (
    id integer not null,
     content varchar(1000),
     send_date datetime,
+    is_read bit not null,
     receiver_id integer,
     sender_id integer,
     primary key (id)
 ) engine=MyISAM;
 
-create table roles (
+create table if not exists roles (
    id integer not null,
     name varchar(45),
     primary key (id)
 ) engine=MyISAM;
 
-create table user_principal (
+create table if not exists user_principal (
    id integer not null,
     password varchar(45),
     user_name varchar(45),
     primary key (id)
 ) engine=MyISAM;
 
-create table user_principal_roles (
+create table if not exists user_principal_roles (
    my_user_principal_id integer not null,
     roles_id integer not null,
     primary key (my_user_principal_id, roles_id)
 ) engine=MyISAM;
 
-create table user_wall (
+create table if not exists user_wall (
    id integer not null,
     primary key (id)
 ) engine=MyISAM;
 
-create table user_wall_message (
+create table if not exists user_wall_message (
    id integer not null,
     content varchar(1000),
     send_date datetime,
@@ -62,7 +63,7 @@ create table user_wall_message (
     primary key (id)
 ) engine=MyISAM;
 
-create table users (
+create table if not exists users (
    users_id integer not null,
     birth_date date,
     city varchar(20),
@@ -76,12 +77,12 @@ create table users (
     primary key (users_id)
 ) engine=MyISAM;
 
-create table users_friends (
+create table if not exists users_friends (
    users_id integer not null,
     friends_id integer not null
 ) engine=MyISAM;
 
-create table users_groups (
+create table if not exists users_groups (
    users_users_id integer not null,
     groups_id integer not null,
     primary key (users_users_id, groups_id)

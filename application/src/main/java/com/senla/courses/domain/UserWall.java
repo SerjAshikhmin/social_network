@@ -17,6 +17,6 @@ public class UserWall extends Wall {
     @OneToOne(mappedBy = "userWall")
     private User user;
 
-    @OneToMany(mappedBy = "userWall", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "userWall", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserWallMessage> messages;
 }

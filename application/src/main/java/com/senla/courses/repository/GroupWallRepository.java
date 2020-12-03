@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GroupWallRepository extends JpaRepository<GroupWall, Long> {
+public interface GroupWallRepository extends JpaRepository<GroupWall, Integer> {
 }

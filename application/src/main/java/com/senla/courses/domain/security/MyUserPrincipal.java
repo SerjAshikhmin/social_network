@@ -1,10 +1,7 @@
 package com.senla.courses.domain.security;
 
 import com.senla.courses.domain.User;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,6 +10,7 @@ import java.util.Collection;
 import java.util.Set;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
 @Entity

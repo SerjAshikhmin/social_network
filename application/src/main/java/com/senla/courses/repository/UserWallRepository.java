@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserWallRepository extends JpaRepository<UserWall, Long> {
+public interface UserWallRepository extends JpaRepository<UserWall, Integer> {
 }

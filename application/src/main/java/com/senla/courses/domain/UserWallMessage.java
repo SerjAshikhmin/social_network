@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Setter
@@ -16,4 +17,9 @@ public class UserWallMessage extends Message {
     @ManyToOne
     @JoinColumn(name = "user_wall_id")
     private UserWall userWall;
+
+    public UserWallMessage(int id, String content, LocalDateTime sendDate, UserWall userWall) {
+        super(id, content, sendDate);
+        this.userWall = userWall;
+    }
 }
