@@ -3,6 +3,8 @@ package com.senla.courses.service;
 import com.senla.courses.domain.Group;
 import com.senla.courses.domain.GroupWall;
 import com.senla.courses.domain.User;
+import com.senla.courses.dto.GroupDto;
+import com.senla.courses.dto.mappers.GroupMapper;
 import com.senla.courses.repository.GroupRepository;
 import com.senla.courses.repository.UserRepository;
 import com.senla.courses.service.interfaces.GroupService;
@@ -11,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
@@ -24,17 +25,16 @@ public class GroupServiceImpl implements GroupService {
     private GroupRepository groupRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private GroupMapper groupMapper;
 
     @Override
     @Transactional
-    public void addGroup(Group group) {
+    public void addGroup(GroupDto groupDto) {
         try {
-            if (group.getGroupWall() == null) {
-                group.setGroupWall(new GroupWall());
-            }
-            if (group.getUsers() == null) {
-                group.setUsers(new HashSet<>());
-            }
+            Group group = groupMapper.groupDtoToGroup(groupDto);
+            group.setGroupWall(new GroupWall());
+            group.setUsers(new HashSet<>());
             groupRepository.save(group);
             log.info(String.format("Group %s successfully created", group.getTitle()));
         } catch (Exception e) {
@@ -62,7 +62,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<Group> getAllGroups() {
+    public List<GroupDto> getAllGroups() {
         List<Group> result = null;
         try {
             result = groupRepository.findAll();
@@ -73,7 +73,18 @@ public class GroupServiceImpl implements GroupService {
             log.error(e.getMessage());
         }
         result.sort((o1, o2) -> Integer.valueOf(o2.getUsers().size()).compareTo(Integer.valueOf(o1.getUsers().size())));
-        return result;
+        return groupMapper.groupListToGroupDtoList(result);
+    }
+
+    @Override
+    public GroupDto findGroupById(int id) {
+        Group group = null;
+        try {
+            group = groupRepository.findById(id).get();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return groupMapper.groupToGroupDto(group);
     }
 
     @Override

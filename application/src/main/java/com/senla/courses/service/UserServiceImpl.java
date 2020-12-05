@@ -2,8 +2,12 @@ package com.senla.courses.service;
 
 import com.senla.courses.domain.User;
 import com.senla.courses.domain.UserWall;
+import com.senla.courses.domain.enums.Gender;
 import com.senla.courses.domain.security.MyUserPrincipal;
 import com.senla.courses.domain.security.Role;
+import com.senla.courses.dto.UserDto;
+import com.senla.courses.dto.mappers.MyUserPrincipalMapper;
+import com.senla.courses.dto.mappers.UserMapper;
 import com.senla.courses.repository.RoleRepository;
 import com.senla.courses.repository.UserPrincipalRepository;
 import com.senla.courses.repository.UserRepository;
@@ -31,10 +35,16 @@ public class UserServiceImpl implements UserService {
     private UserPrincipalRepository userPrincipalRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private MyUserPrincipalMapper userPrincipalMapper;
 
     @Override
     @Transactional
-    public void registerUser(User user, MyUserPrincipal userPrincipal) {
+    public void registerUser(UserDto userDto) {
+        User user = userMapper.userDtoToUser(userDto);
+        MyUserPrincipal userPrincipal = new MyUserPrincipal(null, userDto.getUserName(), userDto.getPassword(), null, null);
         if (user.getFriends() == null) {
             user.setFriends(new ArrayList<>());
         }
@@ -71,32 +81,56 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUserInfo(User user) {
+    public void updateUserInfo(UserDto userDto) {
         try {
-            if (userRepository.existsById(user.getId())) {
-                userRepository.save(user);
-                log.info(String.format("User %s successfully updated", user.getUserPrincipal().getUsername()));
-            } else {
-                log.error(String.format("User %s doesn't exist in DB", user.getUserPrincipal().getUsername()));
+            User user = userRepository.findById(userDto.getId()).get();
+            if (userDto.getPassword() != null) {
+                user.setUserPrincipal(user.getUserPrincipal());
+                user.getUserPrincipal().setPassword(userDto.getPassword());
             }
+            user.setFirstName(userDto.getFirstName());
+            user.setLastName(userDto.getLastName());
+            user.setGender(Gender.valueOf(userDto.getGender()));
+            if (userDto.getBirthDate() != null) {
+                user.setBirthDate(userDto.getBirthDate());
+            } else {
+                user.setBirthDate(null);
+            }
+            if (userDto.getCountry() != null) {
+                user.setCountry(userDto.getCountry());
+            } else {
+                user.setCountry(null);
+            }
+            if (userDto.getCity() != null) {
+                user.setCity(userDto.getCity());
+            } else {
+                user.setCity(null);
+            }
+            if (userDto.getPersonalInfo() != null) {
+                user.setPersonalInfo(userDto.getPersonalInfo());
+            } else {
+                user.setPersonalInfo(null);
+            }
+            userRepository.save(user);
+            log.info(String.format("User %s successfully updated", user.getUserPrincipal().getUsername()));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
     }
 
     @Override
-    public User getUserInfo(int userId) {
+    public UserDto getUserInfo(int userId) {
         User user = null;
         try {
             user = userRepository.findById(userId).get();
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return user;
+        return userMapper.userToUserDto(user);
     }
 
     @Override
-    public List<User> searchUsers(String country, String city, String partOfName, Integer lessThanAgeInYears, Integer moreThanAgeInYears) {
+    public List<UserDto> searchUsers(String country, String city, String partOfName, Integer lessThanAgeInYears, Integer moreThanAgeInYears) {
         List<User> result;
         List<User> usersByCountryAndCity;
         if (country != null && city != null) {
@@ -138,7 +172,7 @@ public class UserServiceImpl implements UserService {
             }
         }
         result.sort(Comparator.comparing(User::getFirstName));
-        return result;
+        return userMapper.userListToUserDtoList(result);
     }
 
     @Override

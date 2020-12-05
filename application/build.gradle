@@ -25,8 +25,6 @@ sourceSets {
     }
 }
 
-sourceCompatibility = 11
-
 repositories {
     jcenter()
     mavenCentral()
@@ -75,7 +73,7 @@ configurations {
 }
 
 ext {
-    mapstructVersion = "1.4.0.Final"
+    mapstructVersion = "1.4.1.Final"
 }
 dependencies {
     compileOnly("org.mapstruct:mapstruct:${mapstructVersion}")

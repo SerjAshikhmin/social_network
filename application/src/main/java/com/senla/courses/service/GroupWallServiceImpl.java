@@ -2,6 +2,9 @@ package com.senla.courses.service;
 
 import com.senla.courses.domain.GroupWall;
 import com.senla.courses.domain.GroupWallMessage;
+import com.senla.courses.dto.GroupWallMessageDto;
+import com.senla.courses.dto.mappers.GroupWallMessageMapper;
+import com.senla.courses.repository.GroupRepository;
 import com.senla.courses.repository.GroupWallMessageRepository;
 import com.senla.courses.repository.GroupWallRepository;
 import com.senla.courses.service.interfaces.GroupWallService;
@@ -15,19 +18,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class GroupWallServiceImpl implements GroupWallService {
 
     @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
     private GroupWallRepository groupWallRepository;
     @Autowired
     private GroupWallMessageRepository groupWallMessageRepository;
+    @Autowired
+    private GroupWallMessageMapper groupWallMessageMapper;
 
     @Override
     @Transactional
-    public void postMessage(int groupWallId, GroupWallMessage message) {
+    public void postMessage(int groupId, GroupWallMessageDto messageDto) {
         try {
-            GroupWall groupWall = groupWallRepository.findById(groupWallId).get();
+            GroupWall groupWall = groupRepository.findById(groupId).get().getGroupWall();
+            GroupWallMessage message = groupWallMessageMapper.groupWallMessageDtoToGroupWallMessage(messageDto);
             groupWall.getMessages().add(message);
             if (message.getGroupWall() == null) {
                 message.setGroupWall(groupWall);
             }
+            message.setId(null);
             groupWallMessageRepository.save(message);
             groupWallRepository.save(groupWall);
             log.info(String.format("Message %d successfully posted on the wall of the %s group", message.getId(), groupWall.getGroup().getTitle()));
@@ -38,10 +47,11 @@ public class GroupWallServiceImpl implements GroupWallService {
 
     @Override
     @Transactional
-    public void removeMessage(int groupWallId, int messageId) {
+    public void removeMessage(int groupId, int messageId) {
         try {
-            GroupWall groupWall = groupWallRepository.findById(groupWallId).get();
+            GroupWall groupWall = groupRepository.findById(groupId).get().getGroupWall();
             GroupWallMessage message = groupWallMessageRepository.findById(messageId).get();
+            groupWall.getMessages().remove(message);
             groupWallMessageRepository.delete(message);
             log.info(String.format("Message %d successfully removed from the wall of the %s group", message.getId(), groupWall.getGroup().getTitle()));
         } catch (Exception e) {

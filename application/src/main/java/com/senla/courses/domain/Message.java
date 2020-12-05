@@ -2,9 +2,9 @@ package com.senla.courses.domain;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 
@@ -16,7 +16,9 @@ import java.time.LocalDateTime;
 public abstract class Message {
 
     @Id
-    private int id;
+    @GeneratedValue
+    @Column(name = "id", length = 10)
+    private Integer id;
     @NonNull
     private String content;
     @NonNull

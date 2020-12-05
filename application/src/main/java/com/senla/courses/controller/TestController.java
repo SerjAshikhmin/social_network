@@ -3,6 +3,9 @@ package com.senla.courses.controller;
 import com.senla.courses.domain.*;
 import com.senla.courses.domain.enums.Gender;
 import com.senla.courses.domain.security.MyUserPrincipal;
+import com.senla.courses.dto.GroupDto;
+import com.senla.courses.dto.MyUserPrincipalDto;
+import com.senla.courses.dto.UserDto;
 import com.senla.courses.service.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -18,7 +21,7 @@ import java.util.List;
 
 
 @Controller
-public class StartController {
+public class TestController {
 
     @Autowired
     private ApplicationContext context;
@@ -47,10 +50,9 @@ public class StartController {
         //userService.addToFriends(6);
         //userService.removeFromFriends(6);
         //User user = userService.getUserInfo(10);
-        /*User user = new User(11, "Format", "Formatter", Gender.male, LocalDate.of(2000, Month.NOVEMBER, 25),
-                            "Russia", "Orel", "format info", null, null, null, null, null, null, null);
-        MyUserPrincipal userPrincipal = new MyUserPrincipal(11, "formatt", "pass11", user, null);
-        userService.registerUser(user, userPrincipal);*/
+        UserDto user = new UserDto(11, "Format", "Formatter", "male", LocalDate.of(2000, Month.NOVEMBER, 25),
+                            "Russia", "Orel", "format info", null, null, null, null, null, null, "formatt", "pass11");
+        userService.registerUser(user);
         /*User user = new User(11, "Format", "Formatov", Gender.male, LocalDate.of(1999, Month.NOVEMBER, 25),
                 "Russia", "Orel", "format info", null, null, null, null, null, null, null);
         MyUserPrincipal userPrincipal = new MyUserPrincipal(11, "formatt", "pass112", user, null);
@@ -60,7 +62,7 @@ public class StartController {
         /*privateMessageService.sendMessage(new PrivateMessage(6, "user 1 to user 2, message 5",
                 LocalDateTime.of(2020, Month.NOVEMBER, 25, 10, 0), null, null), 2);*/
         //List<PrivateMessage> privateMessages = privateMessageService.showDialog(2);
-        List<Group> groups = groupService.getAllGroups();
+        List<GroupDto> groups = groupService.getAllGroups();
         System.out.println(groups);
         return "index";
     }

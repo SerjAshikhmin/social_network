@@ -18,7 +18,7 @@ import java.util.Set;
 public class MyUserPrincipal implements UserDetails {
 
     @Id
-    private int id;
+    private Integer id;
     @NonNull
     private String userName;
     @NonNull

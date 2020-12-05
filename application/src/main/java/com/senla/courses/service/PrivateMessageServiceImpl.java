@@ -3,6 +3,8 @@ package com.senla.courses.service;
 import com.senla.courses.domain.Message;
 import com.senla.courses.domain.PrivateMessage;
 import com.senla.courses.domain.User;
+import com.senla.courses.dto.PrivateMessageDto;
+import com.senla.courses.dto.mappers.PrivateMessageMapper;
 import com.senla.courses.repository.PrivateMessageRepository;
 import com.senla.courses.repository.UserPrincipalRepository;
 import com.senla.courses.repository.UserRepository;
@@ -26,16 +28,20 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
     private UserRepository userRepository;
     @Autowired
     private UserPrincipalRepository userPrincipalRepository;
+    @Autowired
+    private PrivateMessageMapper privateMessageMapper;
 
     @Override
     @Transactional
-    public void sendMessage(PrivateMessage message, int receiverId) {
+    public void sendMessage(PrivateMessageDto messageDto, int receiverId) {
         String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
             User currentUser = userPrincipalRepository.findMyUserPrincipalByUserName(currentUserName).getUser();
             User user = userRepository.findById(receiverId).get();
+            PrivateMessage message = privateMessageMapper.privateMessageDtoToPrivateMessage(messageDto);
             message.setSender(currentUser);
             message.setReceiver(user);
+            message.setId(null);
             privateMessageRepository.save(message);
             log.info(String.format("Message %d successfully sent by user %s to user %s",
                                     message.getId(), currentUserName, user.getUserPrincipal().getUsername()));
@@ -45,7 +51,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
     }
 
     @Override
-    public List<PrivateMessage> showDialog(int userId) {
+    public List<PrivateMessageDto> showDialog(int userId) {
         String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
         List<PrivateMessage> result = null;
         try {
@@ -63,6 +69,6 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return result;
+        return privateMessageMapper.privateMessageListToPrivateMessageDtoList(result);
     }
 }

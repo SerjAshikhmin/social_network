@@ -18,7 +18,8 @@ import java.util.Set;
 public class User {
 
     @Id
-    @Column(name = "users_id")
+    @GeneratedValue
+    @Column(name = "users_id", length = 10)
     private int id;
     @NonNull
     private String firstName;
