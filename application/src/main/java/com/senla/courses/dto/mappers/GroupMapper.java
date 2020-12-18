@@ -24,7 +24,6 @@ public interface GroupMapper {
     List<GroupDto> groupListToGroupDtoList(List<Group> groups);
 
     @Mapping(target = "friends", ignore = true)
-    @Mapping(target = "inFriends", ignore = true)
     @Mapping(target = "userWall", ignore = true)
     @Mapping(target = "outgoingMessages", ignore = true)
     @Mapping(target = "incomingMessages", ignore = true)

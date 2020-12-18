@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -33,7 +34,7 @@ public class GroupController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> addGroup(@RequestBody GroupDto group) {
+    public ResponseEntity<?> addGroup(@RequestBody @Valid GroupDto group) {
         groupService.addGroup(group);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -57,7 +58,7 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/wall")
-    public ResponseEntity<?> postMessage(@PathVariable("groupId") int groupId, @RequestBody GroupWallMessageDto message) {
+    public ResponseEntity<?> postMessage(@PathVariable("groupId") int groupId, @RequestBody @Valid GroupWallMessageDto message) {
         groupWallService.postMessage(groupId, message);
         return new ResponseEntity<>(HttpStatus.OK);
     }

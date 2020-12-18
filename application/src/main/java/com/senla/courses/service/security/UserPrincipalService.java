@@ -1,5 +1,6 @@
 package com.senla.courses.service.security;
 
+import com.senla.courses.domain.security.MyUserPrincipal;
 import com.senla.courses.repository.RoleRepository;
 import com.senla.courses.repository.UserPrincipalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +28,16 @@ public class UserPrincipalService implements UserDetailsService {
 
     public Collection<? extends GrantedAuthority> getRolesByUser(String userName) {
         return Collections.emptyList();
+    }
+
+    public boolean isUserAlreadyExists(String userName) {
+        MyUserPrincipal userPrincipal = null;
+        try {
+            userPrincipal = userPrincipalRepository.findMyUserPrincipalByUserName(userName);
+            System.out.println();
+        } catch (Exception e) {
+            return false;
+        }
+        return userPrincipal != null;
     }
 }

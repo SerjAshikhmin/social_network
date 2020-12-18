@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Set;
 
@@ -18,10 +19,14 @@ import java.util.Set;
 public class MyUserPrincipal implements UserDetails {
 
     @Id
+    @GeneratedValue
+    @Column(name = "id", length = 10)
     private Integer id;
-    @NonNull
+    @NotNull
+    @Column(nullable = false, length = 45)
     private String userName;
-    @NonNull
+    @NotNull
+    @Column(nullable = false, length = 45)
     private String password;
 
     @OneToOne(mappedBy = "userPrincipal")

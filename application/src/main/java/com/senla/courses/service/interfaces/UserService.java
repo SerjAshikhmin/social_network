@@ -1,6 +1,5 @@
 package com.senla.courses.service.interfaces;
 
-import com.senla.courses.domain.User;
 import com.senla.courses.dto.UserDto;
 import org.springframework.stereotype.Service;
 

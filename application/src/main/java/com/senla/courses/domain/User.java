@@ -5,6 +5,7 @@ import com.senla.courses.domain.security.MyUserPrincipal;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -21,16 +22,22 @@ public class User {
     @GeneratedValue
     @Column(name = "users_id", length = 10)
     private int id;
-    @NonNull
+    @NotNull
+    @Column(nullable = false, length = 20)
     private String firstName;
-    @NonNull
+    @NotNull
+    @Column(nullable = false, length = 20)
     private String lastName;
-    @NonNull
+    @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
     private Gender gender;
     private LocalDate birthDate;
+    @Column(length = 45)
     private String country;
+    @Column(length = 20)
     private String city;
+    @Column(length = 1000)
     private String personalInfo;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
@@ -38,9 +45,6 @@ public class User {
             joinColumns = {@JoinColumn(name = "users_id")},
             inverseJoinColumns = {@JoinColumn(name = "friends_id")})
     private List<User> friends;
-
-    @ManyToMany(mappedBy = "friends", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    private List<User> inFriends;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "userWall_id", referencedColumnName = "id")

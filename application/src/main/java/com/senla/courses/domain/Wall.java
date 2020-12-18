@@ -3,6 +3,8 @@ package com.senla.courses.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
@@ -12,5 +14,7 @@ import javax.persistence.MappedSuperclass;
 public abstract class Wall {
 
     @Id
-    private int id;
+    @GeneratedValue
+    @Column(name = "id", length = 10)
+    private Integer id;
 }

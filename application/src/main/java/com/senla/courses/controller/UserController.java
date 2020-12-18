@@ -1,15 +1,17 @@
 package com.senla.courses.controller;
 
-import com.senla.courses.dto.MyUserPrincipalDto;
 import com.senla.courses.dto.UserDto;
 import com.senla.courses.dto.UserWallMessageDto;
+import com.senla.courses.dto.validators.UserDtoValidator;
 import com.senla.courses.service.interfaces.UserService;
 import com.senla.courses.service.interfaces.UserWallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,6 +22,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private UserWallService userWallService;
+    @Autowired
+    private UserDtoValidator userDtoValidator;
 
     @GetMapping("")
     public ResponseEntity<?> searchUsers(@RequestParam(name = "country", required = false) String country,
@@ -38,13 +42,21 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> registerUser(@RequestBody UserDto user) {
+    public ResponseEntity<?> registerUser(@RequestBody @Valid UserDto user, BindingResult result) {
+        userDtoValidator.validate(user, result);
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         userService.registerUser(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("")
-    public ResponseEntity<?> updateUserInfo(@RequestBody UserDto user) {
+    public ResponseEntity<?> updateUserInfo(@RequestBody @Valid UserDto user, BindingResult result) {
+        userDtoValidator.validate(user, result);
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         userService.updateUserInfo(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -62,7 +74,7 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/wall")
-    public ResponseEntity<?> postMessage(@PathVariable("userId") int userId, @RequestBody UserWallMessageDto message) {
+    public ResponseEntity<?> postMessage(@PathVariable("userId") int userId, @RequestBody @Valid UserWallMessageDto message) {
         userWallService.postMessage(userId, message);
         return new ResponseEntity<>(HttpStatus.OK);
     }

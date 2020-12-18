@@ -5,6 +5,8 @@ import com.senla.courses.domain.PrivateMessage;
 import com.senla.courses.domain.User;
 import com.senla.courses.dto.PrivateMessageDto;
 import com.senla.courses.dto.mappers.PrivateMessageMapper;
+import com.senla.courses.exceptions.messageexceptions.SendMessageException;
+import com.senla.courses.exceptions.messageexceptions.ShowDialogException;
 import com.senla.courses.repository.PrivateMessageRepository;
 import com.senla.courses.repository.UserPrincipalRepository;
 import com.senla.courses.repository.UserRepository;
@@ -34,6 +36,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
     @Override
     @Transactional
     public void sendMessage(PrivateMessageDto messageDto, int receiverId) {
+        log.debug(String.format("Call method sendMessage with receiverId %d", receiverId));
         String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
             User currentUser = userPrincipalRepository.findMyUserPrincipalByUserName(currentUserName).getUser();
@@ -47,11 +50,13 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
                                     message.getId(), currentUserName, user.getUserPrincipal().getUsername()));
         } catch (Exception e) {
             log.error(e.getMessage());
+            throw new SendMessageException(e);
         }
     }
 
     @Override
     public List<PrivateMessageDto> showDialog(int userId) {
+        log.debug(String.format("Call method showDialog with userId %d", userId));
         String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
         List<PrivateMessage> result = null;
         try {
@@ -68,6 +73,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
+            throw new ShowDialogException(e);
         }
         return privateMessageMapper.privateMessageListToPrivateMessageDtoList(result);
     }

@@ -50,9 +50,9 @@ public class TestController {
         //userService.addToFriends(6);
         //userService.removeFromFriends(6);
         //User user = userService.getUserInfo(10);
-        UserDto user = new UserDto(11, "Format", "Formatter", "male", LocalDate.of(2000, Month.NOVEMBER, 25),
+       /* UserDto user = new UserDto(11, "Format", "Formatter", "male", LocalDate.of(2000, Month.NOVEMBER, 25),
                             "Russia", "Orel", "format info", null, null, null, null, null, null, "formatt", "pass11");
-        userService.registerUser(user);
+        userService.registerUser(user);*/
         /*User user = new User(11, "Format", "Formatov", Gender.male, LocalDate.of(1999, Month.NOVEMBER, 25),
                 "Russia", "Orel", "format info", null, null, null, null, null, null, null);
         MyUserPrincipal userPrincipal = new MyUserPrincipal(11, "formatt", "pass112", user, null);

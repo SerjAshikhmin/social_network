@@ -1,9 +1,11 @@
 package com.senla.courses.domain.security;
 
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -16,7 +18,9 @@ public class Role implements GrantedAuthority {
 
     @Id
     private int id;
-    @NonNull
+    @Length(min = 2)
+    @NotNull
+    @Column(nullable = false, length = 45)
     private String name;
 
     @Transient

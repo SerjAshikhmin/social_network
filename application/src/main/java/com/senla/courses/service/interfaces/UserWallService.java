@@ -1,6 +1,5 @@
 package com.senla.courses.service.interfaces;
 
-import com.senla.courses.domain.UserWallMessage;
 import com.senla.courses.dto.UserWallMessageDto;
 import org.springframework.stereotype.Service;
 

@@ -4,6 +4,8 @@ import com.senla.courses.domain.GroupWall;
 import com.senla.courses.domain.GroupWallMessage;
 import com.senla.courses.dto.GroupWallMessageDto;
 import com.senla.courses.dto.mappers.GroupWallMessageMapper;
+import com.senla.courses.exceptions.messageexceptions.PostMessageException;
+import com.senla.courses.exceptions.messageexceptions.RemoveMessageException;
 import com.senla.courses.repository.GroupRepository;
 import com.senla.courses.repository.GroupWallMessageRepository;
 import com.senla.courses.repository.GroupWallRepository;
@@ -29,6 +31,7 @@ public class GroupWallServiceImpl implements GroupWallService {
     @Override
     @Transactional
     public void postMessage(int groupId, GroupWallMessageDto messageDto) {
+        log.debug(String.format("Call method postMessage with groupId %d", groupId));
         try {
             GroupWall groupWall = groupRepository.findById(groupId).get().getGroupWall();
             GroupWallMessage message = groupWallMessageMapper.groupWallMessageDtoToGroupWallMessage(messageDto);
@@ -42,12 +45,14 @@ public class GroupWallServiceImpl implements GroupWallService {
             log.info(String.format("Message %d successfully posted on the wall of the %s group", message.getId(), groupWall.getGroup().getTitle()));
         } catch (Exception e) {
             log.error(e.getMessage());
+            throw new PostMessageException(e);
         }
     }
 
     @Override
     @Transactional
     public void removeMessage(int groupId, int messageId) {
+        log.debug(String.format("Call method removeMessage with groupId %d, messageId %d", groupId, messageId));
         try {
             GroupWall groupWall = groupRepository.findById(groupId).get().getGroupWall();
             GroupWallMessage message = groupWallMessageRepository.findById(messageId).get();
@@ -56,6 +61,7 @@ public class GroupWallServiceImpl implements GroupWallService {
             log.info(String.format("Message %d successfully removed from the wall of the %s group", message.getId(), groupWall.getGroup().getTitle()));
         } catch (Exception e) {
             log.error(e.getMessage());
+            throw new RemoveMessageException(e);
         }
     }
 }

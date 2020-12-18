@@ -20,7 +20,6 @@ public interface UserMapper {
     User userDtoToUser(UserDto userDto);
 
     @Mapping(target = "friends", ignore = true)
-    @Mapping(target = "inFriends", ignore = true)
     @Mapping(target = "userWall", ignore = true)
     @Mapping(target = "outgoingMessages", ignore = true)
     @Mapping(target = "incomingMessages", ignore = true)

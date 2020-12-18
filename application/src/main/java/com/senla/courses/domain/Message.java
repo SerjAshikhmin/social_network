@@ -1,10 +1,10 @@
 package com.senla.courses.domain;
 
 import lombok.*;
-import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 
@@ -19,8 +19,10 @@ public abstract class Message {
     @GeneratedValue
     @Column(name = "id", length = 10)
     private Integer id;
-    @NonNull
+    @NotNull
+    @Column(nullable = false, length = 1000)
     private String content;
-    @NonNull
+    @NotNull
+    @Column(nullable = false)
     private LocalDateTime sendDate;
 }

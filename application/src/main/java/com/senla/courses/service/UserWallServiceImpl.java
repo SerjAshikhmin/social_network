@@ -4,6 +4,8 @@ import com.senla.courses.domain.UserWall;
 import com.senla.courses.domain.UserWallMessage;
 import com.senla.courses.dto.UserWallMessageDto;
 import com.senla.courses.dto.mappers.UserWallMessageMapper;
+import com.senla.courses.exceptions.messageexceptions.PostMessageException;
+import com.senla.courses.exceptions.messageexceptions.RemoveMessageException;
 import com.senla.courses.repository.UserRepository;
 import com.senla.courses.repository.UserWallMessageRepository;
 import com.senla.courses.repository.UserWallRepository;
@@ -30,6 +32,7 @@ public class UserWallServiceImpl implements UserWallService {
     @Override
     @Transactional
     public void postMessage(int userId, UserWallMessageDto messageDto) {
+        log.debug(String.format("Call method postMessage with userId %d", userId));
         try {
             UserWall userWall = userRepository.findById(userId).get().getUserWall();
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -48,12 +51,14 @@ public class UserWallServiceImpl implements UserWallService {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
+            throw new PostMessageException(e);
         }
     }
 
     @Override
     @Transactional
     public void removeMessage(int userId, int messageId) {
+        log.debug(String.format("Call method removeMessage with userId %d, messageId %d", userId, messageId));
         try {
             UserWall userWall = userRepository.findById(userId).get().getUserWall();
             UserWallMessage message = userWallMessageRepository.findById(messageId).get();
@@ -61,6 +66,7 @@ public class UserWallServiceImpl implements UserWallService {
             log.info(String.format("Message %d successfully removed from the wall of user %s", message.getId(), userWall.getUser().getUserPrincipal().getUsername()));
         } catch (Exception e) {
             log.error(e.getMessage());
+            throw new RemoveMessageException(e);
         }
     }
 }
