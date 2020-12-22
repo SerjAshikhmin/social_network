@@ -10,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @NoArgsConstructor
 @Setter
@@ -25,4 +26,17 @@ public class UserWallMessageDto {
     @NotNull
     private LocalDateTime sendDate;
     private UserWallDto userWall;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserWallMessageDto that = (UserWallMessageDto) o;
+        return Objects.equals(id, that.id) && Objects.equals(content, that.content) && Objects.equals(sendDate, that.sendDate) && Objects.equals(userWall, that.userWall);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, content, sendDate, userWall);
+    }
 }

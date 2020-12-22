@@ -31,7 +31,7 @@ public class UserPrincipalService implements UserDetailsService {
     }
 
     public boolean isUserAlreadyExists(String userName) {
-        MyUserPrincipal userPrincipal = null;
+        MyUserPrincipal userPrincipal;
         try {
             userPrincipal = userPrincipalRepository.findMyUserPrincipalByUserName(userName);
             System.out.println();

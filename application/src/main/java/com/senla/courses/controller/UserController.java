@@ -45,20 +45,32 @@ public class UserController {
     public ResponseEntity<?> registerUser(@RequestBody @Valid UserDto user, BindingResult result) {
         userDtoValidator.validate(user, result);
         if (result.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            StringBuilder sb = new StringBuilder();
+            result.getFieldErrors().forEach(fe -> sb.append(fe.getField())
+                    .append(" ")
+                    .append(fe.getDefaultMessage())
+                    .append("<br>"));
+            return new ResponseEntity<>(sb.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            userService.registerUser(user);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
-        userService.registerUser(user);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("")
     public ResponseEntity<?> updateUserInfo(@RequestBody @Valid UserDto user, BindingResult result) {
         userDtoValidator.validate(user, result);
         if (result.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            StringBuilder sb = new StringBuilder();
+            result.getFieldErrors().forEach(fe -> sb.append(fe.getField())
+                    .append(" ")
+                    .append(fe.getDefaultMessage())
+                    .append("<br>"));
+            return new ResponseEntity<>(sb.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            userService.updateUserInfo(user);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        userService.updateUserInfo(user);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/friends/{id}")
@@ -74,9 +86,20 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/wall")
-    public ResponseEntity<?> postMessage(@PathVariable("userId") int userId, @RequestBody @Valid UserWallMessageDto message) {
-        userWallService.postMessage(userId, message);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> postMessage(@PathVariable("userId") int userId,
+                                         @RequestBody @Valid UserWallMessageDto message,
+                                         BindingResult result) {
+        if (result.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            result.getFieldErrors().forEach(fe -> sb.append(fe.getField())
+                    .append(" ")
+                    .append(fe.getDefaultMessage())
+                    .append("<br>"));
+            return new ResponseEntity<>(sb.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            userWallService.postMessage(userId, message);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
     }
 
     @DeleteMapping("/{userId}/wall/{messageId}")

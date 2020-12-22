@@ -5,6 +5,7 @@ import com.senla.courses.service.interfaces.PrivateMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,8 +25,18 @@ public class PrivateMessageController {
     }
 
     @PostMapping("/{receiverId}")
-    public ResponseEntity<?> sendMessage(@PathVariable("receiverId") int receiverId, @RequestBody @Valid PrivateMessageDto message) {
-        privateMessageService.sendMessage(message, receiverId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> sendMessage(@PathVariable("receiverId") int receiverId,
+                                         @RequestBody @Valid PrivateMessageDto message, BindingResult result) {
+        if (result.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            result.getFieldErrors().forEach(fe -> sb.append(fe.getField())
+                    .append(" ")
+                    .append(fe.getDefaultMessage())
+                    .append("<br>"));
+            return new ResponseEntity<>(sb.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            privateMessageService.sendMessage(message, receiverId);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
     }
 }

@@ -10,12 +10,14 @@ import com.senla.courses.repository.GroupRepository;
 import com.senla.courses.repository.GroupWallMessageRepository;
 import com.senla.courses.repository.GroupWallRepository;
 import com.senla.courses.service.interfaces.GroupWallService;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@Setter
 @Service
 public class GroupWallServiceImpl implements GroupWallService {
 

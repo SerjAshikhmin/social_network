@@ -7,6 +7,7 @@ import com.senla.courses.service.interfaces.GroupWallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -34,9 +35,18 @@ public class GroupController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> addGroup(@RequestBody @Valid GroupDto group) {
-        groupService.addGroup(group);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<?> addGroup(@RequestBody @Valid GroupDto group, BindingResult result) {
+        if (result.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            result.getFieldErrors().forEach(fe -> sb.append(fe.getField())
+                    .append(" ")
+                    .append(fe.getDefaultMessage())
+                    .append("<br>"));
+            return new ResponseEntity<>(sb.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            groupService.addGroup(group);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -58,9 +68,19 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/wall")
-    public ResponseEntity<?> postMessage(@PathVariable("groupId") int groupId, @RequestBody @Valid GroupWallMessageDto message) {
-        groupWallService.postMessage(groupId, message);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> postMessage(@PathVariable("groupId") int groupId,
+                                         @RequestBody @Valid GroupWallMessageDto message, BindingResult result) {
+        if (result.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            result.getFieldErrors().forEach(fe -> sb.append(fe.getField())
+                                                    .append(" ")
+                                                    .append(fe.getDefaultMessage())
+                                                    .append("<br>"));
+            return new ResponseEntity<>(sb.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            groupWallService.postMessage(groupId, message);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
     }
 
     @DeleteMapping("/{groupId}/wall/{messageId}")

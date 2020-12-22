@@ -13,6 +13,7 @@ import com.senla.courses.repository.RoleRepository;
 import com.senla.courses.repository.UserPrincipalRepository;
 import com.senla.courses.repository.UserRepository;
 import com.senla.courses.service.interfaces.UserService;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +28,7 @@ import java.util.List;
 
 
 @Slf4j
+@Setter
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -123,7 +125,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserInfo(int userId) {
         log.debug(String.format("Call method getUserInfo with id %d", userId));
-        User user = null;
+        User user;
         try {
             user = userRepository.findById(userId).get();
         } catch (Exception e) {

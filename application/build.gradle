@@ -72,10 +72,15 @@ configurations {
     }
 }
 
+test {
+    useJUnitPlatform()
+}
+
 ext {
     mapstructVersion = "1.4.1.Final"
 }
 dependencies {
+    implementation 'junit:junit:4.12'
     compileOnly("org.mapstruct:mapstruct:${mapstructVersion}")
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 }

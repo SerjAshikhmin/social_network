@@ -10,6 +10,7 @@ import com.senla.courses.repository.UserRepository;
 import com.senla.courses.repository.UserWallMessageRepository;
 import com.senla.courses.repository.UserWallRepository;
 import com.senla.courses.service.interfaces.UserWallService;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@Setter
 @Service
 public class UserWallServiceImpl implements UserWallService {
 

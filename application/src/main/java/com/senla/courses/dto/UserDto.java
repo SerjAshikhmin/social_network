@@ -9,6 +9,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -47,4 +48,17 @@ public class UserDto {
     @NotEmpty
     @Size(min = 5, max = 45)
     private String password;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserDto userDto = (UserDto) o;
+        return Objects.equals(id, userDto.id) && Objects.equals(firstName, userDto.firstName) && Objects.equals(lastName, userDto.lastName) && Objects.equals(gender, userDto.gender) && Objects.equals(birthDate, userDto.birthDate) && Objects.equals(country, userDto.country) && Objects.equals(city, userDto.city) && Objects.equals(personalInfo, userDto.personalInfo) && Objects.equals(friends, userDto.friends) && Objects.equals(userWall, userDto.userWall) && Objects.equals(outgoingMessages, userDto.outgoingMessages) && Objects.equals(incomingMessages, userDto.incomingMessages) && Objects.equals(groups, userDto.groups) && Objects.equals(userName, userDto.userName) && Objects.equals(password, userDto.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, gender, birthDate, country, city, personalInfo, friends, userWall, outgoingMessages, incomingMessages, groups, userName, password);
+    }
 }

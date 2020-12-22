@@ -9,6 +9,7 @@ import com.senla.courses.exceptions.groupexceptions.*;
 import com.senla.courses.repository.GroupRepository;
 import com.senla.courses.repository.UserRepository;
 import com.senla.courses.service.interfaces.GroupService;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.List;
 
 
 @Slf4j
+@Setter
 @Service
 public class GroupServiceImpl implements GroupService {
 
@@ -69,9 +71,8 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<GroupDto> getAllGroups() {
         log.debug("Call method getAllGroups");
-        List<Group> result = null;
+        List<Group> result;
         try {
-
             result = groupRepository.findAll();
             if (result == null || result.isEmpty()) {
                 throw new RuntimeException("Groups not found");
@@ -87,7 +88,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public GroupDto findGroupById(int id) {
         log.debug(String.format("Call method findGroupById with id %d", id));
-        Group group = null;
+        Group group;
         try {
             group = groupRepository.findById(id).get();
         } catch (Exception e) {

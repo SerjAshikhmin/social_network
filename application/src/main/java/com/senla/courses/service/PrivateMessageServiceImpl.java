@@ -11,6 +11,7 @@ import com.senla.courses.repository.PrivateMessageRepository;
 import com.senla.courses.repository.UserPrincipalRepository;
 import com.senla.courses.repository.UserRepository;
 import com.senla.courses.service.interfaces.PrivateMessageService;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +22,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
+@Setter
 @Service
 public class PrivateMessageServiceImpl implements PrivateMessageService {
 
@@ -58,7 +60,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
     public List<PrivateMessageDto> showDialog(int userId) {
         log.debug(String.format("Call method showDialog with userId %d", userId));
         String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<PrivateMessage> result = null;
+        List<PrivateMessage> result;
         try {
             User currentUser = userPrincipalRepository.findMyUserPrincipalByUserName(currentUserName).getUser();
             User user = userRepository.findById(userId).get();
