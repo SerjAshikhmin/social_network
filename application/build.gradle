@@ -37,8 +37,8 @@ dependencies {
     compile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
-    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.22'
-    //compile group: 'com.h2database', name: 'h2', version: '1.4.200'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
+    //compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.22'
 
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: SPRING_BOOT_VERSION, ext: 'pom'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: SPRING_BOOT_VERSION
