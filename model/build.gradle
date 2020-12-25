@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.0'
+}
+
+group 'com.senla.cources'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    def SPRING_BOOT_VERSION = '2.4.0'
+
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: SPRING_BOOT_VERSION
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: SPRING_BOOT_VERSION
+    compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+    compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.1.6.Final'
+}
+
+jar {
+    enabled = true
+}
+bootJar {
+    enabled = false
+}

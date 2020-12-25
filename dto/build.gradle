@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.0'
+}
+
+group 'com.senla.cources'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    def SPRING_BOOT_VERSION = '2.4.0'
+
+    compile project(':model')
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: SPRING_BOOT_VERSION
+    compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+}
+
+ext {
+    mapstructVersion = "1.4.1.Final"
+}
+dependencies {
+    implementation 'junit:junit:4.12'
+    compileOnly("org.mapstruct:mapstruct:${mapstructVersion}")
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+}
+compileJava {
+    options.annotationProcessorPath = configurations.annotationProcessor
+}
+
+jar {
+    enabled = true
+}
+bootJar {
+    enabled = false
+}

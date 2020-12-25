@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.0'
+}
+
+group 'com.senla.cources'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    def SPRING_BOOT_VERSION = '2.4.0'
+
+    compile project(':model')
+    compile project(':repository')
+    compile project(':dto')
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: SPRING_BOOT_VERSION
+    testCompile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+}
+
+jar {
+    enabled = true
+}
+bootJar {
+    enabled = false
+}

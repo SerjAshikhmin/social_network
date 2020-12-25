@@ -5,10 +5,9 @@
  * Learn how to create Gradle builds at https://guides.gradle.org/creating-new-gradle-builds/
  */
 
-group 'com.senla.courses'
+group 'com.senla.cources.cources'
 version '1.0-SNAPSHOT'
 apply plugin: 'java'
-sourceCompatibility = 11
 
 repositories {
     jcenter()

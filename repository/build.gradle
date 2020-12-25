@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.0'
+}
+
+group 'com.senla.cources'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    def SPRING_BOOT_VERSION = '2.4.0'
+
+    compile project(':model')
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
+    //compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.22'
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: SPRING_BOOT_VERSION
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: SPRING_BOOT_VERSION
+}
+
+jar {
+    enabled = true
+}
+bootJar {
+    enabled = false
+}
