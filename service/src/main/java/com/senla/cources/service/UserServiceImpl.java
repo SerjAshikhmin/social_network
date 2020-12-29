@@ -6,13 +6,13 @@ import com.senla.cources.domain.enums.Gender;
 import com.senla.cources.domain.security.MyUserPrincipal;
 import com.senla.cources.domain.security.Role;
 import com.senla.cources.dto.UserDto;
-import com.senla.cources.dto.mappers.MyUserPrincipalMapper;
 import com.senla.cources.dto.mappers.UserMapper;
 import com.senla.cources.exceptions.userexceptions.*;
 import com.senla.cources.repository.RoleRepository;
 import com.senla.cources.repository.UserPrincipalRepository;
 import com.senla.cources.repository.UserRepository;
 import com.senla.cources.service.interfaces.UserService;
+import com.senla.cources.service.security.PermissionService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 
 @Slf4j
@@ -41,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private MyUserPrincipalMapper userPrincipalMapper;
+    private PermissionService permissionService;
 
     @Override
     @Transactional
@@ -133,6 +130,32 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(e);
         }
         return userMapper.userToUserDto(user);
+    }
+
+    @Override
+    @Transactional
+    public void removeUser(int userId) {
+        log.debug(String.format("Call method removeUser with id %d", userId));
+        User user;
+        try {
+            user = userRepository.findById(userId).get();
+            if (permissionService.checkPermissionForUserWall(user)) {
+                user.setAdminInGroups(Collections.EMPTY_SET);
+                user.setGroups(Collections.EMPTY_SET);
+                user.setIncomingMessages(Collections.EMPTY_LIST);
+                user.setOutgoingMessages(Collections.EMPTY_LIST);
+                userRepository.save(user);
+                userRepository.delete(user);
+                log.info(String.format("User %s successfully removed", user.getUserPrincipal().getUsername()));
+            } else {
+                String message = String.format("User %s doesn't have permission to remove current user", user.getUserPrincipal().getUsername());
+                log.warn(message);
+                throw new RuntimeException(message);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new RemoveUserException(e);
+        }
     }
 
     @Override

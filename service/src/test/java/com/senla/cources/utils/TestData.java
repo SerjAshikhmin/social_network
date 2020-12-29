@@ -27,11 +27,11 @@ public class TestData {
 
     public TestData() {
         testGroupList = new ArrayList<>();
-        Group firstGroup = new Group(1, "Kinomania", new HashSet<>(), new GroupWall());
+        Group firstGroup = new Group(1, "Kinomania", new HashSet<>(), new HashSet<>(), new GroupWall());
         testGroupList.add(firstGroup);
-        Group secondGroup = new Group(2, "Cherniy umor", new HashSet<>(), new GroupWall());
+        Group secondGroup = new Group(2, "Cherniy umor", new HashSet<>(), new HashSet<>(), new GroupWall());
         testGroupList.add(secondGroup);
-        Group thirdGroup = new Group(3, "Ostroumnie", new HashSet<>(), new GroupWall());
+        Group thirdGroup = new Group(3, "Ostroumnie", new HashSet<>(), new HashSet<>(), new GroupWall());
         testGroupList.add(thirdGroup);
         firstGroup.getGroupWall().setMessages(new ArrayList<>());
         firstGroup.getGroupWall().setGroup(firstGroup);
@@ -45,7 +45,7 @@ public class TestData {
                 LocalDateTime.of(2020, Month.NOVEMBER, 27, 15, 12, 35), null));
 
         User firstUser = new User(1, "Michael", "Astakhov", Gender.male, LocalDate.of(1993, Month.APRIL, 27),
-                "Russia", "Moscow", "some info about me", new ArrayList<>(), new UserWall(), null, null, new HashSet<>(), null);
+                "Russia", "Moscow", "some info about me", new ArrayList<>(), new UserWall(), null, null, new HashSet<>(), new HashSet<>(), null);
         MyUserPrincipal firstPrincipal = new MyUserPrincipal(1, "anonymousUser", "pass1", firstUser, new HashSet<>());
         defaultTestRole = new Role(1, "user", new HashSet<>());
         defaultTestRole.getUsersPrincipals().add(firstPrincipal);
@@ -53,14 +53,15 @@ public class TestData {
         firstUser.setUserPrincipal(firstPrincipal);
         firstUser.getUserWall().setMessages(new ArrayList<>());
         firstUser.getUserWall().setUser(firstUser);
+        firstUser.getAdminInGroups().add(firstGroup);
 
         User secondUser = new User(2, "Daria", "Alimova", Gender.female, LocalDate.of(1996, Month.JUNE, 13),
-                "Russia", "Moscow", "some more info about me", new ArrayList<>(), new UserWall(), null, null, new HashSet<>(), null);
+                "Russia", "Moscow", "some more info about me", new ArrayList<>(), new UserWall(), null, null, new HashSet<>(), new HashSet<>(), null);
         MyUserPrincipal secondPrincipal = new MyUserPrincipal(2, "ali_daria", "pass2", firstUser, new HashSet<>());
         secondUser.setUserPrincipal(secondPrincipal);
 
         User thirdUser = new User(3, "Sergey", "Lapeev", Gender.male, LocalDate.of(1988, Month.NOVEMBER, 17),
-                "Russia", "St. Petersburg", "some more info about me", new ArrayList<>(), new UserWall(), null, null, new HashSet<>(), null);
+                "Russia", "St. Petersburg", "some more info about me", new ArrayList<>(), new UserWall(), null, null, new HashSet<>(), new HashSet<>(), null);
         MyUserPrincipal thirdPrincipal = new MyUserPrincipal(3, "lap_ser", "pass3", firstUser, new HashSet<>());
         thirdUser.setUserPrincipal(thirdPrincipal);
         firstUser.getFriends().add(thirdUser);

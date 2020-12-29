@@ -7,14 +7,17 @@ import com.senla.cources.dto.GroupDto;
 import com.senla.cources.dto.mappers.GroupMapper;
 import com.senla.cources.exceptions.groupexceptions.*;
 import com.senla.cources.repository.GroupRepository;
+import com.senla.cources.repository.UserPrincipalRepository;
 import com.senla.cources.repository.UserRepository;
 import com.senla.cources.service.interfaces.GroupService;
+import com.senla.cources.service.security.PermissionService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -30,6 +33,10 @@ public class GroupServiceImpl implements GroupService {
     private UserRepository userRepository;
     @Autowired
     private GroupMapper groupMapper;
+    @Autowired
+    private UserPrincipalRepository userPrincipalRepository;
+    @Autowired
+    private PermissionService permissionService;
 
     @Override
     @Transactional
@@ -53,15 +60,17 @@ public class GroupServiceImpl implements GroupService {
         log.debug(String.format("Call method removeGroup with id %d", id));
         try {
             Group group = groupRepository.findById(id).get();
-            for (User user : group.getUsers()) {
-                for (Group userGroup : user.getGroups()) {
-                    if (userGroup.getId() == group.getId()) {
-                        user.getGroups().remove(group);
-                    }
-                }
+            if (permissionService.checkPermissionForGroup(group)) {
+                group.setUsers(Collections.EMPTY_SET);
+                group.setAdmins(Collections.EMPTY_SET);
+                groupRepository.save(group);
+                groupRepository.delete(group);
+                log.info(String.format("Group %s successfully removed", group.getTitle()));
+            } else {
+                String message = String.format("Current user doesn't have permission to remove group %s", group.getTitle());
+                log.warn(message);
+                throw new RuntimeException(message);
             }
-            groupRepository.delete(group);
-            log.info(String.format("Group %s successfully removed", group.getTitle()));
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new RemoveGroupException(e);
@@ -133,4 +142,5 @@ public class GroupServiceImpl implements GroupService {
             throw new RemoveUserFromGroupException(e);
         }
     }
+
 }

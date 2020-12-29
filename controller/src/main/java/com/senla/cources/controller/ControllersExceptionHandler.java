@@ -60,14 +60,19 @@ public class ControllersExceptionHandler extends ResponseEntityExceptionHandler 
         return new ResponseEntity<>(new Exception("Dialog or message not found"), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(AddToFriendsException.class)
-    protected ResponseEntity<Exception> handleAddToFriendsException() {
-        return new ResponseEntity<>(new Exception("Error adding user to friends"), HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(RegisterUserException.class)
     protected ResponseEntity<Exception> handleRegisterUserException() {
         return new ResponseEntity<>(new Exception("Error registering user"), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RemoveUserException.class)
+    protected ResponseEntity<Exception> handleRemoveUserException() {
+        return new ResponseEntity<>(new Exception("Error removing user"), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AddToFriendsException.class)
+    protected ResponseEntity<Exception> handleAddToFriendsException() {
+        return new ResponseEntity<>(new Exception("Error adding user to friends"), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RemoveFromFriendsException.class)

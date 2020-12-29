@@ -2,6 +2,7 @@ package com.senla.cources.servicetests;
 
 import com.senla.cources.domain.Group;
 import com.senla.cources.domain.User;
+import com.senla.cources.domain.security.MyUserPrincipal;
 import com.senla.cources.dto.GroupDto;
 import com.senla.cources.dto.mappers.GroupMapper;
 import com.senla.cources.dto.mappers.GroupMapperImpl;
@@ -9,8 +10,10 @@ import com.senla.cources.exceptions.groupexceptions.GroupNotFoundException;
 import com.senla.cources.exceptions.groupexceptions.RemoveGroupException;
 import com.senla.cources.exceptions.groupexceptions.RemoveUserFromGroupException;
 import com.senla.cources.repository.GroupRepository;
+import com.senla.cources.repository.UserPrincipalRepository;
 import com.senla.cources.repository.UserRepository;
 import com.senla.cources.service.GroupServiceImpl;
+import com.senla.cources.service.security.PermissionService;
 import com.senla.cources.utils.TestData;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,6 +24,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -35,10 +40,14 @@ public class GroupServiceImplTest {
 
     @InjectMocks
     private GroupServiceImpl groupService;
+    @InjectMocks
+    private PermissionService permissionService;
     @Mock
     private GroupRepository groupRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private UserPrincipalRepository userPrincipalRepository;
     private final GroupMapper groupMapper;
     private final TestData testData;
 
@@ -56,6 +65,7 @@ public class GroupServiceImplTest {
     public void setUpMocks() {
         MockitoAnnotations.openMocks(this);
         groupService.setGroupMapper(groupMapper);
+        groupService.setPermissionService(permissionService);
     }
 
     @Test
@@ -84,7 +94,11 @@ public class GroupServiceImplTest {
     public void removeGroupTest() {
         log.info("Starting removeGroup test");
         Group testGroup = testData.getTestGroupList().get(0);
+        MyUserPrincipal testPrincipal = testData.getTestUserPrincipals().get(0);
         when(groupRepository.findById(anyInt())).thenReturn(Optional.of(testGroup));
+        when(userPrincipalRepository.findMyUserPrincipalByUserName(anyString())).thenReturn(testPrincipal);
+        AnonymousAuthenticationToken token = new AnonymousAuthenticationToken("testKey", testPrincipal.getUsername(), testPrincipal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(token);
 
         groupService.removeGroup(1);
 

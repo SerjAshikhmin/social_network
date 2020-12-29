@@ -49,12 +49,10 @@ public class UserServiceImplTest {
     @Mock
     private RoleRepository roleRepository;
     private UserMapper userMapper;
-    private MyUserPrincipalMapper userPrincipalMapper;
     private TestData testData;
 
     public UserServiceImplTest() {
         this.userMapper = new UserMapperImpl();
-        this.userPrincipalMapper = new MyUserPrincipalMapperImpl();
         this.testData = new TestData();
     }
 
@@ -67,7 +65,6 @@ public class UserServiceImplTest {
     public void setUpMocks() {
         MockitoAnnotations.openMocks(this);
         userService.setUserMapper(userMapper);
-        userService.setUserPrincipalMapper(userPrincipalMapper);
     }
 
     @Test

@@ -11,8 +11,8 @@ insert into user_principal (id, user_name, password)
             (10, 'sim_orl', 'pass10');
 
 insert into roles (id, name)
-     values (1, 'user'),
-            (2, 'admin');
+     values (1, 'ROLE_USER'),
+            (2, 'ROLE_ADMIN');
 
 insert into user_principal_roles (my_user_principal_id, roles_id)
      values (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (9, 1), (10, 2);
@@ -60,6 +60,11 @@ insert into users_groups (users_users_id, groups_id)
      values (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (9, 1), (10, 1),
             (3, 2), (6, 2), (7, 2), (8, 2), (9, 2),
             (5, 3), (10, 3);
+
+insert into users_admin_in_groups (admins_users_id, admin_in_groups_id)
+     values (1, 1), (2, 1),
+            (3, 2),
+            (5, 3);
 
 insert into group_wall_message (id, content, send_date, group_wall_id)
      values (1, 'group 1, wall message 1', '2020-10-17 10:37:45', 1),

@@ -32,7 +32,7 @@ public class MyUserPrincipal implements UserDetails {
     @OneToOne(mappedBy = "userPrincipal")
     private User user;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
     @Override

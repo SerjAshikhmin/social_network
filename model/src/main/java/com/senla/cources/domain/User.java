@@ -62,6 +62,9 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private Set<Group> groups;
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private Set<Group> adminInGroups;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "userPrincipal_id", referencedColumnName = "id")
     private MyUserPrincipal userPrincipal;

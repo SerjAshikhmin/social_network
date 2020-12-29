@@ -3,14 +3,17 @@ package com.senla.cources.servicetests;
 import com.senla.cources.domain.User;
 import com.senla.cources.domain.UserWall;
 import com.senla.cources.domain.UserWallMessage;
+import com.senla.cources.domain.security.MyUserPrincipal;
 import com.senla.cources.dto.mappers.UserWallMessageMapper;
 import com.senla.cources.dto.mappers.UserWallMessageMapperImpl;
 import com.senla.cources.exceptions.messageexceptions.PostMessageException;
 import com.senla.cources.exceptions.messageexceptions.RemoveMessageException;
+import com.senla.cources.repository.UserPrincipalRepository;
 import com.senla.cources.repository.UserRepository;
 import com.senla.cources.repository.UserWallMessageRepository;
 import com.senla.cources.repository.UserWallRepository;
 import com.senla.cources.service.UserWallServiceImpl;
+import com.senla.cources.service.security.PermissionService;
 import com.senla.cources.utils.TestData;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,12 +41,16 @@ public class UserWallServiceImplTest {
 
     @InjectMocks
     private UserWallServiceImpl userWallService;
+    @InjectMocks
+    private PermissionService permissionService;
     @Mock
     private UserRepository userRepository;
     @Mock
     private UserWallRepository userWallRepository;
     @Mock
     private UserWallMessageRepository userWallMessageRepository;
+    @Mock
+    private UserPrincipalRepository userPrincipalRepository;
     private final UserWallMessageMapper userWallMessageMapper;
     private final TestData testData;
 
@@ -61,6 +68,7 @@ public class UserWallServiceImplTest {
     public void setUpMocks() {
         MockitoAnnotations.openMocks(this);
         userWallService.setUserWallMessageMapper(userWallMessageMapper);
+        userWallService.setPermissionService(permissionService);
     }
 
     @Test
@@ -68,7 +76,9 @@ public class UserWallServiceImplTest {
         log.info("Starting postMessage test");
         UserWallMessage testMessage = testData.getTestUserWallMessages().get(0);
         User testUser = testData.getTestUserList().get(0);
+        MyUserPrincipal testPrincipal = testData.getTestUserPrincipals().get(0);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(testUser));
+        when(userPrincipalRepository.findMyUserPrincipalByUserName(anyString())).thenReturn(testPrincipal);
         AnonymousAuthenticationToken token = new AnonymousAuthenticationToken("testKey", testUser.getUserPrincipal().getUsername(), testUser.getUserPrincipal().getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(token);
 
@@ -93,8 +103,12 @@ public class UserWallServiceImplTest {
         log.info("Starting removeMessage test");
         UserWallMessage testMessage = testData.getTestUserWallMessages().get(0);
         User testUser = testData.getTestUserList().get(0);
+        MyUserPrincipal testPrincipal = testData.getTestUserPrincipals().get(0);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(testUser));
         when(userWallMessageRepository.findById(anyInt())).thenReturn(Optional.of(testMessage));
+        when(userPrincipalRepository.findMyUserPrincipalByUserName(anyString())).thenReturn(testPrincipal);
+        AnonymousAuthenticationToken token = new AnonymousAuthenticationToken("testKey", testPrincipal.getUsername(), testPrincipal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(token);
 
         userWallService.removeMessage(1, 1);
 
@@ -116,10 +130,15 @@ public class UserWallServiceImplTest {
     public void removeNotExistingMessageTest() {
         log.info("Starting removeNotExistingMessage test");
         User testUser = testData.getTestUserList().get(0);
+        MyUserPrincipal testPrincipal = testData.getTestUserPrincipals().get(0);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(testUser));
         when(userWallMessageRepository.findById(5)).thenThrow(new NoSuchElementException());
+        when(userPrincipalRepository.findMyUserPrincipalByUserName(anyString())).thenReturn(testPrincipal);
+        AnonymousAuthenticationToken token = new AnonymousAuthenticationToken("testKey", testPrincipal.getUsername(), testPrincipal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(token);
 
         assertThrows(RemoveMessageException.class, () -> userWallService.removeMessage(1, 5));
+        verify(userRepository, times(1)).findById(anyInt());
         verify(userWallMessageRepository, times(1)).findById(anyInt());
     }
 }

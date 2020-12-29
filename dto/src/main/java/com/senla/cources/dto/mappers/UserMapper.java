@@ -1,9 +1,6 @@
 package com.senla.cources.dto.mappers;
 
-import com.senla.cources.domain.Group;
-import com.senla.cources.domain.User;
-import com.senla.cources.domain.UserWall;
-import com.senla.cources.domain.UserWallMessage;
+import com.senla.cources.domain.*;
 import com.senla.cources.domain.security.MyUserPrincipal;
 import com.senla.cources.dto.*;
 import org.mapstruct.IterableMapping;
@@ -16,6 +13,8 @@ import java.util.List;
 public interface UserMapper {
 
     @FullMapping
+    @Mapping(target = "outgoingMessages", ignore = true)
+    @Mapping(target = "incomingMessages", ignore = true)
     UserDto userToUserDto(User user);
     User userDtoToUser(UserDto userDto);
 

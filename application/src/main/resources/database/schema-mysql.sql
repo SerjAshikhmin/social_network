@@ -88,6 +88,12 @@ create table if not exists users_groups (
     primary key (users_users_id, groups_id)
 ) engine=MyISAM;
 
+create table if not exists users_admin_in_groups (
+   admins_users_id integer not null,
+    admin_in_groups_id integer not null,
+    primary key (admins_users_id, admin_in_groups_id)
+) engine=MyISAM;
+
 alter table group_wall_message
    add constraint FKe5xm90e6iufkxgdyv9npp0wq7
    foreign key (group_wall_id)

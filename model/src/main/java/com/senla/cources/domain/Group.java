@@ -26,6 +26,9 @@ public class Group {
     @ManyToMany(mappedBy = "groups", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private Set<User> users;
 
+    @ManyToMany(mappedBy = "adminInGroups", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private Set<User> admins;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "groupWall_id", referencedColumnName = "id")
     private GroupWall groupWall;

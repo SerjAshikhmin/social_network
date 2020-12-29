@@ -123,3 +123,12 @@ create table users_groups (
   OIDS=FALSE
 );
 ALTER TABLE users_groups OWNER TO postgres;
+
+create table users_admin_in_groups (
+   admins_users_id int4 not null,
+    admin_in_groups_id int4 not null,
+    primary key (admins_users_id, admin_in_groups_id)
+)WITH (
+   OIDS=FALSE
+ );
+ ALTER TABLE users_admin_in_groups OWNER TO postgres;
