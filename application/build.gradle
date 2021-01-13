@@ -40,7 +40,6 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: SPRING_BOOT_VERSION, ext: 'pom'
     compile group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: SPRING_BOOT_VERSION
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: SPRING_BOOT_VERSION
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: SPRING_BOOT_VERSION
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: SPRING_BOOT_VERSION
     providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
 
