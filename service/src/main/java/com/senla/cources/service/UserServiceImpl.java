@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -205,66 +204,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> searchUsers(String country, String city, String partOfName, Integer lessThanAgeInYears, Integer moreThanAgeInYears) {
         log.debug("Call method searchUsers");
-        List<User> result;
-        List<User> usersByCountryAndCity;
-        usersByCountryAndCity = applyCountryAndCityFilters(country, city);
-        result = new ArrayList<>(usersByCountryAndCity);
-        applyPartOfNameFilter(partOfName, result, usersByCountryAndCity);
-        applyAgeFilters(lessThanAgeInYears, moreThanAgeInYears, result);
-        result.sort(Comparator.comparing(User::getFirstName));
-        return userMapper.userListToUserDtoList(result);
+        return userMapper.userListToUserDtoList(userRepository.searchUsers(
+                country, city, partOfName, lessThanAgeInYears, moreThanAgeInYears));
     }
 
-    private void applyAgeFilters(Integer lessThanAgeInYears, Integer moreThanAgeInYears, List<User> result) {
-        if (lessThanAgeInYears != null) {
-            List<User> tempUserList = new ArrayList<>(result);
-            for (User user : tempUserList) {
-                int usersAgeInYears = LocalDateTime.now().minusYears(user.getBirthDate().getYear()).getYear();
-                if (usersAgeInYears > lessThanAgeInYears) {
-                    result.remove(user);
-                }
-            }
-        }
-        if (moreThanAgeInYears != null) {
-            List<User> tempUserList = new ArrayList<>(result);
-            for (User user : tempUserList) {
-                int usersAgeInYears = LocalDateTime.now().minusYears(user.getBirthDate().getYear()).getYear();
-                if (usersAgeInYears < moreThanAgeInYears) {
-                    result.remove(user);
-                }
-            }
-        }
-    }
-
-    private void applyPartOfNameFilter(String partOfName, List<User> result, List<User> usersByCountryAndCity) {
-        if (partOfName != null) {
-            partOfName = partOfName.toLowerCase();
-            for (User user : usersByCountryAndCity) {
-                if (!(user.getFirstName().toLowerCase().contains(partOfName) || user.getLastName().toLowerCase().contains(partOfName)
-                        || (user.getFirstName().toLowerCase() + " " + user.getLastName().toLowerCase()).contains(partOfName)
-                        || (user.getLastName().toLowerCase() + " " + user.getFirstName().toLowerCase()).contains(partOfName))) {
-                    result.remove(user);
-                }
-            }
-        }
-    }
-
-    private List<User> applyCountryAndCityFilters(String country, String city) {
-        List<User> usersByCountryAndCity = null;
-        try {
-            if (country != null && city != null) {
-                usersByCountryAndCity = userRepository.getUsersByCountryAndCity(country, city);
-            } else {
-                if (country != null) {
-                    usersByCountryAndCity = userRepository.getUsersByCountry(country);
-                } else {
-                    usersByCountryAndCity = userRepository.findAll();
-                }
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new UserNotFoundException(e);
-        }
-        return usersByCountryAndCity;
-    }
 }
