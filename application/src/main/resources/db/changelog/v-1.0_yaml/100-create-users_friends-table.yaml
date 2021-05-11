@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 100
+      author: ashikhmin
+      changes:
+        - createTable:
+            tableName: users_friends
+            columns:
+              - column:
+                  name: users_id
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: friends_id
+                  type: integer
+                  constraints:
+                    nullable: false

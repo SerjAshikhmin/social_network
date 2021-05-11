@@ -1,0 +1,2 @@
+drop table users_admin_in_groups
+GO

@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20
+      author: ashikhmin
+      changes:
+        - createTable:
+            tableName: groupes
+            columns:
+              - column:
+                  name: id
+                  type: integer
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(45)
+              - column:
+                  name: group_wall_id
+                  type: integer

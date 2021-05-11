@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 30
+      author: ashikhmin
+      changes:
+        - createTable:
+            tableName: private_message
+            columns:
+              - column:
+                  name: id
+                  type: integer
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: content
+                  type: varchar(1000)
+              - column:
+                  name: send_date
+                  type: datetime
+              - column:
+                  name: is_read
+                  type: bit
+                  constraints:
+                    nullable: false
+              - column:
+                  name: receiver_id
+                  type: integer
+              - column:
+                  name: sender_id
+                  type: integer

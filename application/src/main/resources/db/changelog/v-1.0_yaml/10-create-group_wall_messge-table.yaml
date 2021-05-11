@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10
+      author: ashikhmin
+      changes:
+        - createTable:
+            tableName: group_wall_message
+            columns:
+              - column:
+                  name: id
+                  type: integer
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: content
+                  type: varchar(1000)
+              - column:
+                  name: send_date
+                  type: datetime
+              - column:
+                  name: group_wall_id
+                  type: integer

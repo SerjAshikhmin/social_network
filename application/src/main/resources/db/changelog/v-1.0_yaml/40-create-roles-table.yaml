@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 40
+      author: ashikhmin
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: integer
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(45)

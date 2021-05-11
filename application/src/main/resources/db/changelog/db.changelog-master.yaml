@@ -1,0 +1,38 @@
+databaseChangeLog:
+  # schema
+  - include:
+      file: db/changelog/v-1.0_yaml/01-create-group_wall-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/10-create-group_wall_messge-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/20-create-groupes-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/30-create-private_message-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/40-create-roles-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/50-create-user_principal-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/60-create-user_principal_roles-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/70-create-user_wall-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/80-create-user_wall_message-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/90-create-users-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/100-create-users_friends-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/110-create-users_groups-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/120-create-users_admin_in_groups-table.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/130-add-composite-primary-keys.yaml
+  - include:
+      file: db/changelog/v-1.0_yaml/140-add-foreign-keys.yaml
+  # drop tables
+  - include:
+      file: db/changelog/v-1.0_yaml/190-drop-all-tables.yaml
+  # data
+  #- includeAll:
+  #    path: db/changelog/data/

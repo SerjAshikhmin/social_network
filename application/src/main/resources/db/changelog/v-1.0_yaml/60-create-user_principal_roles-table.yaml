@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 60
+      author: ashikhmin
+      changes:
+        - createTable:
+            tableName: user_principal_roles
+            columns:
+              - column:
+                  name: my_user_principal_id
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: roles_id
+                  type: integer
+                  constraints:
+                    nullable: false

@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 110
+      author: ashikhmin
+      changes:
+        - createTable:
+            tableName: users_groups
+            columns:
+              - column:
+                  name: users_users_id
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: groups_id
+                  type: integer
+                  constraints:
+                    nullable: false

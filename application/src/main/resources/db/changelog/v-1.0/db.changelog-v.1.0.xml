@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <include file="01-changeset-group_wall-table.xml" relativeToChangelogFile="true"/>
+    <include file="10-changeset-group_wall_message-table.xml" relativeToChangelogFile="true"/>
+    <include file="20-changeset-groupes-table.xml" relativeToChangelogFile="true"/>
+    <include file="30-changeset-private_message-table.xml" relativeToChangelogFile="true"/>
+    <include file="40-changeset-roles-table.xml" relativeToChangelogFile="true"/>
+    <include file="50-changeset-user_principal-table.xml" relativeToChangelogFile="true"/>
+    <include file="60-changeset-user_principal_roles-table.xml" relativeToChangelogFile="true"/>
+    <include file="70-changeset-user_wall-table.xml" relativeToChangelogFile="true"/>
+    <include file="80-changeset-user_wall_message-table.xml" relativeToChangelogFile="true"/>
+    <include file="90-changeset-users-table.xml" relativeToChangelogFile="true"/>
+    <include file="100-changeset-users_friends-table.xml" relativeToChangelogFile="true"/>
+    <include file="110-changeset-users_groups-table.xml" relativeToChangelogFile="true"/>
+    <include file="120-changeset-users_admin_in_groups-table.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

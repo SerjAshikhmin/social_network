@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 130
+      author: ashikhmin
+      changes:
+        - addPrimaryKey:
+            columnNames: my_user_principal_id, roles_id
+            constraintName: PK_USER_PRINCIPAL_ROLES
+            tableName: user_principal_roles
+            validate: true
+        - addPrimaryKey:
+            columnNames: users_users_id, groups_id
+            constraintName: PK_USERS_GROUPS
+            tableName: users_groups
+            validate: true
+        - addPrimaryKey:
+            columnNames: admins_users_id, admin_in_groups_id
+            constraintName: PK_ADMIN_IN_GROUPS
+            tableName: users_admin_in_groups
+            validate: true

@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 70
+      author: ashikhmin
+      changes:
+        - createTable:
+            tableName: user_wall
+            columns:
+              - column:
+                  name: id
+                  type: integer
+                  constraints:
+                    primaryKey: true
+                    nullable: false

@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 90
+      author: ashikhmin
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: users_id
+                  type: integer
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: birth_date
+                  type: date
+              - column:
+                  name: city
+                  type: varchar(20)
+              - column:
+                  name: country
+                  type: varchar(45)
+              - column:
+                  name: first_name
+                  type: varchar(20)
+              - column:
+                  name: gender
+                  type: varchar(10)
+              - column:
+                  name: last_name
+                  type: varchar(20)
+              - column:
+                  name: personal_info
+                  type: varchar(1000)
+              - column:
+                  name: user_principal_id
+                  type: integer
+              - column:
+                  name: user_wall_id
+                  type: integer
