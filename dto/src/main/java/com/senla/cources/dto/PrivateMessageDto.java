@@ -7,15 +7,15 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @NoArgsConstructor
 @Setter
 @Getter
-public class PrivateMessageDto {
+public class PrivateMessageDto implements Serializable {
 
     private Integer id;
     @NotEmpty
@@ -23,7 +23,6 @@ public class PrivateMessageDto {
     private String content;
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @NotNull
     private LocalDateTime sendDate;
     private boolean isRead;
     private UserDto sender;

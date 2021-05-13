@@ -9,5 +9,6 @@ import java.util.List;
 public interface PrivateMessageService {
 
     void sendMessage(PrivateMessageDto message, int receiverId);
+    void receiveMessages(int senderId);
     List<PrivateMessageDto> showDialog(int userId);
 }

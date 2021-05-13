@@ -18,7 +18,7 @@ public class PrivateMessageController {
     @Autowired
     private PrivateMessageService privateMessageService;
 
-    @GetMapping("/{userId}")
+    @GetMapping("/dialog/{userId}")
     public ResponseEntity<?> showDialog(@PathVariable("userId") int userId) {
         List<PrivateMessageDto> messages = privateMessageService.showDialog(userId);
         return ResponseEntity.ok(messages);
@@ -38,5 +38,11 @@ public class PrivateMessageController {
             privateMessageService.sendMessage(message, receiverId);
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
+    }
+
+    @GetMapping("/{senderId}")
+    public ResponseEntity<?> receiveMessages(@PathVariable("senderId") int senderId) {
+        privateMessageService.receiveMessages(senderId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -16,7 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Setter
 @Getter
-public class UserDto {
+public class UserDto implements Serializable {
 
     private Integer id;
     @NotEmpty
@@ -37,11 +38,11 @@ public class UserDto {
     private String city;
     @Size(max = 1000)
     private String personalInfo;
-    private List<UserDto> friends;
-    private UserWallDto userWall;
-    private List<PrivateMessageDto> outgoingMessages;
-    private List<PrivateMessageDto> incomingMessages;
-    private Set<GroupDto> groups;
+    private transient List<UserDto> friends;
+    private transient UserWallDto userWall;
+    private transient List<PrivateMessageDto> outgoingMessages;
+    private transient List<PrivateMessageDto> incomingMessages;
+    private transient Set<GroupDto> groups;
     @NotEmpty
     @Size(min = 6, max = 45)
     private String userName;

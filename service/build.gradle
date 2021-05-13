@@ -17,6 +17,7 @@ dependencies {
     compile project(':repository')
     compile project(':dto')
     compile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-activemq', version: '2.4.5'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
     compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
